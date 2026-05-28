@@ -68,6 +68,18 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15p
 .gate-avatar img{width:100%;height:100%;object-fit:cover;display:block;}
 .gate-avatar-more{width:38px;height:38px;border-radius:50%;border:2.5px solid var(--potato-bg);background:var(--potato-dark);color:var(--potato-light);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;margin-left:-8px;flex-shrink:0;}
 .gate-participants-loading{font-size:.78rem;color:rgba(92,74,30,.4);}font-size:.8rem;background:var(--gold-bg);border:1.5px solid var(--gold-border);border-radius:8px;padding:8px 14px;margin-bottom:20px;color:var(--gold);font-weight:700;}
+.gate-share-area{margin-bottom:20px;}
+.gate-share-btns{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;}
+.gate-share-btn{display:inline-flex;flex-direction:column;align-items:center;gap:4px;padding:9px 14px;border-radius:10px;border:1.5px solid var(--border);background:rgba(255,255,255,.7);cursor:pointer;transition:background .15s,border-color .15s,transform .1s;font-family:var(--sans);min-width:60px;}
+.gate-share-btn:hover{background:#fff;transform:translateY(-2px);}
+.gate-share-btn:active{transform:scale(.96);}
+.gate-share-btn .gate-share-icon{font-size:1.25rem;line-height:1;}
+.gate-share-btn .gate-share-lbl{font-size:.68rem;font-weight:700;color:var(--muted);white-space:nowrap;}
+.gate-share-btn.x-btn:hover{background:#000;border-color:#000;}.gate-share-btn.x-btn:hover .gate-share-lbl{color:#fff;}
+.gate-share-btn.bsky-btn:hover{background:#e8f4ff;border-color:#0085ff;}
+.gate-share-btn.line-btn:hover{background:#e6ffe6;border-color:#00b900;}
+.gate-share-btn.mail-btn:hover{background:var(--gold-bg);border-color:var(--gold-border);}
+.gate-share-btn.copy-btn.copied{background:var(--green-bg);border-color:var(--green);}.gate-share-btn.copy-btn.copied .gate-share-lbl{color:var(--green);}
 .gate-divider{border:none;border-top:2px dashed var(--border);margin:0 0 20px;}
 .gate-prompt{font-size:.9rem;font-weight:700;color:var(--potato-dark);margin-bottom:16px;}
 /* ── LANG SWITCHER ── */
@@ -391,6 +403,20 @@ canvas.ci{border-radius:4px;}
 /* FOOTER */
 footer{background:var(--potato-dark);color:rgba(255,255,255,.5);text-align:center;padding:28px 20px;font-size:.82rem;}
 footer a{color:var(--potato-light);text-decoration:none;}
+.share-area{margin-bottom:22px;}
+.share-title{font-size:.78rem;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px;}
+.share-btns{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;}
+.share-btn{display:inline-flex;flex-direction:column;align-items:center;gap:5px;padding:12px 16px;border-radius:12px;border:1.5px solid rgba(255,255,255,.18);background:rgba(255,255,255,.08);cursor:pointer;transition:background .15s,border-color .15s,transform .1s;font-family:var(--sans);text-decoration:none;min-width:72px;}
+.share-btn:hover{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.35);transform:translateY(-2px);}
+.share-btn:active{transform:scale(.96);}
+.share-btn .share-icon{font-size:1.5rem;line-height:1;}
+.share-btn .share-label{font-size:.7rem;font-weight:700;color:rgba(255,255,255,.6);white-space:nowrap;}
+.share-btn.x-btn:hover{background:rgba(0,0,0,.4);border-color:#fff;}
+.share-btn.bsky-btn:hover{background:rgba(0,133,255,.2);border-color:#0085ff;}
+.share-btn.line-btn:hover{background:rgba(0,185,0,.2);border-color:#00b900;}
+.share-btn.mail-btn:hover{background:rgba(255,200,80,.15);border-color:var(--potato-light);}
+.share-btn.copy-btn.copied{background:rgba(74,124,64,.3);border-color:var(--green);}
+.share-footer-divider{border:none;border-top:1px solid rgba(255,255,255,.1);margin:0 0 22px;}
 
 /* ── CONTACT PREFERENCE ── */
 .contact-pref-options{display:flex;gap:10px;flex-wrap:wrap;}
@@ -547,9 +573,9 @@ footer a{color:var(--potato-light);text-decoration:none;}
         <div class="gate-card-restrict" id="gateGeneralRestrict" style="border-color:#e8b0a0;background:#fdf0ee;color:var(--red);">📖 カタログを購入して入場する方はこちら</div>
         <ul class="gate-card-perks" id="gateGeneralPerks">
           <li>1点まで無料</li>
-          <li>追加1点（同じイラスト）：¥400</li>
+          <li>追加1点：¥400</li>
           <li>最大2点まで</li>
-          <li>イラスト1種のみ</li>
+          <li>1人1イラスト上限</li>
         </ul>
         <button class="gate-card-cta" id="gateGeneralCta">製作する →</button>
       </div>
@@ -576,7 +602,9 @@ footer a{color:var(--potato-light);text-decoration:none;}
         <!-- 一般列 -->
         <div class="gate-pcol">
           <div class="gate-pcol-label" style="color:var(--general-color);">🎫 一般参加者</div>
-          <div class="gate-pcol-count" id="gateGeneralCount">参加中：0人</div>
+          <div class="gate-pcol-interest-head">
+            <div class="gate-pcol-count" id="gateGeneralCount">👥 参加中：0人</div>
+          </div>
           <div class="gate-avatars" id="gateGeneralAvatars"></div>
           <div class="gate-pcol-divider"></div>
           <div class="gate-pcol-interest-head">
@@ -591,7 +619,9 @@ footer a{color:var(--potato-light);text-decoration:none;}
         <!-- サークル列 -->
         <div class="gate-pcol">
           <div class="gate-pcol-label" style="color:var(--circle-color);">🪑 サークル参加者</div>
-          <div class="gate-pcol-count" id="gateCircleCount">参加中：0人</div>
+          <div class="gate-pcol-interest-head">
+            <div class="gate-pcol-count" id="gateCircleCount">👥 参加中：0人</div>
+          </div>
           <div class="gate-avatars" id="gateCircleAvatars"></div>
           <div class="gate-pcol-divider"></div>
           <div class="gate-pcol-interest-head">
@@ -603,6 +633,20 @@ footer a{color:var(--potato-light);text-decoration:none;}
           <div class="gate-avatars" id="interestCircleAvatars"></div>
         </div>
 
+      </div>
+    </div>
+
+    <!-- シェア（最下部） -->
+    <hr class="gate-divider" style="margin-top:18px;">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+      <div class="gate-share-area" style="margin-bottom:0">
+        <div class="gate-share-btns">
+          <button class="gate-share-btn x-btn"    onclick="shareX()"    title="Xでシェア">     <span class="gate-share-icon">𝕏</span>     <span class="gate-share-lbl">X</span></button>
+          <button class="gate-share-btn bsky-btn"  onclick="shareBsky()" title="Blueskyでシェア"><span class="gate-share-icon">🦋</span>    <span class="gate-share-lbl">Bluesky</span></button>
+          <button class="gate-share-btn line-btn"  onclick="shareLine()" title="LINEで送る">    <span class="gate-share-icon">💬</span>    <span class="gate-share-lbl">LINE</span></button>
+          <button class="gate-share-btn mail-btn"  onclick="shareMail()" title="メールで送る">  <span class="gate-share-icon">✉️</span>    <span class="gate-share-lbl">メール</span></button>
+          <button class="gate-share-btn copy-btn"  id="gateShareCopyBtn" onclick="gateShareCopy()" title="リンクをコピー"><span class="gate-share-icon">🔗</span><span class="gate-share-lbl" id="gateShareCopyLabel">コピー</span></button>
+        </div>
       </div>
     </div>
   </div>
@@ -836,7 +880,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
       </tbody>
     </table>
     <div class="shape-note">形状はスクエア（85×85mm）・サークル（φ90mm）から選択できます。どちらも同じ料金です。</div>
-    <div class="shape-note" style="margin-top:8px;background:#fdf0e0;border-left:3px solid var(--accent-light);border-radius:0 8px 8px 0;">⚠️ <strong>一般参加者はイラスト1種類のみ受け付けです。</strong>おひとりで2種類以上のイラストを製作することはできません。</div>
+    <div class="shape-note" style="margin-top:8px;background:#fdf0e0;border-left:3px solid var(--accent-light);border-radius:0 8px 8px 0;">⚠️ <strong>2種類以上のイラストを製作できるのはサークル参加者に限られます。</strong></div>
     <div class="shape-note" style="margin-top:8px;background:#f0f8ff;border-left:3px solid #7ab8e0;border-radius:0 8px 8px 0;">
       🔬 <strong>端材サンプル試し刷り</strong>：3週間前まで の申込者は初回無料。それ以外は¥300。端材を使用するため形状が不完全・非平坦な場合があります。
     </div>
@@ -995,7 +1039,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
       </div>
       <div class="form-group full" id="generalImageNotice" style="display:none">
         <div style="background:rgba(240,120,64,.15);border:1.5px solid rgba(240,120,64,.4);border-radius:8px;padding:12px 16px;font-size:.85rem;color:rgba(255,255,255,.85);line-height:1.7;">
-          ℹ️ <strong>一般参加者は2種類以上のイラストを送信できません。</strong><br>
+          ℹ️ <strong>2種類以上のイラストを製作できるのはサークル参加者に限られます。</strong><br>
           多くの方にご参加いただくため、なにとぞご了承くださいませ。
         </div>
       </div>
@@ -1108,6 +1152,32 @@ footer a{color:var(--potato-light);text-decoration:none;}
 </div>
 
 <footer>
+  <div class="share-area">
+    <div class="share-title">このページをシェア</div>
+    <div class="share-btns">
+      <button class="share-btn x-btn" onclick="shareX()" title="Xでシェア">
+        <span class="share-icon">𝕏</span>
+        <span class="share-label">X でシェア</span>
+      </button>
+      <button class="share-btn bsky-btn" onclick="shareBsky()" title="Blueskyでシェア">
+        <span class="share-icon">🦋</span>
+        <span class="share-label">Bluesky</span>
+      </button>
+      <button class="share-btn line-btn" onclick="shareLine()" title="LINEで送る">
+        <span class="share-icon">💬</span>
+        <span class="share-label">LINE で送る</span>
+      </button>
+      <button class="share-btn mail-btn" onclick="shareMail()" title="メールで送る">
+        <span class="share-icon">✉️</span>
+        <span class="share-label">メール送信</span>
+      </button>
+      <button class="share-btn copy-btn" id="shareCopyBtn" onclick="shareCopy()" title="リンクをコピー">
+        <span class="share-icon">🔗</span>
+        <span class="share-label" id="shareCopyLabel">リンクをコピー</span>
+      </button>
+    </div>
+  </div>
+  <hr class="share-footer-divider">
   <p>ふたば★学園祭２１ 参加型企画 — イラスト入りレザーコースター</p>
   <p style="margin-top:6px">大喜幸四郎 🥔 &nbsp;|&nbsp; <a href="#" onclick="toggleAdmin(event)">管理者ログイン</a></p>
 </footer>
@@ -1450,7 +1520,7 @@ function applyModeUI() {
         const priceStr = p1 === p2 ? `追加¥${p1}〜` : `追加¥${p1}〜¥${p2}`;
         return `🪑 サークル参加者（ふたば★学園祭２１限定）— 3点無料 / ${priceStr} / 最大${maxQ}点${eb ? ' ⭐早割適用中' : ''}`;
       })()
-    : '🎫 一般参加者 — 1点無料 / 追加¥400 / 最大2点（イラスト1種類のみ）';
+    : '🎫 一般参加者 — 1点無料 / 追加¥400 / 最大2点（1人1イラスト上限）';
   document.getElementById('f-qty').max = maxQ;
   const qtyHint = document.getElementById('qtyHint');
   if (isC) {
@@ -1458,7 +1528,7 @@ function applyModeUI() {
       ? `最大20点まで（3点まで無料）${isEarlyBird() ? ' ⭐早割適用中' : ''}`
       : `最大5点まで（開催2週間前以降の制限）${isEarlyBird() ? ' ⭐早割適用中' : ''}`;
   } else {
-    qtyHint.textContent = '最大2点まで（1点目無料）同じイラストを複数枚製作します';
+    qtyHint.textContent = '最大2点まで（1点目無料）同じイラストで複数枚製作できます';
   }
   // 早割バナー
   const ebNote = document.getElementById('formEarlyBirdNote');
@@ -2546,6 +2616,56 @@ function closeLabelPreview() {
 function clearAllOrders() { if (!confirm('全件削除しますか？')) return; orders = []; saveOrders(); renderOrders(); }
 function zoomImg(src) { document.getElementById('zoomImg').src = src; document.getElementById('zoomBackdrop').classList.add('show'); }
 function closeZoom() { document.getElementById('zoomBackdrop').classList.remove('show'); }
+
+// ── SHARE ──
+function _shareUrl() { return location.href.split('#')[0]; }
+function _shareText() { return 'ふたば★学園祭２１ 参加型企画「イラスト入りレザーコースター」製作受付中🥔'; }
+function shareX() {
+  const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(_shareText())}&url=${encodeURIComponent(_shareUrl())}`;
+  window.open(url, '_blank', 'noopener,width=600,height=420');
+}
+function shareBsky() {
+  const url = `https://bsky.app/intent/compose?text=${encodeURIComponent(_shareText() + '\n' + _shareUrl())}`;
+  window.open(url, '_blank', 'noopener,width=600,height=520');
+}
+function shareLine() {
+  const url = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(_shareUrl())}`;
+  window.open(url, '_blank', 'noopener,width=600,height=560');
+}
+function shareMail() {
+  const subject = encodeURIComponent('ふたば★学園祭２１ レザーコースター製作企画のご案内');
+  const body = encodeURIComponent(`${_shareText()}\n\n${_shareUrl()}`);
+  location.href = `mailto:?subject=${subject}&body=${body}`;
+}
+async function shareCopy() {
+  const btn = document.getElementById('shareCopyBtn');
+  const lbl = document.getElementById('shareCopyLabel');
+  try {
+    await navigator.clipboard.writeText(_shareUrl());
+  } catch {
+    const ta = document.createElement('textarea');
+    ta.value = _shareUrl(); document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+  }
+  lbl.textContent = 'コピーしました！';
+  btn.classList.add('copied');
+  setTimeout(() => { lbl.textContent = 'リンクをコピー'; btn.classList.remove('copied'); }, 2500);
+}
+async function gateShareCopy() {
+  const btn = document.getElementById('gateShareCopyBtn');
+  const lbl = document.getElementById('gateShareCopyLabel');
+  try {
+    await navigator.clipboard.writeText(_shareUrl());
+  } catch {
+    const ta = document.createElement('textarea');
+    ta.value = _shareUrl(); document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+  }
+  lbl.textContent = '✓ コピー';
+  btn.classList.add('copied');
+  setTimeout(() => { lbl.textContent = 'コピー'; btn.classList.remove('copied'); }, 2500);
+}
+
 function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3500); }
 
 // ══ INTERESTS ══
@@ -2659,7 +2779,7 @@ const TRANSLATIONS = {
     which: 'どちらですか？',
     generalName: '一般参加者', generalSub: '自宅用・プレゼント用', generalCta: '製作する →',
     generalRestrict: '📖 カタログを購入して入場する方はこちら',
-    generalPerks: ['1点まで無料', '追加1点（同じイラスト）：¥400', '最大2点まで', 'イラスト1種のみ'],
+    generalPerks: ['1点まで無料', '追加1点：¥400', '最大2点まで', '1人1イラスト上限'],
     circleName: 'サークル参加者', circleSub: '頒布用途OK', circleCta: '製作する →',
     circleRestrict: '⚠️ ふたば★学園祭２１にサークル参加している方のみ',
     circlePerks: ['3点まで無料', '4〜10点目：¥200/点', '11点目以降：¥250/点', '1か月前まで：早割（¥250→¥220）'],
@@ -2683,7 +2803,7 @@ const TRANSLATIONS = {
     which: 'どっちかい？',
     generalName: 'ふつうの参加者', generalSub: '家で使うやつ・プレゼントにも', generalCta: 'つくってみよさ →',
     generalRestrict: '📖 カタログ買って来た人はこっちかい',
-    generalPerks: ['1点まで ただだべ', '追加1点（おんなじイラスト）：¥400', '最大2点まで', 'イラストは1種類だけかい'],
+    generalPerks: ['1点まで ただだべ', '追加1点：¥400', '最大2点まで', '1人1イラスト上限だかい'],
     circleName: 'サークルの参加者', circleSub: '頒布もOKだべさ', circleCta: 'つくってみよさ →',
     circleRestrict: '⚠️ ふたば★学園祭２１にサークルで出てる人だけだべ',
     circlePerks: ['3点まで ただだべ', '4〜10点：¥200/点', '11点以降：¥250/点', '1か月前まで：早割（¥250→¥220）'],
@@ -2695,7 +2815,7 @@ const TRANSLATIONS = {
     which: 'どっちだが？',
     generalName: 'ふつうの参加者', generalSub: 'うぢで使うもの・プレゼントにも', generalCta: 'つぐってみっか →',
     generalRestrict: '📖 カタログ買って来た人はこっちだが',
-    generalPerks: ['1点まで ただだが', '追加1点（おなじイラスト）：¥400', '最大2点まで', 'イラストは1種類だが'],
+    generalPerks: ['1点まで ただだが', '追加1点：¥400', '最大2点まで', '1人1イラスト上限だが'],
     circleName: 'サークルの参加者', circleSub: '頒布もOKだが', circleCta: 'つぐってみっか →',
     circleRestrict: '⚠️ ふたば★学園祭２１のサークルの人だけだが',
     circlePerks: ['3点まで ただだが', '4〜10点：¥200/点', '11点以降：¥250/点', '1か月前まで：早割（¥250→¥220）'],
@@ -2707,7 +2827,7 @@ const TRANSLATIONS = {
     which: 'どっちにするだ？',
     generalName: 'ふつうの参加者', generalSub: '家で使うだら・プレゼントにもなるじゃん', generalCta: 'つくるだら →',
     generalRestrict: '📖 カタログ買った人はこっちじゃん',
-    generalPerks: ['1点まで ただだら', '追加1点（おんなじイラスト）：¥400', '最大2点まで', 'イラストは1種類だもんで'],
+    generalPerks: ['1点まで ただだら', '追加1点：¥400', '最大2点まで', '1人1イラスト上限だもんで'],
     circleName: 'サークルの参加者', circleSub: '頒布もOKだもんで', circleCta: 'つくるだら →',
     circleRestrict: '⚠️ ふたば★学園祭２１のサークルの人だけだら',
     circlePerks: ['3点まで ただだら', '4〜10点：¥200/点', '11点以降：¥250/点', '1か月前まで：早割（¥250→¥220）だもんで'],
@@ -2719,7 +2839,7 @@ const TRANSLATIONS = {
     which: 'どっちじゃき？',
     generalName: 'ふつうの参加者', generalSub: '家で使うき・プレゼントにもなるがよ', generalCta: 'つくるぜよ →',
     generalRestrict: '📖 カタログ買うて入場する人はこっちじゃき',
-    generalPerks: ['1点まで ただじゃき', '追加1点（おんなじイラスト）：¥400', '最大2点まで', 'イラストは1種類ぜよ'],
+    generalPerks: ['1点まで ただじゃき', '追加1点：¥400', '最大2点まで', '1人1イラスト上限ぜよ'],
     circleName: 'サークルの参加者ぜよ', circleSub: '頒布もOKじゃき', circleCta: 'つくるぜよ →',
     circleRestrict: '⚠️ ふたば★学園祭２１にサークルで出ゆる人だけじゃき',
     circlePerks: ['3点まで ただじゃき', '4〜10点：¥200/点', '11点以降：¥250/点', '1か月前まで：早割（¥250→¥220）ぜよ'],
@@ -2731,7 +2851,7 @@ const TRANSLATIONS = {
     which: 'ちゃーなてが？',
     generalName: 'なんくるないさーなひとぅ', generalSub: 'うちなーでつかうもの・てぃーだかんかん', generalCta: 'つくいんど →',
     generalRestrict: '📖 カタログかいてぃはいるひとぅはこちらさぁ',
-    generalPerks: ['1点まーでぃ無料さ', '追加1点（おなじいらすと）：¥400', '最大2点までやいびーん', 'いらすとぅ1種類ぬみ'],
+    generalPerks: ['1点まーでぃ無料さ', '追加1点：¥400', '最大2点までやいびーん', '1人1いらすとぅ上限'],
     circleName: 'サークルぬひとぅ', circleSub: '頒布もOKさぁ', circleCta: 'つくいんど →',
     circleRestrict: '⚠️ ふたば★学園祭２１んかいサークルぬひとぅぬみやいびーん',
     circlePerks: ['3点まーでぃ無料やいびーん', '4〜10点：¥200/点', '11点以降：¥250/点', '早割あいびーん（¥250→¥220）'],
@@ -2848,7 +2968,7 @@ function renderGroupAvatars(countId, avatarsId, participants) {
   const countEl = document.getElementById(countId);
   const avEl    = document.getElementById(avatarsId);
   if (!countEl || !avEl) return;
-  countEl.textContent = `参加中：${participants.length}人`;
+  countEl.textContent = `👥 参加中：${participants.length}人`;
   if (!participants.length) { avEl.innerHTML = ''; return; }
   const MAX = 6, shown = participants.slice(0, MAX), rest = participants.length - MAX;
   avEl.innerHTML = shown.map(p => {
