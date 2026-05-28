@@ -24,9 +24,9 @@ html{scroll-behavior:smooth;}
 body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.7;overflow-x:hidden;}
 
 /* GATE */
-#gate{position:fixed;inset:0;background:var(--potato-bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:2000;padding:20px;transition:opacity .3s;}
+#gate{position:fixed;inset:0;background:var(--potato-bg);display:flex;flex-direction:column;align-items:center;justify-content:safe center;overflow-y:auto;z-index:2000;padding:20px;transition:opacity .3s;}
 #gate.hidden{opacity:0;pointer-events:none;}
-.gate-inner{max-width:580px;width:100%;text-align:center;}
+.gate-inner{max-width:580px;width:100%;text-align:center;margin:auto;}
 .gate-logo{width:72px;height:72px;margin:0 auto 16px;background:var(--potato-dark);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:2rem;}
 .gate-title{font-size:clamp(1.1rem,4vw,1.5rem);font-weight:700;color:var(--potato-dark);margin-bottom:4px;line-height:1.4;}
 .gate-sub{font-size:.85rem;color:var(--muted);margin-bottom:20px;}
