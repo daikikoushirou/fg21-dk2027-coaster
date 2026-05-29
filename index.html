@@ -2657,11 +2657,10 @@ async function toggleCompletionImageSent(ref) {
 async function updateOrderQty(ref, delta) {
   const o = orders.find(o => o.ref === ref);
   if (!o) return;
-  const maxQty = o.mode === 'circle' ? 20 : 2;
+  const maxQty = o.type === 'circle' ? 20 : 2;
   const newQty = Math.max(1, Math.min(maxQty, (o.qty || 1) + delta));
   if (newQty === o.qty) { showToast(`点数の上限は${maxQty}点です`); return; }
-  // 早割フラグがある場合は注文時の価格（earlyBird=true）で再計算
-  const { total } = calcCost(o.mode, newQty, o.sampleRequested, o.sampleFreeEligible, o.sampleCount);
+  const { total } = calcCost(o.type, newQty, o.sampleRequested, o.sampleFreeEligible, o.sampleCount);
   const adjTotal = total + (o.adjustment || 0);
   o.qty = newQty;
   o.total = adjTotal;
@@ -3491,8 +3490,8 @@ function renderAdminChart() {
   if (!el || !orders.length) { if(el) el.innerHTML = '<div style="font-size:.8rem;color:rgba(255,255,255,.78);">注文なし</div>'; return; }
 
   const total     = orders.length;
-  const circle    = orders.filter(o => o.mode === 'circle').length;
-  const general   = orders.filter(o => o.mode === 'general').length;
+  const circle    = orders.filter(o => o.type === 'circle').length;
+  const general   = orders.filter(o => o.type === 'general').length;
   const delivered = orders.filter(o => o.status === 'delivered').length;
   const making    = orders.filter(o => o.status === 'making').length;
   const revenue   = orders.reduce((s, o) => s + (o.total || 0), 0);
