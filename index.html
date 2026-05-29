@@ -1394,8 +1394,10 @@ footer a{color:var(--potato-light);text-decoration:none;}
     <div id="successParticipantPrompt" style="display:none;margin:16px 0 0;background:rgba(160,20,20,.75);border:2px solid rgba(220,60,60,.9);border-radius:12px;padding:16px;text-align:center;">
       <div style="font-size:1.5rem;margin-bottom:6px;">👥</div>
       <div style="font-weight:700;font-size:.9rem;color:#fff;margin-bottom:6px;">参加中アバターに表示されませんか？</div>
-      <div style="font-size:.78rem;color:rgba(255,255,255,.9);line-height:1.7;margin-bottom:12px;">ゲートページの「＋参加」ボタンからXアカウントを登録すると、<br>参加者一覧にアイコンが表示されます。</div>
-      <button class="code-action-btn" style="font-size:.82rem;padding:8px 20px;background:#fff;color:#8a1010;font-weight:700;border:none;" onclick="closeModal();window.scrollTo({top:0,behavior:'smooth'})">ゲートページで登録する 👆</button>
+      <div style="font-size:.78rem;color:rgba(255,255,255,.9);line-height:1.7;margin-bottom:12px;">ゲートページの「＋参加」ボタンからXアカウントを登録すると、参加者一覧にアイコンが表示されます。</div>
+      <div style="text-align:center;">
+        <button class="code-action-btn" style="font-size:.82rem;padding:8px 20px;background:#fff;color:#8a1010;font-weight:700;border:none;" onclick="closeModal();window.scrollTo({top:0,behavior:'smooth'})">ゲートページで登録する 👆</button>
+      </div>
     </div>
     <div id="successCloudRetry" style="display:none;margin:14px 0 0;background:rgba(224,80,64,.12);border:1.5px solid rgba(224,80,64,.4);border-radius:8px;padding:12px 14px;font-size:.82rem;color:var(--ink);line-height:1.7;text-align:left;">
       ⚠️ クラウド保存に失敗しました。注文データはこの端末に保存済みです。
@@ -3693,8 +3695,8 @@ async function loadInterests() {
 
 function renderInterests(list) {
   // 注文データからXアカウントを参加中に自動反映
-  const orderCircle  = orders.filter(o => o.mode === 'circle'  && o.xAccount).map(o => ({ x_account: o.xAccount, display_name: o.name, type: 'participant_circle' }));
-  const orderGeneral = orders.filter(o => o.mode === 'general' && o.xAccount).map(o => ({ x_account: o.xAccount, display_name: o.name, type: 'participant_general' }));
+  const orderCircle  = orders.filter(o => o.type === 'circle'  && o.xAccount).map(o => ({ x_account: o.xAccount, display_name: o.name, type: 'participant_circle' }));
+  const orderGeneral = orders.filter(o => o.type === 'general' && o.xAccount).map(o => ({ x_account: o.xAccount, display_name: o.name, type: 'participant_general' }));
 
   // ＋参加ボタンで登録した人と合算・重複除外
   const dedup = (arr) => {
