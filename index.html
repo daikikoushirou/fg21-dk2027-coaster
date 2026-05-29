@@ -94,7 +94,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15p
 .gate-countdown-days span{font-size:1rem;font-weight:700;color:var(--muted);margin-left:4px;}
 .gate-countdown-sub{font-size:.72rem;color:var(--muted);margin-top:3px;}
 .gate-deadline-note{font-size:.72rem;color:var(--muted);text-align:center;margin-bottom:10px;display:none;}
-.gate-visitor-count{font-size:.7rem;color:var(--muted);margin-top:4px;text-align:center;letter-spacing:.04em;}
+.gate-visitor-count{font-size:.7rem;color:var(--muted);margin-top:4px;text-align:center;letter-spacing:.04em;max-width:280px;margin-left:auto;margin-right:auto;white-space:normal;word-break:break-all;line-height:1.6;}
 .gate-divider{border:none;border-top:2px dashed var(--border);margin:0 0 20px;}
 .gate-prompt{font-size:.9rem;font-weight:700;color:var(--potato-dark);margin-bottom:16px;}
 /* ── LANG SWITCHER ── */
@@ -189,7 +189,30 @@ h1.site-title small{display:block;font-size:.6em;color:var(--potato-light);font-
 .participant-badge.circle-mode{display:flex;background:var(--circle-bg);color:var(--circle-color);border-color:var(--circle-color);}
 .participant-badge.general-mode{display:flex;background:var(--general-bg);color:var(--general-color);border-color:var(--accent);}
 
-/* DEADLINE BANNER */
+/* DEADLINE CALENDAR */
+.cal-wrap{margin-bottom:24px;}
+.cal-show-btn{display:block;width:100%;padding:10px;background:var(--card);border:1.5px solid var(--border);border-radius:8px;font-size:.82rem;font-weight:700;color:var(--potato-dark);cursor:pointer;margin-bottom:12px;transition:background .15s;font-family:var(--sans);}
+.cal-show-btn:hover{background:var(--potato-bg);}
+.cal-accordion{overflow:hidden;transition:max-height .4s ease;cursor:pointer;}
+.cal-toggle-bar{display:flex;align-items:center;justify-content:center;gap:6px;padding:6px 0 10px;font-size:.75rem;color:var(--muted);font-weight:700;user-select:none;cursor:pointer;}
+.cal-toggle-bar .cal-toggle-arrow{display:inline-block;font-size:.7rem;transition:transform .3s;}
+.cal-months{display:flex;flex-direction:column;gap:10px;}
+.cal-month{background:var(--card);border:1.5px solid var(--border);border-radius:10px;overflow:hidden;}
+.cal-month-title{background:var(--potato-dark);color:#fff;font-size:.78rem;font-weight:700;padding:6px 12px;text-align:center;letter-spacing:.06em;}
+.cal-dow{display:grid;grid-template-columns:repeat(7,1fr);background:var(--potato-bg);}
+.cal-dow-cell{font-size:.6rem;font-weight:700;color:var(--muted);text-align:center;padding:4px 0;}
+.cal-days{display:grid;grid-template-columns:repeat(7,1fr);gap:0;background:var(--border);border-top:1px solid var(--border);}
+.cal-day{background:var(--card);min-height:64px;padding:3px 0;display:flex;flex-direction:column;align-items:flex-start;gap:1px;}
+.cal-day-num{align-self:center;}
+.cal-day.empty{background:var(--bg);}
+.cal-day-num{font-size:.62rem;line-height:1.4;font-weight:500;}
+.cal-event-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;align-self:center;}
+.cal-bar{width:100%;height:4px;flex-shrink:0;cursor:default;}
+#calTooltip{display:none;position:fixed;background:#2c2418;color:#fff;font-size:.75rem;line-height:1.6;padding:7px 11px;border-radius:7px;white-space:nowrap;z-index:9999;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.3);transform:translateX(-50%);}
+#calTooltip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#2c2418;}
+.cal-legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;padding:0 2px;}
+.cal-legend-item{display:flex;align-items:center;gap:5px;font-size:.72rem;color:var(--muted);}
+.cal-legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
 .deadline-banner{display:none;background:#8a1010;color:#fff;text-align:center;padding:14px 20px;font-size:.9rem;font-weight:700;line-height:1.5;}
 .deadline-banner.show{display:block;}
 
@@ -313,7 +336,7 @@ input.invalid,select.invalid{border-color:#e05040 !important;}
 .sample-price-badge{display:inline-block;padding:1px 8px;border-radius:4px;font-size:.72rem;font-weight:700;margin-left:6px;vertical-align:middle;}
 .sample-price-free{background:#c8e8b0;color:#1a5010;}
 .sample-price-paid{background:#f5d080;color:#5a3000;}
-.sample-trial-note{font-size:.8rem;color:rgba(255,255,255,.85);margin-top:5px;line-height:1.6;}
+.sample-trial-note{font-size:.8rem;color:rgba(255,235,160,1);margin-top:5px;line-height:1.6;}
 .sample-warn-box{margin-top:8px;background:rgba(255,200,100,.12);border:1px solid rgba(255,200,100,.3);border-radius:6px;padding:8px 12px;font-size:.8rem;color:rgba(255,235,150,1);line-height:1.6;display:none;}
 .sample-warn-box.show{display:block;}
 
@@ -942,6 +965,10 @@ footer a{color:var(--potato-light);text-decoration:none;}
     <div class="dates-box-title">📅 重要な日程（<span id="eventDateDisplay"></span> 開催）</div>
     <div class="dates-grid" id="datesGrid"></div>
   </div>
+  <!-- カレンダー -->
+  <button class="cal-show-btn" id="calShowBtn" onclick="toggleCalendarVisibility()">📅 カレンダーで確認する</button>
+  <div class="cal-wrap" id="calWrap" style="display:none;"></div>
+<div id="calTooltip"></div>
   <div class="pricing-tabs" id="pricingTabs">
     <button class="pricing-tab general-tab" onclick="switchPricingTab('general')">🎫 一般参加者</button>
     <button class="pricing-tab circle-tab" onclick="switchPricingTab('circle')">🪑 サークル参加者</button>
@@ -996,17 +1023,18 @@ footer a{color:var(--potato-light);text-decoration:none;}
     <div class="form-earlybird-note" id="formEarlyBirdNote"></div>
     <div class="form-mode-bar" id="formModeBar"></div>
     <form class="order-form" id="orderForm" novalidate>
-      <div class="form-group">
+      <div class="form-group full">
         <label>おなまえ<span class="required-mark">*</span></label>
         <input type="text" id="f-name" placeholder="ポコ太郎" required>
         <span class="field-error" id="e-name">お名前を入力してください</span>
       </div>
 
-      <!-- サークル名・スペース（サークルモードのみ） -->
+      <!-- サークルスペース・サークル名（サークルモードのみ） -->
       <div class="form-group" id="circleSpaceGroup" style="display:none;">
         <label>サークルスペース<span class="required-mark">*</span></label>
-        <input type="text" id="f-circle-space" placeholder="例：A-01A" oninput="this.value=this.value.replace(/[^A-Za-z0-9\-]/g,'').toUpperCase()" autocomplete="off">
+        <input type="text" id="f-circle-space" placeholder="例：A-01A" oninput="this.value=this.value.replace(/[^A-Za-z0-9\-]/g,'').toUpperCase()" autocomplete="off" inputmode="text">
         <span class="field-error" id="e-circle-space">サークルスペースを入力してください</span>
+        <span style="font-size:.68rem;color:rgba(255,255,255,.6);margin-top:2px;display:block;">半角英数字・自動大文字変換</span>
       </div>
       <div class="form-group" id="circleNameGroup" style="display:none;">
         <label>サークル名<span class="required-mark">*</span></label>
@@ -1058,7 +1086,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
       <!-- メールアドレス -->
       <div class="form-group">
         <label id="label-email">メールアドレス<span class="required-mark">*</span></label>
-        <input type="email" id="f-email" placeholder="example@mail.com">
+        <input type="email" id="f-email" inputmode="email" autocomplete="email" oncompositionstart="this.dataset.ime='1'" oncompositionend="this.dataset.ime='0'" oninput="if(!this.dataset.ime||this.dataset.ime==='0'){this.value=this.value.replace(/[^ -~]/g,'')}" placeholder="example@mail.com">
         <span class="field-error" id="e-email">正しいメールアドレスを入力してください</span>
       </div>
 
@@ -1141,7 +1169,8 @@ footer a{color:var(--potato-light);text-decoration:none;}
             <input type="checkbox" id="f-completion-img" onchange="toggleCompletionNote()">
             <div>
               <div class="completion-img-title">1点目が完成した時点で仕上がり確認画像を受け取る <span class="sample-price-badge sample-price-free">無料</span></div>
-              <div class="completion-img-note">刻印が完了した段階で画像をお送りします。問題がなく、OKのご連絡をいただいたらそのままのデータで製作を進めます。</div>
+              <div style="font-size:.75rem;color:rgba(255,235,160,1);margin-top:3px;">開催10日前までの無料オプション。</div>
+              <div class="completion-img-note">刻印が完了した段階で画像をお送りします。OKのご連絡をいただいたらそのままのデータで製作を進めます。</div>
               <div style="font-size:.8rem;color:rgba(255,255,255,.85);line-height:1.7;margin-top:5px;">
                 <strong>こんな方にオススメ：</strong>大体の仕上がりはイメージできていて、より丁寧に仕上がりを確認したい方。端材サンプルと組み合わせて使うこともできます。
               </div>
@@ -1614,6 +1643,7 @@ function initDatesUI() {
   }).join('');
   // ゲート画面のサークル最大表示
   document.getElementById('gateCircleMax').textContent = isCircleBulkAllowed() ? '最大20点まで' : '最大5点まで（2週間前以降）';
+  renderCalendar();
 
   // イベントまでのカウントダウン（常時表示）
   const t = TRANSLATIONS[_currentLang] || TRANSLATIONS.ja;
@@ -1761,6 +1791,175 @@ function applyModeUI() {
 function toggleFlow(i) { document.getElementById('flow-'+i).classList.toggle('open'); }
 
 // ══ PRICING TABS ══
+function renderCalendar(mode) {
+  if (!mode) mode = document.querySelector('.pricing-tab.active')?.classList.contains('circle-tab') ? 'circle' : 'general';
+  const wrap = document.getElementById('calWrap');
+  if (!wrap) return;
+
+  // 2〜5月固定
+  const y    = EVENT_DATE.getFullYear(); // 2027
+  const SHOW_MONTHS = [
+    new Date(y, 3, 1), // 4月
+    new Date(y, 4, 1), // 5月
+  ];
+
+  // 期間バー定義（開始〜終了、色、ラベル）
+  const PERIODS = [
+    { start: new Date(y, 1, 1),
+      end:   EARLY_BIRD_END,
+      color: '#f0a040', label: '早割期間 🪑', opacity: .85 },
+    { start: new Date(y, 1, 1),
+      end:   DEADLINE,
+      color: '#8ca8c8', label: '申し込み受付期間', opacity: .7 },
+    { start: new Date(y, 1, 1),
+      end:   COMPLETION_IMG_END,
+      color: '#d07080', label: '確認画像受付期間', opacity: .85 },
+    { start: new Date(y, 1, 1),
+      end:   BULK_ORDER_END,
+      color: '#a070d0', label: '大量注文可能期間 🪑', opacity: .85, circleOnly: true },
+    { start: new Date(y, 1, 1),
+      end:   SAMPLE_FREE_END,
+      color: '#60b8e0', label: 'サンプル無料期間', opacity: .85 },
+  ];
+
+  // 締め切り単発イベント（ドット）※バーが終わる日はバーで表現するのでdotは除外
+  // 一般参加者タブではサークル専用バーを除外
+  const activePeriods = PERIODS.filter(p => !p.circleOnly || mode === 'circle');
+
+  const DOTS = [
+  ];
+
+  const todayD = new Date(); todayD.setHours(0,0,0,0);
+  const DOW      = ['日','月','火','水','木','金','土'];
+  const MONTH_JP = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+
+  function toDay0(d) { const x = new Date(d); x.setHours(0,0,0,0); return x; }
+
+  const monthsHtml = SHOW_MONTHS.map(monthStart => {
+    const y2 = monthStart.getFullYear();
+    const m  = monthStart.getMonth();
+    const firstDow   = monthStart.getDay();
+    const daysInMonth = new Date(y2, m+1, 0).getDate();
+    // 5月は第1週（7日まで）のみ表示
+    const displayDays = (m === 4) ? 7 : daysInMonth;
+
+    // ドットマップ
+    const dotMap = {};
+    DOTS.forEach(ev => {
+      const ed = toDay0(ev.date);
+      if (ed.getFullYear() === y2 && ed.getMonth() === m) {
+        const d = ed.getDate();
+        if (!dotMap[d]) dotMap[d] = [];
+        dotMap[d].push(ev);
+      }
+    });
+
+    // バーマップ: 各日にどの期間が有効か
+    const barMap = {};
+    activePeriods.forEach((p, pi) => {
+      const ps = toDay0(p.start);
+      const pe = toDay0(p.end);
+      for (let d = 1; d <= displayDays; d++) {
+        const dt = new Date(y2, m, d);
+        if (dt >= ps && dt <= pe) {
+          if (!barMap[d]) barMap[d] = [];
+          barMap[d].push({ ...p, idx: pi });
+        }
+      }
+    });
+
+    const dowRow = DOW.map((d,i) =>
+      `<div class="cal-dow-cell" style="${i===0?'color:#e05040':i===6?'color:#4070c0':''}">${d}</div>`
+    ).join('');
+
+    const blanks = Array(firstDow).fill('<div class="cal-day empty"></div>').join('');
+
+    const dayCells = Array.from({length: displayDays}, (_, i) => {
+      const day = i + 1;
+      const dt  = new Date(y2, m, day);
+      const dow = dt.getDay();
+      const isToday  = dt.getTime() === todayD.getTime();
+      const isPast    = dt < todayD;
+      const isEventDay = dt.getTime() === toDay0(EVENT_DATE).getTime();
+      const dots = dotMap[day] || [];
+      const bars = barMap[day] || [];
+
+      // バー表示（各期間を小さな帯として積む）
+      const barHtml = bars.map(b => {
+        const dtStart = toDay0(b.start);
+        const dtEnd   = toDay0(b.end);
+        const isFirst = dt.getTime() === dtStart.getTime();
+        const isLast  = dt.getTime() === dtEnd.getTime();
+        const brL = isFirst ? '4px' : '0';
+        const brR = isLast  ? '4px' : '0';
+        const br  = `${brL} ${brR} ${brR} ${brL}`;
+        const w   = isLast ? '50%' : '100%';
+        const tip = `${b.label}　〜 ${fmtDate(b.end)} まで`;
+        return `<div class="cal-bar" data-tip="${tip}" style="background:${b.color};border-radius:${br};opacity:${isPast?.45:b.opacity};width:${w};"></div>`;
+      }).join('');
+
+      const dotHtml = dots.map(ev =>
+        `<div class="cal-event-dot" style="background:${ev.color}" title="${ev.label}"></div>`
+      ).join('');
+
+      const numStyle = dow===0 ? 'color:#e05040' : dow===6 ? 'color:#4070c0' : '';
+      const dayNumHtml = isToday
+        ? `<span class="cal-day-num" style="background:var(--potato-dark);color:#fff;border-radius:50%;width:15px;height:15px;display:flex;align-items:center;justify-content:center;">${day}</span>`
+        : `<span class="cal-day-num" style="${numStyle}${isPast?';opacity:.45':''}">${day}</span>`;
+
+      const eventIconHtml = isEventDay
+        ? `<span style="font-size:11px;align-self:center;line-height:1;margin-top:1px;" title="ふたば★学園祭２１ 開催日">🌿</span>`
+        : '';
+
+      return `<div class="cal-day"${isEventDay ? ' style="background:rgba(232,176,32,.12);border:1.5px solid rgba(232,176,32,.4);"' : ''}>${dayNumHtml}${barHtml}${dotHtml}${eventIconHtml}</div>`;
+    }).join('');
+
+    return `<div class="cal-month">
+      <div class="cal-month-title">${y2}年 ${MONTH_JP[m]}</div>
+      <div class="cal-dow">${dowRow}</div>
+      <div class="cal-days">${blanks}${dayCells}</div>
+    </div>`;
+  }).join('');
+
+  // 凡例
+  const periodLegend = activePeriods.map(p =>
+    `<div class="cal-legend-item"><div class="cal-legend-dot" style="background:${p.color};border-radius:2px;width:18px;height:6px;"></div>${p.label}</div>`
+  ).join('');
+
+  wrap.innerHTML = `
+    <div class="cal-months">${monthsHtml}</div>
+    <div class="cal-legend" style="margin-top:10px;">${periodLegend}</div>
+  `;
+
+  // ツールチップ（fixed位置でマウス追従）
+  const tip = document.getElementById('calTooltip');
+  wrap.querySelectorAll('.cal-bar[data-tip]').forEach(bar => {
+    bar.addEventListener('mouseenter', e => {
+      tip.textContent = bar.dataset.tip;
+      tip.style.display = 'block';
+    });
+    bar.addEventListener('mousemove', e => {
+      tip.style.left  = e.clientX + 'px';
+      tip.style.top   = (e.clientY - 44) + 'px';
+    });
+    bar.addEventListener('mouseleave', () => {
+      tip.style.display = 'none';
+    });
+  });
+
+  // 初期高さ設定（遅延してDOM確定後に計算）
+
+}
+
+function toggleCalendarVisibility() {
+  const wrap = document.getElementById('calWrap');
+  const btn  = document.getElementById('calShowBtn');
+  if (!wrap) return;
+  const hidden = wrap.style.display === 'none';
+  wrap.style.display = hidden ? '' : 'none';
+  if (btn) btn.textContent = hidden ? '📅 カレンダーを閉じる' : '📅 カレンダーで確認する';
+}
+
 function switchPricingTab(tab) {
   document.querySelectorAll('.pricing-tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.pricing-panel').forEach(p => p.classList.remove('active'));
@@ -1772,6 +1971,8 @@ function switchPricingTab(tab) {
   document.querySelectorAll('.circle-only-date').forEach(el => {
     el.style.display = tab === 'general' ? 'none' : '';
   });
+  // カレンダーをタブに合わせて再描画
+  renderCalendar(tab);
 }
 
 // ══ SHAPE ══
