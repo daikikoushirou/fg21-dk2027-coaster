@@ -3070,7 +3070,7 @@ function renderInterestsAdmin() {
         <td><span class="type-badge ${typeBadgeClass(i.type)}">${typeLabel[i.type || 'general'] || i.type}</span></td>
         <td style="font-size:.85rem">${i.x_account ? `@${i.x_account}` : '—'}</td>
         <td style="font-size:.85rem">${i.display_name || '—'}</td>
-        <td style="font-size:.72rem;color:rgba(255,255,255,.6);font-family:monospace;white-space:nowrap">${ip}</td>
+        <td style="font-size:.72rem;color:#fff;font-family:monospace;white-space:nowrap">${ip}</td>
         <td><img class="thumb-mini" src="${src}" alt="" onerror="this.src='${FALLBACK_AVATAR}'" style="border-radius:50%"></td>
         <td>${i.id ? `<button class="admin-btn danger" style="padding:4px 10px;font-size:.72rem" onclick="deleteInterest(${i.id})">削除</button>` : '—'}</td>
       </tr>`;
@@ -4275,20 +4275,41 @@ const FALLBACK_AVATAR = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000
 
 // 名前のハッシュ値からスタイルを選択
 const DICEBEAR_STYLES = [
-  'thumbs', 'fun-emoji', 'bottts-neutral', 'pixel-art-neutral',
-  'shapes', 'adventurer-neutral', 'lorelei-neutral', 'micah'
+  'adventurer', 'adventurer-neutral',
+  'avataaars', 'avataaars-neutral',
+  'big-ears', 'big-ears-neutral',
+  'big-smile',
+  'bottts', 'bottts-neutral',
+  'croodles', 'croodles-neutral',
+  'fun-emoji',
+  'lorelei', 'lorelei-neutral',
+  'micah',
+  'miniavs',
+  'notionists', 'notionists-neutral',
+  'open-peeps',
+  'personas',
+  'pixel-art', 'pixel-art-neutral',
+  'shapes',
+  'thumbs'
+];
+const DICEBEAR_BG = [
+  'b6e3f4','c0aede','d1d4f9','ffd5dc','ffdfbf',
+  'c9f0d1','fde68a','ddd6fe','fbcfe8','a7f3d0',
+  'fca5a5','fdba74','a5f3fc','86efac','818cf8'
 ];
 function getDiceBearStyle(seed) {
   let h = 0;
   for (const c of String(seed)) h = (h * 31 + c.charCodeAt(0)) & 0xffffffff;
-  return DICEBEAR_STYLES[Math.abs(h) % DICEBEAR_STYLES.length];
+  const style = DICEBEAR_STYLES[Math.abs(h) % DICEBEAR_STYLES.length];
+  const bg    = DICEBEAR_BG[Math.abs(h >> 4) % DICEBEAR_BG.length];
+  return { style, bg };
 }
 
 function avatarUrl(xAccount, name) {
   if (xAccount) return `https://unavatar.io/x/${encodeURIComponent(xAccount)}`;
   const seed = encodeURIComponent(name || 'anonymous');
-  const style = getDiceBearStyle(name || 'anonymous');
-  return `https://api.dicebear.com/9.x/${style}/svg?seed=${seed}&backgroundColor=d6cdb4&radius=50`;
+  const { style, bg } = getDiceBearStyle(name || 'anonymous');
+  return `https://api.dicebear.com/9.x/${style}/svg?seed=${seed}&backgroundColor=${bg}&radius=50`;
 }
 
 function maskName(name) {
