@@ -120,7 +120,8 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15p
 .gate-pcol-label{font-size:.76rem;font-weight:700;}
 .gate-pcol-count{font-size:.72rem;font-weight:700;color:var(--muted);}
 .gate-pcol-divider{border:none;border-top:1px dashed var(--border);margin:6px 0;}
-.gate-pcol-interest-head{display:flex;align-items:center;justify-content:space-between;gap:4px;}
+.gate-pcol-interest-head{display:flex;align-items:flex-end;justify-content:space-between;gap:4px;}
+.gate-pcol-interest-head .heart-bubble-wrap,.gate-pcol-interest-head>.heart-btn{align-self:flex-end;}
 .heart-btn{display:flex;align-items:center;gap:4px;background:none;border:1.5px solid var(--border);border-radius:20px;padding:3px 10px;cursor:pointer;font-size:.78rem;font-weight:700;color:var(--muted);transition:border-color .15s,color .15s,background .15s;font-family:var(--sans);}
 .heart-btn:hover{border-color:#e05080;color:#e05080;background:#fff5f7;}
 .heart-btn.liked{border-color:#e05080;color:#e05080;background:#fff5f7;}
@@ -644,28 +645,29 @@ footer a{color:var(--potato-light);text-decoration:none;}
         <!-- 一般列 -->
         <div class="gate-pcol">
           <div class="gate-pcol-label" id="gatePcolGeneralLabel" style="color:var(--general-color);">🎫 一般参加者</div>
+          <div class="gate-avatars" id="gateGeneralAvatars"></div>
           <div class="gate-pcol-interest-head">
             <div class="gate-pcol-count" id="gateGeneralCount">👥 参加中：0人</div>
           </div>
-          <div class="gate-avatars" id="gateGeneralAvatars"></div>
           <div class="gate-pcol-divider"></div>
+          <div class="gate-avatars" id="interestGeneralAvatars"></div>
           <div class="gate-pcol-interest-head">
             <div class="gate-pcol-count" style="color:#e05080;"><span id="gateInterestGeneralPre">💬 興味あり：</span><span id="interestGeneralCount">0</span><span id="gateInterestGeneralSuf">人</span></div>
             <button class="heart-btn" id="heartBtnGeneral" onclick="onHeartClick('general')">
               <span class="heart-icon" id="heartIconGeneral">♡</span>
             </button>
           </div>
-          <div class="gate-avatars" id="interestGeneralAvatars"></div>
         </div>
 
         <!-- サークル列 -->
         <div class="gate-pcol">
           <div class="gate-pcol-label" id="gatePcolCircleLabel" style="color:var(--circle-color);">🪑 サークル参加者</div>
+          <div class="gate-avatars" id="gateCircleAvatars"></div>
           <div class="gate-pcol-interest-head">
             <div class="gate-pcol-count" id="gateCircleCount">👥 参加中：0人</div>
           </div>
-          <div class="gate-avatars" id="gateCircleAvatars"></div>
           <div class="gate-pcol-divider"></div>
+          <div class="gate-avatars" id="interestCircleAvatars"></div>
           <div class="gate-pcol-interest-head">
             <div class="gate-pcol-count" style="color:#e05080;"><span id="gateInterestCirclePre">💬 興味あり：</span><span id="interestCircleCount">0</span><span id="gateInterestCircleSuf">人</span></div>
             <div class="heart-bubble-wrap">
@@ -677,7 +679,6 @@ footer a{color:var(--potato-light);text-decoration:none;}
               </div>
             </div>
           </div>
-          <div class="gate-avatars" id="interestCircleAvatars"></div>
         </div>
 
       </div>
@@ -2765,10 +2766,9 @@ function showMsgModal(type, ref) {
 大喜幸四郎と申します。
 ふたば★学園祭２１ レザーコースター企画へのご注文ありがとうございます。
 
-端材への出力サンプル画像をお送りしましたので、ご確認をお願いいたします。
-継続の場合も、修正の場合も、お手数ですがご返信願います。
-なお、修正してサンプル再出力の場合は¥300を頂戴しております。
-修正原稿をそのまま出力する場合には料金が発生しません。
+端材サンプルをお送りしましたので、ご確認をお願いいたします。
+問題なければそのままお待ちください。修正のご希望がある場合はお知らせください。
+（なお、修正対応は¥300を頂戴しております）
 
 注文番号：${ref}
 引換コード：${code}
@@ -2783,8 +2783,7 @@ ${closing}`;
 
 コースターの仕上がり確認画像をお送りします。ご確認をお願いいたします。
 問題なければ当日ブースにてお受け取りください。
-修正をご希望の場合は1点⁺出力、作業代を含め追加料金¥300が発生します。
-継続の場合も、修正の場合も、お手数ですがご返信願います。
+修正をご希望の場合は追加料金（¥300）が発生します。
 
 注文番号：${ref}
 引換コード：${code}
