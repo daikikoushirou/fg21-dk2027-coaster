@@ -193,9 +193,6 @@ h1.site-title small{display:block;font-size:.6em;color:var(--potato-light);font-
 .cal-wrap{margin-bottom:24px;}
 .cal-show-btn{display:block;width:100%;padding:10px;background:var(--card);border:1.5px solid var(--border);border-radius:8px;font-size:.82rem;font-weight:700;color:var(--potato-dark);cursor:pointer;margin-bottom:12px;transition:background .15s;font-family:var(--sans);}
 .cal-show-btn:hover{background:var(--potato-bg);}
-.cal-accordion{overflow:hidden;transition:max-height .4s ease;cursor:pointer;}
-.cal-toggle-bar{display:flex;align-items:center;justify-content:center;gap:6px;padding:6px 0 10px;font-size:.75rem;color:var(--muted);font-weight:700;user-select:none;cursor:pointer;}
-.cal-toggle-bar .cal-toggle-arrow{display:inline-block;font-size:.7rem;transition:transform .3s;}
 .cal-months{display:flex;flex-direction:column;gap:10px;}
 .cal-month{background:var(--card);border:1.5px solid var(--border);border-radius:10px;overflow:hidden;}
 .cal-month-title{background:var(--potato-dark);color:#fff;font-size:.78rem;font-weight:700;padding:6px 12px;text-align:center;letter-spacing:.06em;}
@@ -466,12 +463,12 @@ footer{background:var(--potato-dark);color:rgba(255,255,255,.5);text-align:cente
 footer a{color:var(--potato-light);text-decoration:none;}
 .share-area{margin-bottom:22px;}
 .share-title{font-size:.78rem;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px;}
-.share-btns{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;}
-.share-btn{display:inline-flex;flex-direction:column;align-items:center;gap:5px;padding:12px 8px;border-radius:12px;border:1.5px solid rgba(255,255,255,.18);background:rgba(255,255,255,.08);cursor:pointer;transition:background .15s,border-color .15s,transform .1s;font-family:var(--sans);text-decoration:none;width:90px;box-sizing:border-box;}
+.share-btns{display:flex;flex-wrap:nowrap;justify-content:center;gap:6px;}
+.share-btn{display:inline-flex;flex-direction:column;align-items:center;gap:4px;padding:10px 6px;border-radius:10px;border:1.5px solid rgba(255,255,255,.18);background:rgba(255,255,255,.08);cursor:pointer;transition:background .15s,border-color .15s,transform .1s;font-family:var(--sans);text-decoration:none;flex:1;min-width:0;max-width:80px;box-sizing:border-box;}
 .share-btn:hover{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.35);transform:translateY(-2px);}
 .share-btn:active{transform:scale(.96);}
-.share-btn .share-icon{font-size:1.5rem;line-height:1;}
-.share-btn .share-label{font-size:.7rem;font-weight:700;color:rgba(255,255,255,.6);white-space:nowrap;}
+.share-btn .share-icon{font-size:1.2rem;line-height:1;}
+.share-btn .share-label{font-size:.62rem;font-weight:700;color:rgba(255,255,255,.6);white-space:nowrap;}
 .share-btn.x-btn:hover{background:rgba(0,0,0,.4);border-color:#fff;}
 .share-btn.bsky-btn:hover{background:rgba(0,133,255,.2);border-color:#0085ff;}
 .share-btn.line-btn:hover{background:rgba(0,185,0,.2);border-color:#00b900;}
@@ -1090,7 +1087,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
       <!-- メールアドレス -->
       <div class="form-group">
         <label id="label-email">メールアドレス<span class="required-mark">*</span></label>
-        <input type="email" id="f-email" inputmode="email" autocomplete="email" oncompositionstart="this.dataset.ime='1'" oncompositionend="this.dataset.ime='0'" oninput="if(!this.dataset.ime||this.dataset.ime==='0'){this.value=this.value.replace(/[^ -~]/g,'')}" placeholder="example@mail.com">
+        <input type="text" id="f-email" inputmode="email" autocomplete="email" placeholder="example@mail.com" oninput="this.value=this.value.replace(/[^\x20-\x7E]/g,'')" onblur="this.value=this.value.replace(/[^\x20-\x7E]/g,'').trim()">
         <span class="field-error" id="e-email">正しいメールアドレスを入力してください</span>
       </div>
 
