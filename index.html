@@ -1381,6 +1381,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
       <div class="code-label">引換コード</div>
       <div class="code-value" id="exchangeCodeDisplay">?????</div>
       <div class="code-note" id="exchangeCodeNote"></div>
+      <div id="successOptions" style="margin-top:6px;display:flex;flex-direction:column;gap:3px;text-align:left;"></div>
     </div>
     <div class="code-actions">
       <button class="code-action-btn" onclick="copyCode(this)">📋 コピー</button>
@@ -1394,6 +1395,12 @@ footer a{color:var(--potato-light);text-decoration:none;}
       👥 ゲートページの「＋参加」ボタンからXアカウントや名前を登録すると、参加中アバターに表示されます。
       <div style="margin-top:8px;">
         <button class="code-action-btn" style="font-size:.8rem;padding:6px 14px;" onclick="closeModal();window.scrollTo({top:0,behavior:'smooth'})">ゲートページへ →</button>
+      </div>
+    </div>
+    <div id="successCloudRetry" style="display:none;margin:14px 0 0;background:rgba(224,80,64,.12);border:1.5px solid rgba(224,80,64,.4);border-radius:8px;padding:12px 14px;font-size:.82rem;color:var(--ink);line-height:1.7;text-align:left;">
+      ⚠️ クラウド保存に失敗しました。注文データはこの端末に保存済みです。
+      <div style="margin-top:8px;">
+        <button class="code-action-btn" style="font-size:.8rem;padding:6px 14px;" onclick="retryCloudSave(this)">🔄 再送信する</button>
       </div>
     </div>
     <div id="successQR" style="margin:16px auto 0;text-align:center;display:none;">
@@ -2364,12 +2371,13 @@ document.getElementById('orderForm').addEventListener('submit', async e => {
   };
 
   // DBに保存（Supabase設定済みの場合）
+  let cloudSaveFailed = false;
   if (sbReady()) {
     try {
       await sbInsert(order);
     } catch (err) {
       console.warn('DB保存失敗（ローカルに保存）:', err);
-      showToast('⚠ クラウド保存に失敗しました。ローカルに記録しました。');
+      cloudSaveFailed = true;
     }
   }
 
@@ -2379,20 +2387,66 @@ document.getElementById('orderForm').addEventListener('submit', async e => {
 
   document.getElementById('orderRef').textContent = 'ORDER ' + ref;
   document.getElementById('exchangeCodeDisplay').textContent = code;
-  const sampleNote = sampleRequested
-    ? (sampleFreeEligible ? '　端材サンプル試し刷り：初回無料' : `　端材サンプル試し刷り：¥${SAMPLE_PRICE}`)
-    : '';
   document.getElementById('exchangeCodeNote').textContent =
-    (total === 0 ? 'このご注文は無料です！' : '当日お支払い金額：¥' + total.toLocaleString()) + sampleNote;
+    total === 0 ? 'このご注文は無料です！' : '当日お支払い金額：¥' + total.toLocaleString();
+
+  // オプション一覧を構築
+  const optionLines = [];
+  if (sampleRequested)
+    optionLines.push(sampleFreeEligible ? '🔬 端材サンプル試し刷り：初回無料' : `🔬 端材サンプル試し刷り：¥${SAMPLE_PRICE}`);
+  if (order.wantsCompletionImage)
+    optionLines.push('🖼️ 仕上がり確認画像を受け取る：無料');
+  if (order.circleSpace || order.circleName)
+    optionLines.push(`🪑 ${[order.circleSpace, order.circleName].filter(Boolean).join('　')}`);
+  const optEl = document.getElementById('successOptions');
+  optEl.innerHTML = optionLines.map(l =>
+    `<div style="font-size:.72rem;color:rgba(255,255,255,.78);">${l}</div>`
+  ).join('');
+
   document.getElementById('successModal').classList.add('show');
-  showCodeQR(code);
+
+  // QRコードにコード・スペース・サークル名を含める
+  const qrParts = [code];
+  if (order.circleSpace) qrParts.push(order.circleSpace);
+  if (order.circleName)  qrParts.push(order.circleName);
+  showCodeQR(qrParts.join('\n'));
   // Xアカウント未入力の場合は参加登録の案内を表示
   const xval = document.getElementById('f-xaccount').value.trim();
   const prompt = document.getElementById('successParticipantPrompt');
   if (prompt) prompt.style.display = xval ? 'none' : 'block';
 
+  // クラウド保存失敗時は再送ボタンを表示
+  const retryDiv = document.getElementById('successCloudRetry');
+  if (retryDiv) {
+    if (cloudSaveFailed) {
+      retryDiv.style.display = 'block';
+      retryDiv.dataset.ref = order.ref;
+    } else {
+      retryDiv.style.display = 'none';
+    }
+  }
+
   btn.disabled = false; btn.textContent = '製作情報送信 🔨';
 });
+async function retryCloudSave(btn) {
+  const retryDiv = document.getElementById('successCloudRetry');
+  const ref = retryDiv?.dataset.ref;
+  if (!ref) return;
+  const order = orders.find(o => o.ref === ref);
+  if (!order) { showToast('注文データが見つかりません'); return; }
+  btn.disabled = true;
+  btn.textContent = '送信中…';
+  try {
+    await sbInsert(order);
+    retryDiv.style.display = 'none';
+    showToast('✅ クラウド保存に成功しました！');
+  } catch (err) {
+    btn.disabled = false;
+    btn.textContent = '🔄 再送信する';
+    showToast('⚠ 再送信に失敗しました。しばらく後に再試行してください。');
+  }
+}
+
 function closeModal() {
   document.getElementById('successModal').classList.remove('show');
   document.getElementById('orderForm').reset();
@@ -3021,16 +3075,15 @@ function updateLabelHint() {
   if (hint) hint.textContent = `${selected} / ${total} 件選択中`;
 }
 
-async function makeLabelQR(xAccount, size) {
-  const url = xAccount ? `https://x.com/${xAccount}` : 'https://x.com/';
-  const key = xAccount + '_' + size;
+async function makeLabelQR(text, size) {
+  const key = encodeURIComponent(text) + '_' + size;
   if (labelQrCache[key]) return labelQrCache[key];
   return new Promise(resolve => {
     const tmp = document.createElement('div');
     tmp.style.cssText = 'position:absolute;visibility:hidden;top:-9999px;left:-9999px;';
     document.body.appendChild(tmp);
     try {
-      new QRCode(tmp, { text: url, width: size, height: size, correctLevel: QRCode.CorrectLevel.M });
+      new QRCode(tmp, { text, width: size, height: size, correctLevel: QRCode.CorrectLevel.M });
     } catch(e) { document.body.removeChild(tmp); resolve(''); return; }
     setTimeout(() => {
       const el = tmp.querySelector('img') || tmp.querySelector('canvas');
@@ -3061,7 +3114,12 @@ async function openLabelPreview() {
 
   grid.innerHTML = '';
   for (const c of selected) {
-    const qrSrc = c.xAccount ? await makeLabelQR(c.xAccount, 128) : '';
+    const qrLines = [];
+    if (c.name)       qrLines.push(c.name);
+    if (c.circleSpace || c.circleName) qrLines.push([c.circleSpace, c.circleName].filter(Boolean).join(' '));
+    if (c.xAccount)   qrLines.push(`https://x.com/${c.xAccount}`);
+    const qrText = qrLines.join('\n') || 'no data';
+    const qrSrc = qrLines.length ? await makeLabelQR(qrText, 128) : '';
     const item = document.createElement('div');
     item.className = 'label-print-item';
     item.innerHTML = `
@@ -3400,7 +3458,7 @@ function closeDuplicateModal() {
 }
 
 function shareOrderX() {
-  const text = `ふたば★学園祭２１の参加型企画「イラスト入りレザーコースター」に注文しました🥔✨\n#ふたば学園祭21 #fg21\n${_shareUrl()}`;
+  const text = `ふたば★学園祭２１の参加型企画「イラスト入りレザーコースター」に注文しました🥔✨\n#ふたば学園祭２１ #ftgk21\n${_shareUrl()}`;
   window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, '_blank', 'noopener,width=600,height=420');
 }
 
