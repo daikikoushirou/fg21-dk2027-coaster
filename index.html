@@ -3694,9 +3694,9 @@ async function loadInterests() {
 }
 
 function renderInterests(list) {
-  // 注文データからXアカウントを参加中に自動反映
-  const orderCircle  = orders.filter(o => o.type === 'circle'  && o.xAccount).map(o => ({ x_account: o.xAccount, display_name: o.name, type: 'participant_circle' }));
-  const orderGeneral = orders.filter(o => o.type === 'general' && o.xAccount).map(o => ({ x_account: o.xAccount, display_name: o.name, type: 'participant_general' }));
+  // 注文データから全員を参加中に反映（Xアカウントがなくても名前でカウント）
+  const orderCircle  = orders.filter(o => o.type === 'circle').map(o => ({ x_account: o.xAccount || '', display_name: o.name, type: 'participant_circle' }));
+  const orderGeneral = orders.filter(o => o.type === 'general').map(o => ({ x_account: o.xAccount || '', display_name: o.name, type: 'participant_general' }));
 
   // ＋参加ボタンで登録した人と合算・重複除外
   const dedup = (arr) => {
