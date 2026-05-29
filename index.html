@@ -80,13 +80,24 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15p
 .gate-share-btn.line-btn:hover{background:#e6ffe6;border-color:#00b900;}
 .gate-share-btn.mail-btn:hover{background:var(--gold-bg);border-color:var(--gold-border);}
 .gate-share-btn.copy-btn.copied{background:var(--green-bg);border-color:var(--green);}.gate-share-btn.copy-btn.copied .gate-share-lbl{color:var(--green);}
+.gate-event-countdown{margin:0 0 10px;text-align:center;}
+.gate-countdown-label{font-size:.72rem;font-weight:700;color:var(--muted);letter-spacing:.08em;margin-bottom:4px;}
+.gate-countdown-days{font-size:2.8rem;font-weight:900;line-height:1;color:var(--accent);letter-spacing:-.02em;}
+.gate-countdown-days span{font-size:1rem;font-weight:700;color:var(--muted);margin-left:4px;}
+.gate-countdown-sub{font-size:.72rem;color:var(--muted);margin-top:3px;}
+.gate-deadline-note{font-size:.72rem;color:var(--muted);text-align:center;margin-bottom:10px;display:none;}
+.gate-visitor-count{font-size:.7rem;color:var(--muted);margin-top:4px;text-align:center;letter-spacing:.04em;}
 .gate-divider{border:none;border-top:2px dashed var(--border);margin:0 0 20px;}
 .gate-prompt{font-size:.9rem;font-weight:700;color:var(--potato-dark);margin-bottom:16px;}
 /* ── LANG SWITCHER ── */
-.lang-switcher{position:relative;display:inline-block;margin-bottom:14px;}
-.lang-btn{background:rgba(92,74,30,.15);border:1.5px solid var(--border);border-radius:20px;padding:5px 14px;font-size:.78rem;font-weight:700;color:var(--muted);cursor:pointer;font-family:var(--sans);transition:background .15s;}
+.lang-switcher{position:relative;display:inline-flex;align-items:center;margin-bottom:0;}
+.lang-btn{background:rgba(92,74,30,.15);border:1.5px solid var(--border);border-radius:20px;padding:0 14px;font-size:.78rem;font-weight:700;color:var(--muted);cursor:pointer;font-family:var(--sans);transition:background .15s;height:30px;line-height:1;}
+.lang-menu-arrow{position:sticky;display:flex;align-items:center;justify-content:center;height:22px;font-size:.75rem;color:var(--muted);background:linear-gradient(to bottom,var(--card) 60%,transparent);pointer-events:none;transition:opacity .15s;}
+.lang-menu-arrow.bottom{background:linear-gradient(to top,var(--card) 60%,transparent);bottom:0;}
+.lang-menu-arrow.top{top:0;}
+.lang-menu-arrow.hidden{opacity:0;}
 .lang-btn:hover{background:rgba(92,74,30,.25);}
-.lang-menu{display:none;position:absolute;top:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--card);border:1.5px solid var(--border);border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,.15);z-index:100;min-width:190px;overflow:hidden;}
+.lang-menu{display:none;position:absolute;top:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--card);border:1.5px solid var(--border);border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,.15);z-index:500;min-width:190px;overflow-x:hidden;overflow-y:auto;max-height:60vh;}
 .lang-menu.open{display:block;}
 .lang-menu-item{display:flex;align-items:center;gap:8px;padding:9px 14px;font-size:.82rem;cursor:pointer;transition:background .1s;font-family:var(--sans);color:var(--ink);border:none;background:none;width:100%;text-align:left;}
 .lang-menu-item:hover{background:var(--potato-bg);}
@@ -115,6 +126,11 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15p
 .heart-btn.liked{border-color:#e05080;color:#e05080;background:#fff5f7;}
 .heart-btn .heart-icon{font-size:.95rem;transition:transform .2s;}
 .heart-btn:hover .heart-icon,.heart-btn.liked .heart-icon{transform:scale(1.25);}
+.heart-bubble-wrap{position:relative;display:inline-flex;flex-direction:column;align-items:center;}
+.heart-bubble{position:absolute;top:calc(100% + 12px);right:0;background:#fff;border:1.5px solid #f0a0b8;border-radius:10px;padding:7px 10px;font-size:.72rem;font-weight:700;color:#c0406a;line-height:1.45;white-space:nowrap;box-shadow:0 3px 10px rgba(224,80,128,.18);pointer-events:none;animation:bubbleFloat 3s ease-in-out infinite;z-index:10;}
+.heart-bubble::before{content:'';position:absolute;top:-9px;right:11px;width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:9px solid #f0a0b8;}
+.heart-bubble::after{content:'';position:absolute;top:-6px;right:12px;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:7px solid #fff;}
+@keyframes bubbleFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-4px);}}
 .gate-card-icon{font-size:2rem;margin-bottom:10px;line-height:1;}
 .gate-card-name{font-size:1rem;font-weight:700;margin-bottom:3px;}
 .gate-card.circle-type .gate-card-name{color:var(--circle-color);}
@@ -406,7 +422,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
 .share-area{margin-bottom:22px;}
 .share-title{font-size:.78rem;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px;}
 .share-btns{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;}
-.share-btn{display:inline-flex;flex-direction:column;align-items:center;gap:5px;padding:12px 16px;border-radius:12px;border:1.5px solid rgba(255,255,255,.18);background:rgba(255,255,255,.08);cursor:pointer;transition:background .15s,border-color .15s,transform .1s;font-family:var(--sans);text-decoration:none;min-width:72px;}
+.share-btn{display:inline-flex;flex-direction:column;align-items:center;gap:5px;padding:12px 8px;border-radius:12px;border:1.5px solid rgba(255,255,255,.18);background:rgba(255,255,255,.08);cursor:pointer;transition:background .15s,border-color .15s,transform .1s;font-family:var(--sans);text-decoration:none;width:90px;box-sizing:border-box;}
 .share-btn:hover{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.35);transform:translateY(-2px);}
 .share-btn:active{transform:scale(.96);}
 .share-btn .share-icon{font-size:1.5rem;line-height:1;}
@@ -544,24 +560,50 @@ footer a{color:var(--potato-light);text-decoration:none;}
     </div>
 
     <!-- 言語切り替え -->
-    <div class="lang-switcher">
-      <button class="lang-btn" onclick="toggleLangMenu(event)">🌍 言語 / Language</button>
+    <div style="display:flex;align-items:center;gap:8px;justify-content:center;margin-bottom:14px;">
+      <div class="lang-switcher" style="margin-bottom:0;">
+        <button class="lang-btn" onclick="toggleLangMenu(event)">🌍 言語 / Language</button>
       <div class="lang-menu" id="langMenu">
+        <div class="lang-menu-arrow top hidden" id="langArrowTop">▲</div>
         <button class="lang-menu-item active" id="lang-ja"      onclick="setLang('ja')">      <span class="lang-flag">🇯🇵</span>日本語</button>
         <button class="lang-menu-item"        id="lang-en"      onclick="setLang('en')">      <span class="lang-flag">🇬🇧</span>English</button>
         <hr class="lang-menu-divider">
         <button class="lang-menu-item"        id="lang-hokkaido" onclick="setLang('hokkaido')"><span class="lang-flag">🐻</span>北海道弁</button>
         <button class="lang-menu-item"        id="lang-akita"   onclick="setLang('akita')">   <span class="lang-flag">🐕</span>秋田弁</button>
+        <button class="lang-menu-item"        id="lang-niigata" onclick="setLang('niigata')"> <span class="lang-flag">🌾</span>新潟弁</button>
+        <button class="lang-menu-item"        id="lang-gunma"   onclick="setLang('gunma')">   <span class="lang-flag">🐎</span>群馬弁</button>
+        <button class="lang-menu-item"        id="lang-tokyo"   onclick="setLang('tokyo')">   <span class="lang-flag">🗼</span>東京弁</button>
+        <button class="lang-menu-item"        id="lang-kanagawa" onclick="setLang('kanagawa')"><span class="lang-flag">⚓</span>神奈川弁</button>
+        <button class="lang-menu-item"        id="lang-nagoya"  onclick="setLang('nagoya')">  <span class="lang-flag">🦐</span>名古屋弁</button>
         <button class="lang-menu-item"        id="lang-shizuoka" onclick="setLang('shizuoka')"><span class="lang-flag">🗻</span>静岡弁</button>
+        <button class="lang-menu-item"        id="lang-osaka"   onclick="setLang('osaka')">   <span class="lang-flag">🦁</span>大阪弁</button>
         <button class="lang-menu-item"        id="lang-tosa"    onclick="setLang('tosa')">    <span class="lang-flag">🐟</span>土佐弁</button>
+        <button class="lang-menu-item"        id="lang-hakata"  onclick="setLang('hakata')">  <span class="lang-flag">🍜</span>博多弁</button>
         <button class="lang-menu-item"        id="lang-okinawa" onclick="setLang('okinawa')"> <span class="lang-flag">🌺</span>沖縄弁</button>
+          <hr class="lang-menu-divider">
+          <button class="lang-menu-item"        id="lang-nojya"   onclick="setLang('nojya')">   <span class="lang-flag">🧙</span>のじゃロリ語</button>
+          <button class="lang-menu-item"        id="lang-king"    onclick="setLang('king')">    <span class="lang-flag">👑</span>王様語</button>
+          <button class="lang-menu-item"        id="lang-mesugaki" onclick="setLang('mesugaki')"><span class="lang-flag">😈</span>メスガキ</button>
+          <button class="lang-menu-item"        id="lang-gal"     onclick="setLang('gal')">     <span class="lang-flag">💅</span>ギャル語</button>
+          <hr class="lang-menu-divider">
+          <button class="lang-menu-item"        id="lang-ninja"   onclick="setLang('ninja')">   <span class="lang-flag">🍥</span>忍者語</button>
+          <button class="lang-menu-item"        id="lang-silent"  onclick="setLang('silent')">  <span class="lang-flag">🤖</span>無口系語</button>
+          <button class="lang-menu-item"        id="lang-monk"    onclick="setLang('monk')">    <span class="lang-flag">🐒</span>修行僧語</button>
+          <button class="lang-menu-item"        id="lang-mahou"   onclick="setLang('mahou')">   <span class="lang-flag">✨</span>魔法少女語</button>
+          <button class="lang-menu-item"        id="lang-tsundere" onclick="setLang('tsundere')"><span class="lang-flag">💢</span>ツンデレ語</button>
+          <button class="lang-menu-item"        id="lang-chuuni"  onclick="setLang('chuuni')">  <span class="lang-flag">🌙</span>中二病語</button>
+          <div class="lang-menu-arrow bottom" id="langArrowBottom">▼</div>
       </div>
     </div>
+      <button class="lang-btn" onclick="setRandomLang()" title="ランダムな言語に切り替え" style="padding:0 10px;height:30px;line-height:1;">🎲</button>
+    </div>
+    <div class="gate-visitor-count" id="gateVisitorCount"></div>
 
     <div class="gate-participants" id="gateParticipants" style="display:none">
       <div class="gate-participants-count">現在の参加者：<span id="gateCount">0</span> 人</div>
       <div class="gate-avatars" id="gateAvatars"></div>
     </div>
+    <div class="gate-event-countdown" id="gateEventCountdown"></div>
     <div class="gate-deadline-note" id="gateDeadlineNote"></div>
     <hr class="gate-divider">
     <p class="gate-prompt" id="gateWhich">どちらですか？</p>
@@ -601,14 +643,14 @@ footer a{color:var(--potato-light);text-decoration:none;}
 
         <!-- 一般列 -->
         <div class="gate-pcol">
-          <div class="gate-pcol-label" style="color:var(--general-color);">🎫 一般参加者</div>
+          <div class="gate-pcol-label" id="gatePcolGeneralLabel" style="color:var(--general-color);">🎫 一般参加者</div>
           <div class="gate-pcol-interest-head">
             <div class="gate-pcol-count" id="gateGeneralCount">👥 参加中：0人</div>
           </div>
           <div class="gate-avatars" id="gateGeneralAvatars"></div>
           <div class="gate-pcol-divider"></div>
           <div class="gate-pcol-interest-head">
-            <div class="gate-pcol-count" style="color:#e05080;">💬 興味あり：<span id="interestGeneralCount">0</span>人</div>
+            <div class="gate-pcol-count" style="color:#e05080;"><span id="gateInterestGeneralPre">💬 興味あり：</span><span id="interestGeneralCount">0</span><span id="gateInterestGeneralSuf">人</span></div>
             <button class="heart-btn" id="heartBtnGeneral" onclick="onHeartClick('general')">
               <span class="heart-icon" id="heartIconGeneral">♡</span>
             </button>
@@ -618,17 +660,22 @@ footer a{color:var(--potato-light);text-decoration:none;}
 
         <!-- サークル列 -->
         <div class="gate-pcol">
-          <div class="gate-pcol-label" style="color:var(--circle-color);">🪑 サークル参加者</div>
+          <div class="gate-pcol-label" id="gatePcolCircleLabel" style="color:var(--circle-color);">🪑 サークル参加者</div>
           <div class="gate-pcol-interest-head">
             <div class="gate-pcol-count" id="gateCircleCount">👥 参加中：0人</div>
           </div>
           <div class="gate-avatars" id="gateCircleAvatars"></div>
           <div class="gate-pcol-divider"></div>
           <div class="gate-pcol-interest-head">
-            <div class="gate-pcol-count" style="color:#e05080;">💬 興味あり：<span id="interestCircleCount">0</span>人</div>
-            <button class="heart-btn" id="heartBtnCircle" onclick="onHeartClick('circle')">
-              <span class="heart-icon" id="heartIconCircle">♡</span>
-            </button>
+            <div class="gate-pcol-count" style="color:#e05080;"><span id="gateInterestCirclePre">💬 興味あり：</span><span id="interestCircleCount">0</span><span id="gateInterestCircleSuf">人</span></div>
+            <div class="heart-bubble-wrap">
+              <button class="heart-btn" id="heartBtnCircle" onclick="onHeartClick('circle')">
+                <span class="heart-icon" id="heartIconCircle">♡</span>
+              </button>
+              <div class="heart-bubble" id="heartBubble">
+                <span id="heartBubbleText">注文は迷ってるけど気になってる人はここ♡</span>
+              </div>
+            </div>
           </div>
           <div class="gate-avatars" id="interestCircleAvatars"></div>
         </div>
@@ -644,7 +691,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
           <button class="gate-share-btn x-btn"    onclick="shareX()"    title="Xでシェア">     <span class="gate-share-icon">𝕏</span>     <span class="gate-share-lbl">X</span></button>
           <button class="gate-share-btn bsky-btn"  onclick="shareBsky()" title="Blueskyでシェア"><span class="gate-share-icon">🦋</span>    <span class="gate-share-lbl">Bluesky</span></button>
           <button class="gate-share-btn line-btn"  onclick="shareLine()" title="LINEで送る">    <span class="gate-share-icon">💬</span>    <span class="gate-share-lbl">LINE</span></button>
-          <button class="gate-share-btn mail-btn"  onclick="shareMail()" title="メールで送る">  <span class="gate-share-icon">✉️</span>    <span class="gate-share-lbl">メール</span></button>
+          <button class="gate-share-btn mail-btn"  onclick="shareMail()" title="メールで送る">  <span class="gate-share-icon">✉️</span>    <span class="gate-share-lbl" id="gateShareMailLbl">メール</span></button>
           <button class="gate-share-btn copy-btn"  id="gateShareCopyBtn" onclick="gateShareCopy()" title="リンクをコピー"><span class="gate-share-icon">🔗</span><span class="gate-share-lbl" id="gateShareCopyLabel">コピー</span></button>
         </div>
       </div>
@@ -1093,6 +1140,12 @@ footer a{color:var(--potato-light);text-decoration:none;}
 <div class="admin-section" id="adminPanel" style="display:none">
   <div class="section">
     <div class="admin-label">🔒 管理パネル</div>
+
+    <!-- 簡易グラフ -->
+    <div style="background:var(--card);border-radius:12px;padding:16px;margin-bottom:16px;">
+      <div style="font-size:.8rem;font-weight:700;color:var(--muted);margin-bottom:12px;">📊 注文サマリー</div>
+      <div id="adminChartArea" style="display:flex;flex-direction:column;gap:10px;"></div>
+    </div>
     <div class="verify-box">
       <div class="verify-title">🔑 引換コード照合</div>
       <div class="verify-row">
@@ -1184,6 +1237,32 @@ footer a{color:var(--potato-light);text-decoration:none;}
 </div><!-- /mainContent -->
 
 <!-- SUCCESS MODAL -->
+<div class="modal-backdrop" id="msgModal">
+  <div class="modal" style="max-width:520px;text-align:left;">
+    <div class="modal-icon">📝</div>
+    <h3 class="modal-title" style="text-align:center;" id="msgModalTitle">送信文面</h3>
+    <p style="font-size:.75rem;color:var(--muted);margin-bottom:8px;text-align:center;" id="msgModalHint"></p>
+    <textarea id="msgModalText" style="width:100%;box-sizing:border-box;min-height:220px;font-size:.83rem;line-height:1.7;padding:12px;border-radius:8px;border:1.5px solid var(--border);background:#fff;color:var(--text);resize:vertical;font-family:var(--sans);"></textarea>
+    <div style="display:flex;gap:10px;margin-top:12px;justify-content:center;flex-wrap:wrap;">
+      <button class="code-action-btn" style="font-size:.9rem;padding:10px 20px;" onclick="copyMsgText()">📋 コピー</button>
+      <button class="modal-close" onclick="document.getElementById('msgModal').classList.remove('show')">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="duplicateModal">
+  <div class="modal">
+    <div class="modal-icon">🔍</div>
+    <h3 class="modal-title">注文済みの可能性があります</h3>
+    <p class="modal-body" style="line-height:1.8;">
+      入力されたメールアドレスまたはXアカウントで、すでに一般参加者の注文が登録されています。<br>
+      引換コードが分からなくなった場合は、下の検索フォームから確認できます。
+    </p>
+    <button class="modal-close" style="background:var(--accent);color:#fff;border-radius:8px;padding:10px 24px;font-weight:700;margin-bottom:8px;" onclick="closeDuplicateModal()">引換コードを確認する →</button>
+    <button class="modal-close" onclick="document.getElementById('duplicateModal').classList.remove('show')">キャンセル</button>
+  </div>
+</div>
+
 <div class="modal-backdrop" id="successModal">
   <div class="modal">
     <div class="modal-icon">🎉</div>
@@ -1199,6 +1278,13 @@ footer a{color:var(--potato-light);text-decoration:none;}
       <button class="code-action-btn" onclick="copyCode(this)">📋 コピー</button>
       <button class="code-action-btn" onclick="saveCodeImage()">🖼️ 画像保存</button>
       <button class="code-action-btn" onclick="mailCode()">✉️ メール送信</button>
+    </div>
+    <button class="code-action-btn" style="margin:14px auto 0;display:flex;align-items:center;gap:7px;background:#000;border-color:#000;color:#fff;font-weight:700;padding:10px 22px;font-size:.95rem;" onclick="shareOrderX()">
+      <span style="font-size:1.1rem;">𝕏</span> Xでシェアする
+    </button>
+    <div id="successQR" style="margin:16px auto 0;text-align:center;display:none;">
+      <div style="font-size:.75rem;color:var(--muted);margin-bottom:6px;">📱 当日はQRでも提示できます</div>
+      <div id="successQRCanvas" style="display:inline-block;padding:8px;background:#fff;border-radius:8px;border:1.5px solid var(--border);"></div>
     </div>
     <canvas id="codeCanvas" width="400" height="240" style="display:none"></canvas>
     <button class="modal-close" onclick="closeModal()">閉じる</button>
@@ -1436,11 +1522,24 @@ function initDatesUI() {
   }).join('');
   // ゲート画面のサークル最大表示
   document.getElementById('gateCircleMax').textContent = isCircleBulkAllowed() ? '最大20点まで' : '最大5点まで（2週間前以降）';
-  // 残り日数表示
+
+  // イベントまでのカウントダウン（常時表示）
+  const t = TRANSLATIONS[_currentLang] || TRANSLATIONS.ja;
+  const eventDaysLeft = Math.ceil((EVENT_DATE - n) / 86400000);
+  const countdownEl = document.getElementById('gateEventCountdown');
+  if (eventDaysLeft > 0 && countdownEl) {
+    countdownEl.innerHTML = `
+      <div class="gate-countdown-label">${t.countdownLabel || 'ふたば★学園祭２１まで'}</div>
+      <div class="gate-countdown-days">${eventDaysLeft}<span>${t.countdownUnit || '日'}</span></div>
+      <div class="gate-countdown-sub">${fmtDate(EVENT_DATE)}</div>`;
+  }
+
+  // 申し込み締め切り（残り30日以内に小さく表示）
   const daysLeft = Math.ceil((DEADLINE - n) / 86400000);
   if (daysLeft > 0 && daysLeft <= 30) {
-    document.getElementById('gateDeadlineNote').textContent = `⏰ 申し込み締め切りまであと ${daysLeft} 日（${fmtDate(DEADLINE)}）`;
-    document.getElementById('gateDeadlineNote').style.display = 'block';
+    const deadlineEl = document.getElementById('gateDeadlineNote');
+    deadlineEl.textContent = (t.deadlineNote || '⏰ 申し込み締め切りまであと {n} 日').replace('{n}', daysLeft);
+    deadlineEl.style.display = 'block';
   }
 }
 
@@ -1884,6 +1983,29 @@ document.getElementById('orderForm').addEventListener('submit', async e => {
   if (isPastDeadline()) { showToast('申し込みは締め切りました'); return; }
   if (!validateForm()) return;
 
+  // 一般参加者の重複注文チェック
+  if (currentMode === 'general' && sbReady()) {
+    const email   = document.getElementById('f-email').value.trim();
+    const xaccount = (document.getElementById('f-xaccount')?.value || '').trim();
+    try {
+      let query = `${SUPABASE_URL}/rest/v1/orders?mode=eq.general&select=id,email,x_account&limit=1`;
+      const orParts = [];
+      if (email)    orParts.push(`email.eq.${encodeURIComponent(email)}`);
+      if (xaccount) orParts.push(`x_account.eq.${encodeURIComponent(xaccount)}`);
+      if (orParts.length) {
+        query += `&or=(${orParts.join(',')})`;
+        const res = await fetch(query, { headers: SB_H() });
+        const rows = await res.json();
+        if (Array.isArray(rows) && rows.length > 0) {
+          showDuplicateWarning();
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn('重複チェック失敗（続行）:', err);
+    }
+  }
+
   const btn = document.getElementById('submitBtn');
   btn.disabled = true; btn.textContent = '送信中…';
 
@@ -1953,6 +2075,7 @@ document.getElementById('orderForm').addEventListener('submit', async e => {
   document.getElementById('exchangeCodeNote').textContent =
     (total === 0 ? 'このご注文は無料です！' : '当日お支払い金額：¥' + total.toLocaleString()) + sampleNote;
   document.getElementById('successModal').classList.add('show');
+  showCodeQR(code);
 
   btn.disabled = false; btn.textContent = '製作情報送信 🔨';
 });
@@ -1977,7 +2100,7 @@ function toggleAdmin(e) {
   if (!adminVisible) { const pw = prompt('管理者パスワード:'); if (pw !== 'Xt4p8VrC2K9') { showToast('パスワードが違います'); return; } }
   adminVisible = !adminVisible;
   document.getElementById('adminPanel').style.display = adminVisible ? 'block' : 'none';
-  if (adminVisible) { loadAndRenderOrders(); reloadInterestsAdmin(); document.getElementById('adminPanel').scrollIntoView({ behavior: 'smooth' }); }
+  if (adminVisible) { loadAndRenderOrders(); reloadInterestsAdmin(); renderAdminChart(); document.getElementById('adminPanel').scrollIntoView({ behavior: 'smooth' }); }
 }
 
 async function loadAndRenderOrders() {
@@ -2005,6 +2128,7 @@ async function loadAndRenderOrders() {
     }
   }
   renderOrders();
+  renderAdminChart();
   renderLabelEntries();
 }
 
@@ -2112,11 +2236,13 @@ function renderOrders() {
         ${o.sampleRequested ? `
         <button class="sent-btn ${o.sampleSent?'done':''}" onclick="toggleSampleSent('${o.ref}')">
           ${o.sampleSent ? '✓ サンプル送信済み' : '○ サンプル未送信'}
-        </button>` : ''}
+        </button>
+        <button class="sent-btn" style="background:rgba(255,200,80,.15);border-color:var(--gold-border);font-size:.75rem;padding:5px 10px;" onclick="showMsgModal('sample','${o.ref}')">📝 文面</button>` : ''}
         ${o.wantsCompletionImage ? `
         <button class="sent-btn ${o.completionImageSent?'done':''}" onclick="toggleCompletionImageSent('${o.ref}')">
           ${o.completionImageSent ? '✓ 完成画像送信済み' : '○ 完成画像未送信'}
-        </button>` : ''}
+        </button>
+        <button class="sent-btn" style="background:rgba(255,200,80,.15);border-color:var(--gold-border);font-size:.75rem;padding:5px 10px;" onclick="showMsgModal('completion','${o.ref}')">📝 文面</button>` : ''}
         ${!o.sampleRequested && !o.wantsCompletionImage ? '<span style="font-size:.78rem;color:var(--muted)">送信予定なし</span>' : ''}
         ${o.note ? `<span style="font-size:.8rem;color:var(--muted);margin-left:auto">💬 ${o.note}</span>` : ''}
       </div>
@@ -2618,6 +2744,154 @@ function zoomImg(src) { document.getElementById('zoomImg').src = src; document.g
 function closeZoom() { document.getElementById('zoomBackdrop').classList.remove('show'); }
 
 // ── SHARE ──
+function showMsgModal(type, ref) {
+  const o = orders.find(x => x.ref === ref);
+  if (!o) return;
+
+  const name     = o.name || 'ご注文者';
+  const code     = o.code || '?????';
+  const isX      = o.contactPref === 'x';
+  const greeting = isX ? `@${o.xAccount || name} さん` : `${name} 様`;
+  const closing  = isX ? '\nDMにてご返信ください。よろしくお願いいたします。' : '\nご返信はこのメールへお願いいたします。';
+  const header   = isX ? '' : `件名：【ふたば★学園祭２１ レザーコースター】`;
+
+  let title, hint, body;
+
+  if (type === 'sample') {
+    title = '端材サンプル送付の文面';
+    hint  = isX ? 'X（DM）用' : 'メール用';
+    body  = `${header}${header ? '\n\n' : ''}${greeting}
+
+大喜幸四郎と申します。
+ふたば★学園祭２１ レザーコースター企画へのご注文ありがとうございます。
+
+端材への出力サンプル画像をお送りしましたので、ご確認をお願いいたします。
+継続の場合も、修正の場合も、お手数ですがご返信願います。
+なお、修正してサンプル再出力の場合は¥300を頂戴しております。
+修正原稿をそのまま出力する場合には料金が発生しません。
+
+注文番号：${ref}
+引換コード：${code}
+${closing}`;
+  } else {
+    title = '仕上がり確認画像の文面';
+    hint  = isX ? 'X（DM）用' : 'メール用';
+    body  = `${header}${header ? '\n\n' : ''}${greeting}
+
+大喜幸四郎と申します。
+ふたば★学園祭２１ レザーコースター企画へのご注文ありがとうございます。
+
+コースターの仕上がり確認画像をお送りします。ご確認をお願いいたします。
+問題なければ当日ブースにてお受け取りください。
+修正をご希望の場合は1点⁺出力、作業代を含め追加料金¥300が発生します。
+継続の場合も、修正の場合も、お手数ですがご返信願います。
+
+注文番号：${ref}
+引換コード：${code}
+
+当日はこちらのコードをブースにてご提示ください。
+${closing}`;
+  }
+
+  document.getElementById('msgModalTitle').textContent = title;
+  document.getElementById('msgModalHint').textContent  = hint;
+  document.getElementById('msgModalText').value        = body.trimStart();
+  document.getElementById('msgModal').classList.add('show');
+}
+
+async function copyMsgText() {
+  const text = document.getElementById('msgModalText').value;
+  try { await navigator.clipboard.writeText(text); }
+  catch { const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); }
+  showToast('文面をコピーしました');
+}
+
+function setRandomLang() {
+  const keys = Object.keys(TRANSLATIONS).filter(k => k !== _currentLang);
+  setLang(keys[Math.floor(Math.random() * keys.length)]);
+}
+
+// 訪問者カウンター（localStorage）
+function initVisitorCount() {
+  const key = 'fg21_visit_count';
+  const count = parseInt(localStorage.getItem(key) || '0') + 1;
+  localStorage.setItem(key, count);
+  const el = document.getElementById('gateVisitorCount');
+  if (el) el.textContent = `👁 あなたは ${count.toLocaleString()} 回目の訪問です`;
+}
+
+// 引換コードQR生成
+function showCodeQR(code) {
+  const wrap = document.getElementById('successQR');
+  const container = document.getElementById('successQRCanvas');
+  if (!wrap || !container) return;
+  container.innerHTML = '';
+  wrap.style.display = 'block';
+  try {
+    new QRCode(container, {
+      text: code,
+      width: 140, height: 140,
+      correctLevel: QRCode.CorrectLevel.M
+    });
+  } catch(e) {
+    wrap.style.display = 'none';
+  }
+}
+
+// 管理パネル 簡易グラフ
+function renderAdminChart() {
+  const el = document.getElementById('adminChartArea');
+  if (!el || !orders.length) { if(el) el.innerHTML = '<div style="font-size:.8rem;color:var(--muted);">注文なし</div>'; return; }
+
+  const total     = orders.length;
+  const circle    = orders.filter(o => o.mode === 'circle').length;
+  const general   = orders.filter(o => o.mode === 'general').length;
+  const delivered = orders.filter(o => o.status === 'delivered').length;
+  const making    = orders.filter(o => o.status === 'making').length;
+  const revenue   = orders.reduce((s, o) => s + (o.total || 0), 0);
+  const maxQty    = orders.reduce((s, o) => s + (o.qty || 0), 0);
+
+  const bar = (label, val, max, color, suffix='') => {
+    const pct = max > 0 ? Math.round(val / max * 100) : 0;
+    return `<div>
+      <div style="display:flex;justify-content:space-between;font-size:.75rem;margin-bottom:3px;">
+        <span style="color:var(--muted);font-weight:700;">${label}</span>
+        <span style="font-weight:700;">${val.toLocaleString()}${suffix}</span>
+      </div>
+      <div style="background:rgba(0,0,0,.08);border-radius:4px;height:10px;overflow:hidden;">
+        <div style="background:${color};width:${pct}%;height:100%;border-radius:4px;transition:width .4s;"></div>
+      </div>
+    </div>`;
+  };
+
+  el.innerHTML = [
+    bar('サークル参加者', circle, total, 'var(--circle-color)'),
+    bar('一般参加者', general, total, 'var(--general-color)'),
+    bar('製作中', making, total, '#f0a040'),
+    bar('受け渡し済み', delivered, total, 'var(--green)'),
+    `<div style="display:flex;justify-content:space-between;font-size:.8rem;padding:6px 0 0;border-top:1px solid var(--border);margin-top:4px;">
+      <span style="color:var(--muted);font-weight:700;">総注文数</span><span style="font-weight:900;">${total} 件 / ${maxQty} 点</span>
+    </div>`,
+    `<div style="display:flex;justify-content:space-between;font-size:.8rem;">
+      <span style="color:var(--muted);font-weight:700;">売上合計</span><span style="font-weight:900;color:var(--accent);">¥${revenue.toLocaleString()}</span>
+    </div>`,
+  ].join('');
+}
+
+function showDuplicateWarning() {
+  document.getElementById('duplicateModal').classList.add('show');
+}
+function closeDuplicateModal() {
+  document.getElementById('duplicateModal').classList.remove('show');
+  // 注文検索セクションへスクロール
+  document.getElementById('findOrder')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function shareOrderX() {
+  const text = `ふたば★学園祭２１の参加型企画「イラスト入りレザーコースター」に注文しました🥔✨\n#ふたば学園祭21 #fg21\n${_shareUrl()}`;
+  window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, '_blank', 'noopener,width=600,height=420');
+}
+
 function _shareUrl() { return location.href.split('#')[0]; }
 function _shareText() { return 'ふたば★学園祭２１ 参加型企画「イラスト入りレザーコースター」製作受付中🥔'; }
 function shareX() {
@@ -2654,6 +2928,7 @@ async function shareCopy() {
 async function gateShareCopy() {
   const btn = document.getElementById('gateShareCopyBtn');
   const lbl = document.getElementById('gateShareCopyLabel');
+  const t = TRANSLATIONS[_currentLang] || TRANSLATIONS.ja;
   try {
     await navigator.clipboard.writeText(_shareUrl());
   } catch {
@@ -2661,9 +2936,9 @@ async function gateShareCopy() {
     ta.value = _shareUrl(); document.body.appendChild(ta); ta.select();
     document.execCommand('copy'); document.body.removeChild(ta);
   }
-  lbl.textContent = '✓ コピー';
+  lbl.textContent = t.shareCopiedLbl || '✓ コピー';
   btn.classList.add('copied');
-  setTimeout(() => { lbl.textContent = 'コピー'; btn.classList.remove('copied'); }, 2500);
+  setTimeout(() => { lbl.textContent = t.shareCopyLbl || 'コピー'; btn.classList.remove('copied'); }, 2500);
 }
 
 function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3500); }
@@ -2780,6 +3055,11 @@ const TRANSLATIONS = {
     generalName: '一般参加者', generalSub: '自宅用・プレゼント用', generalCta: '製作する →',
     generalRestrict: '📖 カタログを購入して入場する方はこちら',
     generalPerks: ['1点まで無料', '追加1点：¥400', '最大2点まで', '1人1イラスト上限'],
+    pcolGeneralLabel: '🎫 一般参加者', pcolCircleLabel: '🪑 サークル参加者',
+    participantPre: '👥 参加中：', participantSuf: '人',
+    interestPre: '💬 興味あり：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
+    heartBubble: '注文は迷ってるけど<br>気になってる人はここ♡',
+    countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日',
     circleName: 'サークル参加者', circleSub: '頒布用途OK', circleCta: '製作する →',
     circleRestrict: '⚠️ ふたば★学園祭２１にサークル参加している方のみ',
     circlePerks: ['3点まで無料', '4〜10点目：¥200/点', '11点目以降：¥250/点', '1か月前まで：早割（¥250→¥220）'],
@@ -2792,6 +3072,11 @@ const TRANSLATIONS = {
     generalName: 'General Attendee', generalSub: 'For personal use · gifts', generalCta: 'Get Started →',
     generalRestrict: '📖 For those entering with a catalogue',
     generalPerks: ['1st coaster — free!', '2nd coaster (same design)：¥400', 'Max 2 coasters', '1 design only'],
+    pcolGeneralLabel: '🎫 General Attendees', pcolCircleLabel: '🪑 Circle Participants',
+    participantPre: '👥 Attending: ', participantSuf: '',
+    interestPre: '💬 Interested: ', interestSuf: '', shareMailLbl: 'Mail', shareCopyLbl: 'Copy', shareCopiedLbl: '✓ Copied',
+    heartBubble: 'Not sure yet?<br>Tap if you\'re interested♡',
+    countdownLabel: 'Days until ふたば★学園祭２１', countdownUnit: ' days', deadlineNote: '⏰ {n} days left to apply',
     circleName: 'Circle Participant', circleSub: 'Distribution OK', circleCta: 'Get Started →',
     circleRestrict: '⚠️ ふたば★学園祭２１ circle participants only',
     circlePerks: ['First 3 — free!', '4〜10：¥200 each', '11+：¥250 each', 'Early bird：¥250→¥220 (1 month before)'],
@@ -2804,6 +3089,11 @@ const TRANSLATIONS = {
     generalName: 'ふつうの参加者', generalSub: '家で使うやつ・プレゼントにも', generalCta: 'つくってみよさ →',
     generalRestrict: '📖 カタログ買って来た人はこっちかい',
     generalPerks: ['1点まで ただだべ', '追加1点：¥400', '最大2点まで', '1人1イラスト上限だかい'],
+    pcolGeneralLabel: '🎫 ふつうの参加者', pcolCircleLabel: '🪑 サークルの参加者',
+    participantPre: '👥 参加中：', participantSuf: '人だべ',
+    interestPre: '💬 興味あるべ：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
+    heartBubble: 'まだ迷ってるけど<br>気になってるべさ♡',
+    countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日だべ', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日だべ',
     circleName: 'サークルの参加者', circleSub: '頒布もOKだべさ', circleCta: 'つくってみよさ →',
     circleRestrict: '⚠️ ふたば★学園祭２１にサークルで出てる人だけだべ',
     circlePerks: ['3点まで ただだべ', '4〜10点：¥200/点', '11点以降：¥250/点', '1か月前まで：早割（¥250→¥220）'],
@@ -2816,6 +3106,11 @@ const TRANSLATIONS = {
     generalName: 'ふつうの参加者', generalSub: 'うぢで使うもの・プレゼントにも', generalCta: 'つぐってみっか →',
     generalRestrict: '📖 カタログ買って来た人はこっちだが',
     generalPerks: ['1点まで ただだが', '追加1点：¥400', '最大2点まで', '1人1イラスト上限だが'],
+    pcolGeneralLabel: '🎫 ふつうの参加者', pcolCircleLabel: '🪑 サークルの参加者',
+    participantPre: '👥 参加中：', participantSuf: '人だが',
+    interestPre: '💬 興味あるだが：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
+    heartBubble: 'まだ迷ってるけど<br>気になってるだが♡',
+    countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日だが', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日だが',
     circleName: 'サークルの参加者', circleSub: '頒布もOKだが', circleCta: 'つぐってみっか →',
     circleRestrict: '⚠️ ふたば★学園祭２１のサークルの人だけだが',
     circlePerks: ['3点まで ただだが', '4〜10点：¥200/点', '11点以降：¥250/点', '1か月前まで：早割（¥250→¥220）'],
@@ -2828,6 +3123,11 @@ const TRANSLATIONS = {
     generalName: 'ふつうの参加者', generalSub: '家で使うだら・プレゼントにもなるじゃん', generalCta: 'つくるだら →',
     generalRestrict: '📖 カタログ買った人はこっちじゃん',
     generalPerks: ['1点まで ただだら', '追加1点：¥400', '最大2点まで', '1人1イラスト上限だもんで'],
+    pcolGeneralLabel: '🎫 ふつうの参加者', pcolCircleLabel: '🪑 サークルの参加者',
+    participantPre: '👥 参加中：', participantSuf: '人だら',
+    interestPre: '💬 興味あるじゃん：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
+    heartBubble: 'まだ迷ってるけど<br>気になってるだら♡',
+    countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日だら', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日だもんで',
     circleName: 'サークルの参加者', circleSub: '頒布もOKだもんで', circleCta: 'つくるだら →',
     circleRestrict: '⚠️ ふたば★学園祭２１のサークルの人だけだら',
     circlePerks: ['3点まで ただだら', '4〜10点：¥200/点', '11点以降：¥250/点', '1か月前まで：早割（¥250→¥220）だもんで'],
@@ -2840,6 +3140,11 @@ const TRANSLATIONS = {
     generalName: 'ふつうの参加者', generalSub: '家で使うき・プレゼントにもなるがよ', generalCta: 'つくるぜよ →',
     generalRestrict: '📖 カタログ買うて入場する人はこっちじゃき',
     generalPerks: ['1点まで ただじゃき', '追加1点：¥400', '最大2点まで', '1人1イラスト上限ぜよ'],
+    pcolGeneralLabel: '🎫 ふつうの参加者', pcolCircleLabel: '🪑 サークルの参加者',
+    participantPre: '👥 参加中：', participantSuf: '人ぜよ',
+    interestPre: '💬 興味あるき：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
+    heartBubble: 'まだ迷ってるけど<br>気になってるぜよ♡',
+    countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日ぜよ', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日じゃき',
     circleName: 'サークルの参加者ぜよ', circleSub: '頒布もOKじゃき', circleCta: 'つくるぜよ →',
     circleRestrict: '⚠️ ふたば★学園祭２１にサークルで出ゆる人だけじゃき',
     circlePerks: ['3点まで ただじゃき', '4〜10点：¥200/点', '11点以降：¥250/点', '1か月前まで：早割（¥250→¥220）ぜよ'],
@@ -2852,9 +3157,303 @@ const TRANSLATIONS = {
     generalName: 'なんくるないさーなひとぅ', generalSub: 'うちなーでつかうもの・てぃーだかんかん', generalCta: 'つくいんど →',
     generalRestrict: '📖 カタログかいてぃはいるひとぅはこちらさぁ',
     generalPerks: ['1点まーでぃ無料さ', '追加1点：¥400', '最大2点までやいびーん', '1人1いらすとぅ上限'],
+    pcolGeneralLabel: '🎫 なんくるないさーなひとぅ', pcolCircleLabel: '🪑 サークルぬひとぅ',
+    participantPre: '👥 参加中：', participantSuf: 'ちゅ',
+    interestPre: '💬 興味あいびーん：', interestSuf: 'ちゅ', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
+    heartBubble: 'まだ迷ってるけど<br>気になってるさぁ♡',
+    countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: 'ちちやいびーん', deadlineNote: '⏰ 申し込み締め切りまであと {n} ちちやいびーん',
     circleName: 'サークルぬひとぅ', circleSub: '頒布もOKさぁ', circleCta: 'つくいんど →',
     circleRestrict: '⚠️ ふたば★学園祭２１んかいサークルぬひとぅぬみやいびーん',
     circlePerks: ['3点まーでぃ無料やいびーん', '4〜10点：¥200/点', '11点以降：¥250/点', '早割あいびーん（¥250→¥220）'],
+  },
+  osaka: {
+    title: 'ふたば★学園祭２１<br>参加型企画 イラスト入りレザーコースター',
+    tagline1: 'イラスト送ったらええねん', tagline2: 'コースターできるで！',
+    tagline3: '⭐めっちゃすごい⭐かんたんやで⭐たのしいで⭐',
+    which: 'どっちやねん？',
+    generalName: 'いっぱん参加者', generalSub: '家で使うやつ・プレゼントにも', generalCta: 'つくってもらうで →',
+    generalRestrict: '📖 カタログ買うて入場する人はこっちやで',
+    generalPerks: ['1点まで ただやで', '追加1点：¥400', '最大2点まで', '1人1イラスト上限やねん'],
+    pcolGeneralLabel: '🎫 いっぱん参加者', pcolCircleLabel: '🪑 サークル参加者',
+    participantPre: '👥 参加中：', participantSuf: '人',
+    interestPre: '💬 興味あり：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
+    heartBubble: 'まだ迷ってるけど<br>気になってるで♡',
+    countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日やで', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日やで',
+    circleName: 'サークル参加者', circleSub: '頒布もOKやで', circleCta: 'つくってもらうで →',
+    circleRestrict: '⚠️ ふたば★学園祭２１にサークルで出てる人だけやで',
+    circlePerks: ['3点まで ただやで', '4〜10点：¥200/点', '11点以降：¥250/点', '1か月前まで：早割（¥250→¥220）やで'],
+  },
+  hakata: {
+    title: 'ふたば★学園祭２１<br>参加型企画 イラスト入りレザーコースター',
+    tagline1: 'イラスト送ってみてんね', tagline2: 'コースターできるばい！',
+    tagline3: '⭐すごかばい⭐かんたんたい⭐たのしかばい⭐',
+    which: 'どっちね？',
+    generalName: 'いっぱん参加者', generalSub: '家で使うやつ・プレゼントにも', generalCta: 'つくってもらうばい →',
+    generalRestrict: '📖 カタログ買うて来た人はこっちたい',
+    generalPerks: ['1点まで ただたい', '追加1点：¥400', '最大2点まで', '1人1イラスト上限ばい'],
+    pcolGeneralLabel: '🎫 いっぱん参加者', pcolCircleLabel: '🪑 サークル参加者',
+    participantPre: '👥 参加中：', participantSuf: '人',
+    interestPre: '💬 興味あり：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
+    heartBubble: 'まだ迷ってるけど<br>気になってるたい♡',
+    countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日たい', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日ばい',
+    circleName: 'サークル参加者', circleSub: '頒布もOKたい', circleCta: 'つくってもらうばい →',
+    circleRestrict: '⚠️ ふたば★学園祭２１にサークルで出ようとる人だけたい',
+    circlePerks: ['3点まで ただたい', '4〜10点：¥200/点', '11点以降：¥250/点', '1か月前まで：早割（¥250→¥220）ばい'],
+  },
+  nagoya: {
+    title: 'ふたば★学園祭２１<br>参加型企画 イラスト入りレザーコースター',
+    tagline1: 'イラスト送ればええがや', tagline2: 'コースターできるでかんわ！',
+    tagline3: '⭐えれゃーすごい⭐かんたんだがね⭐たのしーでかんわ⭐',
+    which: 'どっちだぎゃ？',
+    generalName: 'いっぱん参加者', generalSub: '家で使うやつ・プレゼントにも', generalCta: 'つくってちょ →',
+    generalRestrict: '📖 カタログ買って来た人はこっちだがね',
+    generalPerks: ['1点まで ただだがや', '追加1点：¥400', '最大2点まで', '1人1イラスト上限だぎゃ'],
+    pcolGeneralLabel: '🎫 いっぱん参加者', pcolCircleLabel: '🪑 サークル参加者',
+    participantPre: '👥 参加中：', participantSuf: '人',
+    interestPre: '💬 興味あり：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
+    heartBubble: 'まだ迷ってるけど<br>気になってるだがね♡',
+    countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日だがね', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日だぎゃ',
+    circleName: 'サークル参加者', circleSub: '頒布もOKだがね', circleCta: 'つくってちょ →',
+    circleRestrict: '⚠️ ふたば★学園祭２１にサークルで出とる人だけだぎゃ',
+    circlePerks: ['3点まで ただだがや', '4〜10点：¥200/点', '11点以降：¥250/点', '1か月前まで：早割（¥250→¥220）だがね'],
+  },
+  niigata: {
+    title: 'ふたば★学園祭２１<br>参加型企画 イラスト入りレザーコースター',
+    tagline1: 'イラスト送ってくんない', tagline2: 'コースターできっけ！',
+    tagline3: '⭐えれーすごいっけ⭐かんたんだっけ⭐たのしいっけ⭐',
+    which: 'どっちらね？',
+    generalName: 'いっぱん参加者', generalSub: '家で使うやつ・プレゼントにも', generalCta: 'つくってもらうっけ →',
+    generalRestrict: '📖 カタログ買って来た人はこっちらね',
+    generalPerks: ['1点まで ただっけ', '追加1点：¥400', '最大2点まで', '1人1イラスト上限だっけ'],
+    pcolGeneralLabel: '🎫 いっぱん参加者', pcolCircleLabel: '🪑 サークル参加者',
+    participantPre: '👥 参加中：', participantSuf: '人',
+    interestPre: '💬 興味あり：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
+    heartBubble: 'まだ迷ってるけど<br>気になってるっけ♡',
+    countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日っけ', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日っけ',
+    circleName: 'サークル参加者', circleSub: '頒布もOKっけ', circleCta: 'つくってもらうっけ →',
+    circleRestrict: '⚠️ ふたば★学園祭２１にサークルで出てる人だけっけ',
+    circlePerks: ['3点まで ただっけ', '4〜10点：¥200/点', '11点以降：¥250/点', '1か月前まで：早割（¥250→¥220）だっけ'],
+  },
+  tokyo: {
+    title: 'ふたば★学園祭２１<br>参加型企画 イラスト入りレザーコースター',
+    tagline1: 'イラスト送っちゃいなよ', tagline2: 'コースターできちゃうじゃん！',
+    tagline3: '⭐すごくない？⭐かんたんじゃん⭐たのしーじゃん⭐',
+    which: 'どっちなの？',
+    generalName: 'いっぱん参加者', generalSub: '家用・プレゼントにも', generalCta: 'つくってもらっちゃお →',
+    generalRestrict: '📖 カタログ買って入場する人はこっちじゃん',
+    generalPerks: ['1点まで ただじゃん', '追加1点：¥400', '最大2点まで', '1人1イラスト上限ね'],
+    pcolGeneralLabel: '🎫 いっぱん参加者', pcolCircleLabel: '🪑 サークル参加者',
+    participantPre: '👥 参加中：', participantSuf: '人',
+    interestPre: '💬 興味あり：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
+    heartBubble: 'まだ迷ってるけど\n気になってるじゃん♡',
+    countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日じゃん', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日じゃん',
+    circleName: 'サークル参加者', circleSub: '頒布もOKじゃん', circleCta: 'つくってもらっちゃお →',
+    circleRestrict: '⚠️ ふたば★学園祭２１にサークルで出てる人だけじゃん',
+    circlePerks: ['3点まで ただじゃん', '4〜10点：¥200/点', '11点以降：¥250/点', '1か月前まで：早割（¥250→¥220）だって'],
+  },
+  kanagawa: {
+    title: 'ふたば★学園祭２１<br>参加型企画 イラスト入りレザーコースター',
+    tagline1: 'イラスト送ってみなよ', tagline2: 'コースターできるじゃん！',
+    tagline3: '⭐すごいじゃん⭐かんたんじゃん⭐たのしいじゃん⭐',
+    which: 'どっちじゃん？',
+    generalName: 'いっぱん参加者', generalSub: '家用・プレゼントにも', generalCta: 'つくってもらおうじゃん →',
+    generalRestrict: '📖 カタログ買って来た人はこっちじゃん',
+    generalPerks: ['1点まで ただじゃん', '追加1点：¥400', '最大2点まで', '1人1イラスト上限じゃん'],
+    pcolGeneralLabel: '🎫 いっぱん参加者', pcolCircleLabel: '🪑 サークル参加者',
+    participantPre: '👥 参加中：', participantSuf: '人',
+    interestPre: '💬 興味あり：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
+    heartBubble: 'まだ迷ってるけど<br>気になってるじゃん♡',
+    countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日じゃん', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日じゃん',
+    circleName: 'サークル参加者', circleSub: '頒布もOKじゃん', circleCta: 'つくってもらおうじゃん →',
+    circleRestrict: '⚠️ ふたば★学園祭２１にサークルで出てる人だけじゃん',
+    circlePerks: ['3点まで ただじゃん', '4〜10点：¥200/点', '11点以降：¥250/点', '1か月前まで：早割（¥250→¥220）じゃん'],
+  },
+  gunma: {
+    title: 'ふたば★学園祭２１<br>参加型企画 イラスト入りレザーコースター',
+    tagline1: 'イラスト送ってくんない', tagline2: 'コースターできっぺよ！',
+    tagline3: '⭐すごいっぺ⭐かんたんだんべ⭐たのしいっぺよ⭐',
+    which: 'どっちだんべ？',
+    generalName: 'いっぱん参加者', generalSub: '家で使うやつ・プレゼントにも', generalCta: 'つくってもらっぺ →',
+    generalRestrict: '📖 カタログ買って来た人はこっちだんべ',
+    generalPerks: ['1点まで ただだっぺ', '追加1点：¥400', '最大2点まで', '1人1イラスト上限だんべ'],
+    pcolGeneralLabel: '🎫 いっぱん参加者', pcolCircleLabel: '🪑 サークル参加者',
+    participantPre: '👥 参加中：', participantSuf: '人',
+    interestPre: '💬 興味あり：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
+    heartBubble: 'まだ迷ってるけど<br>気になってるだっぺ♡',
+    countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日だっぺ', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日だっぺ',
+    circleName: 'サークル参加者', circleSub: '頒布もOKだっぺ', circleCta: 'つくってもらっぺ →',
+    circleRestrict: '⚠️ ふたば★学園祭２１にサークルで出てる人だけだっぺよ',
+    circlePerks: ['3点まで ただだっぺ', '4〜10点：¥200/点', '11点以降：¥250/点', '1か月前まで：早割（¥250→¥220）だんべ'],
+  },
+  nojya: {
+    title: 'ふたば★学園祭２１<br>参加型企画 イラスト入りレザーコースター',
+    tagline1: 'イラストを送るのじゃ', tagline2: 'コースターができるのじゃ！',
+    tagline3: '⭐すごいのじゃ⭐かんたんじゃろ⭐たのしいのじゃ⭐',
+    which: 'どちらじゃ？',
+    generalName: 'いっぱん参加者', generalSub: '家で使うのじゃ・プレゼントにもなるのじゃ', generalCta: 'つくってもらうのじゃ →',
+    generalRestrict: '📖 カタログを買うて入場する者はこちらじゃ',
+    generalPerks: ['1点まで ただじゃ', '追加1点：¥400のじゃ', '最大2点まで', '1人1イラスト上限じゃ'],
+    pcolGeneralLabel: '🎫 いっぱん参加者', pcolCircleLabel: '🪑 サークル参加者',
+    participantPre: '👥 参加中：', participantSuf: '人のじゃ',
+    interestPre: '💬 興味あり：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
+    heartBubble: 'まだ注文は迷うておるが<br>気になっておるのじゃ♡',
+    countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日のじゃ', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日じゃ',
+    circleName: 'サークル参加者', circleSub: '頒布もOKなのじゃ', circleCta: 'つくってもらうのじゃ →',
+    circleRestrict: '⚠️ ふたば★学園祭２１にサークルで出ておる者だけじゃ',
+    circlePerks: ['3点まで ただじゃ', '4〜10点：¥200/点', '11点以降：¥250/点', '1か月前まで：早割（¥250→¥220）じゃ'],
+  },
+  king: {
+    title: 'ふたば★学園祭２１<br>参加型企画 イラスト入りレザーコースター',
+    tagline1: 'イラストを送るがよい', tagline2: 'コースターを授けようぞ！',
+    tagline3: '⭐余が認める⭐かんたんである⭐たのしいであろう⭐',
+    which: 'いずれであるか？',
+    generalName: 'いっぱんの民', generalSub: '自宅用・下賜品にも', generalCta: '製作を命ずる →',
+    generalRestrict: '📖 カタログを購入して入場する者はこちらへ参れ',
+    generalPerks: ['1点まで 無償である', '追加1点：¥400也', '最大2点まで', '1人1イラスト上限であるぞ'],
+    pcolGeneralLabel: '🎫 いっぱんの民', pcolCircleLabel: '🪑 サークルの者ども',
+    participantPre: '👥 参加中：', participantSuf: '名',
+    interestPre: '💬 興味ある者：', interestSuf: '名', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
+    heartBubble: '注文はまだ決めかねるが<br>興味はある者はこちらへ',
+    countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日である', deadlineNote: '⏰ 申し込み締め切りまで {n} 日しかないぞ',
+    circleName: 'サークルの者ども', circleSub: '頒布も許可する', circleCta: '製作を命ずる →',
+    circleRestrict: '⚠️ ふたば★学園祭２１にサークル参加しておる者のみ許可する',
+    circlePerks: ['3点まで 無償である', '4〜10点：¥200/点', '11点以降：¥250/点', '1か月前まで：早割（¥250→¥220）を与えようぞ'],
+  },
+  mesugaki: {
+    title: 'ふたば★学園祭２１<br>参加型企画 イラスト入りレザーコースター',
+    tagline1: 'イラスト送るだけじゃん♡', tagline2: 'コースターできちゃうんですけど〜♡',
+    tagline3: '⭐すごくない？ざぁこ♡⭐かんたんすぎ〜⭐たのし〜んだけど⭐',
+    which: 'どっちなんですか〜？',
+    generalName: 'いっぱん参加者', generalSub: '家用・プレゼントにも♡', generalCta: 'つくってもらうんですけど →',
+    generalRestrict: '📖 カタログ買って来た人はこっちじゃないんですか〜？',
+    generalPerks: ['1点まで ただなんですけど♡', '追加1点：¥400だけ〜', '最大2点まで', '1人1イラスト上限なんですけど？'],
+    pcolGeneralLabel: '🎫 いっぱん参加者', pcolCircleLabel: '🪑 サークル参加者',
+    participantPre: '👥 参加中：', participantSuf: '人もいるんですけど〜',
+    interestPre: '💬 興味あり：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
+    heartBubble: 'まだ迷ってるんですけど<br>気になってる人はここ♡',
+    countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日しかないんですけど〜', deadlineNote: '⏰ 締め切りまであと {n} 日なんですけど？',
+    circleName: 'サークル参加者', circleSub: '頒布もOKなんですけど♡', circleCta: 'つくってもらうんですけど →',
+    circleRestrict: '⚠️ ふたば★学園祭２１のサークルの人だけなんですけど〜？',
+    circlePerks: ['3点まで ただなんですけど♡', '4〜10点：¥200/点', '11点以降：¥250/点', '1か月前まで：早割（¥250→¥220）あるんですけど〜'],
+  },
+  gal: {
+    title: 'ふたば★学園祭２１<br>参ヵ型企画 ΙΡΑスト入りレザーコースター',
+    tagline1: 'ΙΡΑスト送ってみ〜', tagline2: 'コースターでさるじゃん卍！',
+    tagline3: '⭐まじすごくなぃ？⭐余裕ヵんたん⭐たのしすぎてうける⭐',
+    which: 'どっ亡なん〜？',
+    generalName: 'ぃっぱん参ヵ者', generalSub: '家用・プレとヵにも♡', generalCta: 'つくってもらっちゃ →',
+    generalRestrict: '📖 ヵタログ買って来た人はこっ亡じゃん〜',
+    generalPerks: ['1点まで タダじゃん♡', '追ヵ1点：¥400だって〜', '最大2点まで', '1人1ΙΡΑストまでね〜'],
+    pcolGeneralLabel: '🎫 ぃっぱん参ヵ者', pcolCircleLabel: '🪑 サークル参ヵ者',
+    participantPre: '👥 参ヵ中：', participantSuf: '人もぃてうける',
+    interestPre: '💬 気になってる：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
+    heartBubble: 'まだ迷ってるけど<br>気になってるじゃん♡',
+    countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日じゃん卍', deadlineNote: '⏰ 締め切りまじあと {n} 日しかないじゃん',
+    circleName: 'サークル参ヵ者', circleSub: '頒布もOKじゃん♡', circleCta: 'つくってもらっちゃ →',
+    circleRestrict: '⚠️ ふたば★学園祭２１乃サークル乃人だけなんよ〜',
+    circlePerks: ['3点まで タダじゃん♡', '4〜10点：¥200/点', '11点以降：¥250/点', '1ヵ月前まで：早割（¥250→¥220）らしぃよ〜'],
+  },
+  ninja: {
+    title: 'ふたば★学園祭２１<br>参加型企画 イラスト入りレザーコースター',
+    tagline1: 'イラスト送るってばよ！', tagline2: 'コースターできるってばよ！',
+    tagline3: '⭐すごいってばよ⭐かんたんだってば⭐たのしいってばよ⭐',
+    which: 'どっちのやつだってばよ？',
+    generalName: 'いっぱん参加者', generalSub: '家用・プレゼントにも', generalCta: '製作するってばよ →',
+    generalRestrict: '📖 カタログ買って来たやつはこっちだってば',
+    generalPerks: ['1点まで タダだってばよ♡', '追加1点：¥400だってば', '最大2点まで', '1人1イラスト上限だってばよ'],
+    pcolGeneralLabel: '🎫 いっぱん参加者', pcolCircleLabel: '🪑 サークル参加者',
+    participantPre: '👥 参加中：', participantSuf: '人だってばよ',
+    interestPre: '💬 興味あり：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
+    heartBubble: 'まだ迷ってるけど<br>信じてくれ！気になってるってばよ♡',
+    countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日だってばよ', deadlineNote: '⏰ 締め切りまであと {n} 日だってばよ',
+    circleName: 'サークル参加者', circleSub: '頒布もOKだってばよ', circleCta: '製作するってばよ →',
+    circleRestrict: '⚠️ ふたば★学園祭２１のサークルのやつだけだってばよ',
+    circlePerks: ['3点まで タダだってばよ', '4〜10点：¥200/点', '11点以降：¥250/点', '1か月前まで：早割（¥250→¥220）だってばよ'],
+  },
+  silent: {
+    title: 'ふたば★学園祭２１<br>参加型企画 イラスト入りレザーコースター',
+    tagline1: '…イラストを送れ。', tagline2: '…コースターになる。',
+    tagline3: '…すごい。…かんたん。…たのしい。',
+    which: '…どちらか。',
+    generalName: 'いっぱん参加者', generalSub: '…家用。または贈り物。', generalCta: '…製作する。',
+    generalRestrict: '…カタログ購入者はこちら。',
+    generalPerks: ['…1点まで無料。', '…追加1点：¥400。', '…最大2点。', '…1人1イラスト。'],
+    pcolGeneralLabel: '🎫 いっぱん参加者', pcolCircleLabel: '🪑 サークル参加者',
+    participantPre: '👥 参加中：', participantSuf: '名。',
+    interestPre: '…興味あり：', interestSuf: '名。', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
+    heartBubble: '…まだ決めていない。<br>…でも気になる。',
+    countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日。', deadlineNote: '…締め切りまで {n} 日。',
+    circleName: 'サークル参加者', circleSub: '…頒布可。', circleCta: '…製作する。',
+    circleRestrict: '…サークル参加者のみ。',
+    circlePerks: ['…3点まで無料。', '…4〜10点：¥200/点。', '…11点以降：¥250/点。', '…早割あり（¥250→¥220）。'],
+  },
+  monk: {
+    title: 'ふたば★学園祭２１<br>参加型企画 イラスト入りレザーコースター',
+    tagline1: 'イラスト送ってみな！', tagline2: 'コースターできるぞ！強ぇ！',
+    tagline3: '⭐すげぇぞ！⭐かんたんだぞ！⭐たのしいぞ！⭐',
+    which: 'どっちだ！？',
+    generalName: 'いっぱん参加者', generalSub: '家用・プレゼントにもなるぞ', generalCta: 'つくってもらうぞ →',
+    generalRestrict: '📖 カタログ買って来たやつはこっちだぞ',
+    generalPerks: ['1点まで タダだぞ！', '追加1点：¥400だ', '最大2点まで', '1人1イラスト上限だぞ'],
+    pcolGeneralLabel: '🎫 いっぱん参加者', pcolCircleLabel: '🪑 サークル参加者',
+    participantPre: '👥 参加中：', participantSuf: '人もいるぞ！',
+    interestPre: '💬 興味あり：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
+    heartBubble: 'まだ迷ってるけど<br>オッス！気になってるぞ♡',
+    countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日だぞ！', deadlineNote: '⏰ 締め切りまであと {n} 日だぞ',
+    circleName: 'サークル参加者', circleSub: '頒布もOKだぞ', circleCta: 'つくってもらうぞ →',
+    circleRestrict: '⚠️ ふたば★学園祭２１のサークルのやつだけだぞ',
+    circlePerks: ['3点まで タダだぞ', '4〜10点：¥200/点', '11点以降：¥250/点', '1か月前まで：早割（¥250→¥220）だぞ'],
+  },
+  mahou: {
+    title: 'ふたば★学園祭２１<br>参加型企画 イラスト入りレザーコースター✨',
+    tagline1: 'イラストをおくってね✨', tagline2: 'コースターにへんしん！✨',
+    tagline3: '⭐すごいよ✨⭐かんたんなの✨⭐たのしい！✨⭐',
+    which: 'どっちかな？✨',
+    generalName: 'いっぱん参加者', generalSub: '家用・プレゼントにも✨', generalCta: 'へんしんさせて →',
+    generalRestrict: '📖 カタログを買ってきたひとはこっちだよ✨',
+    generalPerks: ['1点まで 無料なの✨', '追加1点：¥400だよ', '最大2点まで', '1人1イラスト上限なの'],
+    pcolGeneralLabel: '🎫 いっぱん参加者', pcolCircleLabel: '🪑 サークル参加者',
+    participantPre: '👥 参加中：', participantSuf: '人いるよ✨',
+    interestPre: '💬 興味あり：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
+    heartBubble: 'まだ迷ってるけど<br>気になってるの✨ぽちっとしてね♡',
+    countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日だよ✨', deadlineNote: '⏰ 締め切りまであと {n} 日だよ✨',
+    circleName: 'サークル参加者', circleSub: '頒布もOKだよ✨', circleCta: 'へんしんさせて →',
+    circleRestrict: '⚠️ ふたば★学園祭２１のサークルのひとだけなの',
+    circlePerks: ['3点まで 無料なの✨', '4〜10点：¥200/点', '11点以降：¥250/点', '1か月前まで：早割（¥250→¥220）だよ✨'],
+  },
+  tsundere: {
+    title: 'ふたば★学園祭２１<br>参加型企画 イラスト入りレザーコースター',
+    tagline1: 'べ、べつにイラスト送ってほしいわけじゃ…', tagline2: 'コースターつくってあげるんだから！',
+    tagline3: '⭐す、すごいでしょ⭐か、かんたんよ⭐た、たのしくなんかないし⭐',
+    which: 'ど、どっちなの…',
+    generalName: 'いっぱん参加者', generalSub: 'か、家用とかプレゼントとか…', generalCta: 'つ、つくってあげる →',
+    generalRestrict: '📖 カタログ買って来た人はこっちよ、べつに案内したいわけじゃないけど',
+    generalPerks: ['1点まで タダよ、べつに大盤振る舞いしたいわけじゃないし', '追加1点：¥400ね', '最大2点まで', '1人1イラスト上限よ'],
+    pcolGeneralLabel: '🎫 いっぱん参加者', pcolCircleLabel: '🪑 サークル参加者',
+    participantPre: '👥 参加中：', participantSuf: '人…べつにうれしくないし',
+    interestPre: '💬 興味あり：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
+    heartBubble: 'べ、べつに気になってる<br>わけじゃないけど…♡',
+    countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日…べつにカウントしてないし', deadlineNote: '⏰ 締め切りまであと {n} 日よ、お、覚えておきなさいよね',
+    circleName: 'サークル参加者', circleSub: 'は、頒布もOKよ、べつに…', circleCta: 'つ、つくってあげる →',
+    circleRestrict: '⚠️ ふたば★学園祭２１のサークルの人だけよ、ちゃんと確認しなさい',
+    circlePerks: ['3点まで タダよ', '4〜10点：¥200/点', '11点以降：¥250/点', '1か月前まで：早割（¥250→¥220）よ、お得でしょ'],
+  },
+  chuuni: {
+    title: 'ふたば★学園祭２１<br>参加型企画 イラスト入りレザーコースター',
+    tagline1: '我がイラストよ、革に宿れ…！', tagline2: '禁断の刻印、解放される…！',
+    tagline3: '⭐闇の力、解放⭐容易なる儀式⭐魂が震える⭐',
+    which: '汝、いずれの使徒か…？',
+    generalName: '一般の使徒', generalSub: '自宅用の聖遺物・贈り物の封印品', generalCta: '刻印を授かる →',
+    generalRestrict: '📖 目録を入手せし者は此方の封印へ',
+    generalPerks: ['1点まで 無償の契約', '追加の刻印：¥400の代償', '最大2点の封印', '一人一紋の掟'],
+    pcolGeneralLabel: '🎫 一般の使徒', pcolCircleLabel: '🪑 サークルの眷属',
+    participantPre: '👥 契約済み：', participantSuf: '名の使徒',
+    interestPre: '💬 魂が揺れる者：', interestSuf: '名', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
+    heartBubble: '…まだ契約は迷うが<br>我が魂が引き寄せられる…♡',
+    countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日…刻一刻と迫る', deadlineNote: '⏰ 封印の刻まであと {n} 日…',
+    circleName: 'サークルの眷属', circleSub: '頒布という名の布教も可', circleCta: '刻印を授かる →',
+    circleRestrict: '⚠️ ふたば★学園祭２１の眷属のみ許された儀式',
+    circlePerks: ['3点まで 無償の契約', '4〜10点：¥200/点の代償', '11点以降：¥250/点', '一月前まで：早割の祝福（¥250→¥220）'],
   },
 };
 
@@ -2862,9 +3461,21 @@ let _currentLang = 'ja';
 
 function toggleLangMenu(e) {
   e.stopPropagation();
-  document.getElementById('langMenu').classList.toggle('open');
+  const menu = document.getElementById('langMenu');
+  menu.classList.toggle('open');
+  if (menu.classList.contains('open')) updateLangArrows();
+}
+
+function updateLangArrows() {
+  const menu = document.getElementById('langMenu');
+  const top  = document.getElementById('langArrowTop');
+  const bot  = document.getElementById('langArrowBottom');
+  if (!menu || !top || !bot) return;
+  top.classList.toggle('hidden', menu.scrollTop <= 4);
+  bot.classList.toggle('hidden', menu.scrollTop + menu.clientHeight >= menu.scrollHeight - 4);
 }
 document.addEventListener('click', () => document.getElementById('langMenu')?.classList.remove('open'));
+document.getElementById('langMenu')?.addEventListener('scroll', updateLangArrows);
 
 function setLang(code) {
   const t = TRANSLATIONS[code] || TRANSLATIONS.ja;
@@ -2885,6 +3496,36 @@ function setLang(code) {
   setText('gateTagline2', t.tagline2);
   setText('gateTagline3', t.tagline3);
   setText('gateWhich', t.which);
+  setText('gatePcolGeneralLabel', t.pcolGeneralLabel);
+  setText('gatePcolCircleLabel',  t.pcolCircleLabel);
+  setText('gateInterestGeneralPre', t.interestPre);
+  setText('gateInterestGeneralSuf', t.interestSuf);
+  setText('gateInterestCirclePre',  t.interestPre);
+  setText('gateInterestCircleSuf',  t.interestSuf);
+  setText('gateShareMailLbl', t.shareMailLbl);
+  const bubbleEl = document.getElementById('heartBubbleText');
+  if (bubbleEl && t.heartBubble) bubbleEl.innerHTML = t.heartBubble;
+  const copyLbl = document.getElementById('gateShareCopyLabel');
+  if (copyLbl && !document.getElementById('gateShareCopyBtn')?.classList.contains('copied')) {
+    copyLbl.textContent = t.shareCopyLbl || 'コピー';
+  }
+
+  // カウントダウン再描画
+  const n2 = now();
+  const eventDaysLeft2 = Math.ceil((EVENT_DATE - n2) / 86400000);
+  const countdownEl2 = document.getElementById('gateEventCountdown');
+  if (eventDaysLeft2 > 0 && countdownEl2) {
+    countdownEl2.innerHTML = `
+      <div class="gate-countdown-label">${t.countdownLabel || 'ふたば★学園祭２１まで'}</div>
+      <div class="gate-countdown-days">${eventDaysLeft2}<span>${t.countdownUnit || '日'}</span></div>
+      <div class="gate-countdown-sub">${fmtDate(EVENT_DATE)}</div>`;
+  }
+  const daysLeft2 = Math.ceil((DEADLINE - n2) / 86400000);
+  const deadlineEl2 = document.getElementById('gateDeadlineNote');
+  if (deadlineEl2 && daysLeft2 > 0 && daysLeft2 <= 30) {
+    deadlineEl2.textContent = (t.deadlineNote || '⏰ 申し込み締め切りまであと {n} 日').replace('{n}', daysLeft2);
+  }
+
   setText('gateGeneralName', t.generalName);
   setText('gateGeneralSub', t.generalSub);
   setText('gateGeneralCta', t.generalCta);
@@ -2968,7 +3609,8 @@ function renderGroupAvatars(countId, avatarsId, participants) {
   const countEl = document.getElementById(countId);
   const avEl    = document.getElementById(avatarsId);
   if (!countEl || !avEl) return;
-  countEl.textContent = `👥 参加中：${participants.length}人`;
+  const t = TRANSLATIONS[_currentLang] || TRANSLATIONS.ja;
+  countEl.textContent = (t.participantPre || '👥 参加中：') + participants.length + (t.participantSuf || '人');
   if (!participants.length) { avEl.innerHTML = ''; return; }
   const MAX = 6, shown = participants.slice(0, MAX), rest = participants.length - MAX;
   avEl.innerHTML = shown.map(p => {
@@ -2986,6 +3628,7 @@ loadInterests();
 if (localStorage.getItem('bc_interest_liked_circle'))  applyHeartState('circle',  true);
 if (localStorage.getItem('bc_interest_liked_general')) applyHeartState('general', true);
 initCanvasDrag();
+initVisitorCount();
 </script>
 <!-- INTEREST MODAL -->
 <div class="interest-modal-bg" id="interestModalBg" onclick="closeInterestModal(event)">
