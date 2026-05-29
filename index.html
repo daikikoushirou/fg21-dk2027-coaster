@@ -2722,16 +2722,18 @@ function verifyCode() {
   const currentTotal = calcOrderTotal(o);
   const amtHtml = currentTotal === 0 ? '<span style="color:var(--green);font-weight:700">無料</span>' : '¥' + currentTotal.toLocaleString();
   const sampleInfo = o.sampleRequested ? `${o.sampleCount || 0}回（${o.sampleFreeEligible ? '初回無料' : '有料'} ¥${calcSampleCost(o.sampleFreeEligible, o.sampleCount || 0).toLocaleString()}）` : 'なし';
+  const completionInfo = o.wantsCompletionImage ? `希望あり` : 'なし';
   res.className = 'verify-result show';
   res.innerHTML = `<div class="verify-card ok">
     <div><div class="vf-label">コード</div><div class="vf-value">${o.code}${used}</div></div>
-    <div><div class="vf-label">注文番号</div><div class="vf-value" style="font-size:.8rem">${o.ref}</div></div>
-    <div><div class="vf-label">区分</div><div class="vf-value">${tl[o.type] || o.type}</div></div>
-    <div><div class="vf-label">お名前</div><div class="vf-value">${o.name}</div></div>
-    <div><div class="vf-label">連絡方法</div><div class="vf-value">${o.contactPref==='x' ? `𝕏 @${o.xAccount||'?'}` : `✉ ${o.email}`}</div></div>
-    <div><div class="vf-label">内容</div><div class="vf-value">${o.shape} × ${o.qty}点${o.earlyBird ? ' ⭐早割' : ''}</div></div>
-    <div><div class="vf-label">サンプル試し刷り</div><div class="vf-value">${sampleInfo}</div></div>
+    <div><div class="vf-label">お名前</div><div class="vf-value">${o.name}${o.circleName ? `<span style="font-size:.8rem;color:var(--circle-color);margin-left:6px;">${o.circleSpace ? o.circleSpace+'・' : ''}${o.circleName}</span>` : ''}</div></div>
     <div><div class="vf-label">請求金額</div><div class="vf-value">${amtHtml}</div></div>
+    <div><div class="vf-label">内容</div><div class="vf-value">${o.shape} × ${o.qty}点${o.earlyBird ? ' ⭐早割' : ''}</div></div>
+    <div><div class="vf-label">注文番号</div><div class="vf-value" style="font-size:.8rem">${o.ref}</div></div>
+    <div><div class="vf-label">連絡方法</div><div class="vf-value">${o.contactPref==='x' ? `𝕏 @${o.xAccount||'?'}` : `✉ ${o.email}`}</div></div>
+    <div><div class="vf-label">区分</div><div class="vf-value">${tl[o.type] || o.type}</div></div>
+    ${o.sampleRequested ? `<div><div class="vf-label">端材サンプル</div><div class="vf-value">${sampleInfo}</div></div>` : ''}
+    ${o.wantsCompletionImage ? `<div><div class="vf-label">仕上がり確認画像</div><div class="vf-value">${completionInfo}</div></div>` : ''}
   </div>
   ${!o.codeUsed ? `<button class="mark-used-btn" onclick="markCodeUsed('${o.ref}')">✓ 受け渡し完了にする</button>` : '<p style="margin-top:9px;font-size:.8rem;color:var(--red);font-weight:700">⚠ このコードは使用済みです</p>'}`;
 }
@@ -3639,11 +3641,19 @@ function closeInterestModal(e) {
 }
 
 async function fetchClientIP() {
-  try {
-    const res = await fetch('https://api.ipify.org?format=json');
-    const d = await res.json();
-    return d.ip || '';
-  } catch { return ''; }
+  const services = [
+    'https://api.ipify.org?format=json',
+    'https://api4.my-ip.io/v2/ip.json',
+  ];
+  for (const url of services) {
+    try {
+      const res = await fetch(url);
+      const d = await res.json();
+      const ip = d.ip || d.ip4 || '';
+      if (ip) return ip;
+    } catch { /* 次のサービスへ */ }
+  }
+  return '';
 }
 
 async function submitInterest() {
