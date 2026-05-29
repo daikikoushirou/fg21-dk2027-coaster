@@ -268,7 +268,7 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:0;}
 .form-section{background:var(--potato-dark);}
 .form-section .section-title{color:#fff;}
 .form-section .section-title::before{background:var(--potato-light);}
-.form-section .section-sub{color:rgba(255,255,255,.6);}
+.form-section .section-sub{color:rgba(255,255,255,.8);}
 .form-mode-bar{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:8px;margin-bottom:22px;font-size:.83rem;font-weight:700;}
 .form-mode-bar.circle-mode{background:var(--circle-bg);color:var(--circle-color);}
 .form-mode-bar.general-mode{background:var(--general-bg);color:var(--general-color);}
@@ -288,12 +288,12 @@ input:focus,select:focus,textarea:focus{border-color:var(--potato-light);backgro
 select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23c4a85a' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;}
 select option{background:var(--potato-dark);color:#fff;}
 textarea{resize:vertical;min-height:86px;}
-.qty-hint{font-size:.78rem;color:rgba(255,255,255,.5);}
+.qty-hint{font-size:.78rem;color:rgba(255,255,255,.7);}
 .field-error{font-size:.76rem;color:#f09080;display:none;}
 .field-error.visible{display:block;}
 input.invalid,select.invalid{border-color:#e05040 !important;}
 .cost-breakdown{background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);border-radius:8px;padding:16px;}
-.cost-row{display:flex;justify-content:space-between;align-items:center;font-size:.88rem;color:rgba(255,255,255,.7);padding:3px 0;}
+.cost-row{display:flex;justify-content:space-between;align-items:center;font-size:.88rem;color:rgba(255,255,255,.85);padding:3px 0;}
 .cost-row.free{color:#90d870;}
 .cost-row.paid{color:var(--potato-light);}
 .cost-row.discount{color:#f0d060;}
@@ -301,16 +301,16 @@ input.invalid,select.invalid{border-color:#e05040 !important;}
 .cost-row.total-row{border-top:1px solid rgba(255,255,255,.2);padding-top:10px;margin-top:6px;font-size:1.1rem;color:#fff;font-weight:700;}
 
 /* SAMPLE TRIAL CHECKBOX */
-.sample-trial-area{background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.18);border-radius:8px;padding:14px 16px;}
+.sample-trial-area{background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.28);border-radius:8px;padding:14px 16px;}
 .sample-trial-head{display:flex;align-items:flex-start;gap:10px;cursor:pointer;}
 .sample-trial-head input[type="checkbox"]{width:18px;height:18px;flex-shrink:0;margin-top:2px;cursor:pointer;accent-color:var(--potato-light);}
 .sample-trial-head-text{}
-.sample-trial-title{font-size:.9rem;font-weight:700;color:rgba(255,255,255,.9);}
+.sample-trial-title{font-size:.9rem;font-weight:700;color:#fff;}
 .sample-price-badge{display:inline-block;padding:1px 8px;border-radius:4px;font-size:.72rem;font-weight:700;margin-left:6px;vertical-align:middle;}
 .sample-price-free{background:#c8e8b0;color:#1a5010;}
 .sample-price-paid{background:#f5d080;color:#5a3000;}
-.sample-trial-note{font-size:.8rem;color:rgba(255,255,255,.5);margin-top:5px;line-height:1.6;}
-.sample-warn-box{margin-top:8px;background:rgba(255,200,100,.12);border:1px solid rgba(255,200,100,.3);border-radius:6px;padding:8px 12px;font-size:.8rem;color:rgba(255,220,120,.85);line-height:1.6;display:none;}
+.sample-trial-note{font-size:.8rem;color:rgba(255,255,255,.85);margin-top:5px;line-height:1.6;}
+.sample-warn-box{margin-top:8px;background:rgba(255,200,100,.12);border:1px solid rgba(255,200,100,.3);border-radius:6px;padding:8px 12px;font-size:.8rem;color:rgba(255,235,150,1);line-height:1.6;display:none;}
 .sample-warn-box.show{display:block;}
 
 /* UPLOAD & PREVIEW */
@@ -319,11 +319,11 @@ input.invalid,select.invalid{border-color:#e05040 !important;}
 .upload-area input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;border:none;background:none;padding:0;}
 .upload-icon{width:36px;height:36px;margin:0 auto 8px;color:var(--potato-light);}
 .upload-text-main{color:var(--potato-light);font-size:.9rem;font-weight:700;}
-.upload-text-sub{font-size:.75rem;color:rgba(255,255,255,.4);margin-top:4px;}
+.upload-text-sub{font-size:.75rem;color:rgba(255,255,255,.65);margin-top:4px;}
 .preview-wrapper{display:none;}
 .preview-wrapper.visible{display:block;margin-top:14px;}
 .preview-pane{margin-bottom:10px;}
-.preview-label{font-size:.78rem;font-weight:700;color:rgba(255,255,255,.7);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.preview-label{font-size:.78rem;font-weight:700;color:rgba(255,255,255,.9);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
 .preview-label .dot{width:6px;height:6px;background:var(--potato-light);border-radius:50%;}
 canvas{display:block;border-radius:4px;touch-action:none;}
 canvas.draggable-img{cursor:grab;}
@@ -494,6 +494,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
 .lp-text{flex:1;display:flex;flex-direction:column;justify-content:center;min-width:0;overflow:hidden;}
 .lp-by{font-size:5.5pt;color:#555;white-space:nowrap;}
 .lp-name{font-size:11pt;font-weight:700;color:#000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.15;margin-top:.3mm;}
+.lp-circle{font-size:6pt;color:#5a6aaa;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:.3mm;font-weight:600;}
 .lp-handle{font-size:5.5pt;color:#333;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:.5mm;}
 .lp-divider{width:.2mm;background:#bbb;height:16mm;flex-shrink:0;}
 .lp-qr{flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5mm;}
@@ -533,11 +534,11 @@ footer a{color:var(--potato-light);text-decoration:none;}
 .interest-submit-btn:hover{background:#c03060;}
 .interest-cancel{display:block;text-align:center;margin-top:10px;font-size:.82rem;color:var(--muted);cursor:pointer;}
 .interest-cancel:hover{color:var(--ink);}
-.completion-img-area{background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.18);border-radius:8px;padding:12px 16px;margin-top:10px;}
+.completion-img-area{background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.28);border-radius:8px;padding:12px 16px;margin-top:10px;}
 .completion-img-head{display:flex;align-items:flex-start;gap:10px;cursor:pointer;}
 .completion-img-head input[type="checkbox"]{width:18px;height:18px;flex-shrink:0;margin-top:2px;cursor:pointer;accent-color:var(--potato-light);}
-.completion-img-title{font-size:.9rem;font-weight:700;color:rgba(255,255,255,.9);}
-.completion-img-note{font-size:.8rem;color:rgba(255,255,255,.5);margin-top:4px;line-height:1.6;}
+.completion-img-title{font-size:.9rem;font-weight:700;color:#fff;}
+.completion-img-note{font-size:.8rem;color:rgba(255,255,255,.85);margin-top:4px;line-height:1.6;}
 
 /* ── ADMIN CARDS ── */
 .order-cards{display:flex;flex-direction:column;gap:10px;}
@@ -890,6 +891,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
           <ul>
             <li>当日、コードを確認した後にお支払いください。</li>
             <li>お支払い方法は現金です。</li>
+            <li>おつりの出ないようにご準備いただけると大変助かります。</li>
           </ul>
           <div class="tip-box">💡 無料範囲内の注文は0円です。その場合も必ずコードをご提示ください。</div>
         </div></div>
@@ -916,6 +918,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
       <div style="font-size:.95rem;font-weight:700;color:var(--potato-dark);margin-bottom:14px;display:flex;align-items:center;gap:8px;"><span>🖼️</span> イラストの制限</div>
       <ul style="list-style:none;display:flex;flex-direction:column;gap:10px;padding:0;">
         <li style="font-size:.88rem;line-height:1.65;display:flex;align-items:flex-start;gap:8px;"><span style="color:var(--accent);flex-shrink:0;margin-top:2px;">●</span>ふたばに関連したイラストであること</li>
+        <li style="font-size:.88rem;line-height:1.65;display:flex;align-items:flex-start;gap:8px;"><span style="color:var(--accent);flex-shrink:0;margin-top:2px;">●</span>R18イラストにつきましては製作はお受けできますが、当サークルスペースでの展示ができません。あらかじめご了承ください。</li>
       </ul>
       <div style="margin-top:12px;background:var(--potato-bg);border-radius:6px;padding:10px 12px;font-size:.82rem;color:var(--muted);line-height:1.6;">
         ふたば★学園祭の各種要件に準じます。詳細は公式サイトをご確認ください：<br>
@@ -955,7 +958,9 @@ footer a{color:var(--potato-light);text-decoration:none;}
     <div class="shape-note" style="margin-top:8px;background:#f0f8ff;border-left:3px solid #7ab8e0;border-radius:0 8px 8px 0;">
       🔬 <strong>端材サンプル試し刷り</strong>：3週間前まで の申込者 または 11点以上 の申込者は初回無料。それ以外は¥300。端材を使用するため形状が不完全・非平坦な場合があります。
     </div>
-  </div>
+    <div class="shape-note" style="margin-top:8px;background:#fff8f0;border-left:3px solid #e8b060;border-radius:0 8px 8px 0;font-size:.82rem;line-height:1.75;color:var(--ink);">
+      📝 <strong>価格変更の可能性について：</strong>家内制手工業のため、作業量が著しく増えた場合、各種オプションや単価が上がる可能性があります。前回の学園祭では開催10日前ごろに申し込みが集中し、現場がかなりバタバタしました。今回は早割も導入しましたので、<strong>早ければ早いほど安い</strong>と思っていただいて間違いありません。数を作ってみたいサークルの方も、まずは少部数で早めの申し込みをいただけると大変助かります。
+    </div>
   <div class="pricing-panel" id="pricePanel-general">
     <table class="price-tier-table">
       <thead><tr><th>点数</th><th>1点あたり</th><th>備考</th></tr></thead>
@@ -969,8 +974,10 @@ footer a{color:var(--potato-light);text-decoration:none;}
     <div class="shape-note" style="margin-top:8px;background:#f0f8ff;border-left:3px solid #7ab8e0;border-radius:0 8px 8px 0;">
       🔬 <strong>端材サンプル試し刷り</strong>：3週間前まで の申込者は初回無料。それ以外は¥300。端材を使用するため形状が不完全・非平坦な場合があります。
     </div>
+    <div class="shape-note" style="margin-top:8px;background:#fff8f0;border-left:3px solid #e8b060;border-radius:0 8px 8px 0;font-size:.82rem;line-height:1.75;color:var(--ink);">
+      📝 <strong>価格変更の可能性について：</strong>家内制手工業のため、作業量が著しく増えた場合、単価が上がる可能性があります。早めのお申し込みをお待ちしております。
+    </div>
   </div>
-</div>
 
 <hr class="divider">
 
@@ -987,6 +994,24 @@ footer a{color:var(--potato-light);text-decoration:none;}
         <label>おなまえ<span class="required-mark">*</span></label>
         <input type="text" id="f-name" placeholder="ポコ太郎" required>
         <span class="field-error" id="e-name">お名前を入力してください</span>
+      </div>
+
+      <!-- サークル名・スペース（サークルモードのみ） -->
+      <div class="form-group" id="circleSpaceGroup" style="display:none;">
+        <label>サークルスペース<span class="required-mark">*</span></label>
+        <input type="text" id="f-circle-space" placeholder="例：A-01A" oninput="this.value=this.value.replace(/[^A-Za-z0-9\-]/g,'').toUpperCase()" autocomplete="off">
+        <span class="field-error" id="e-circle-space">サークルスペースを入力してください</span>
+      </div>
+      <div class="form-group" id="circleNameGroup" style="display:none;">
+        <label>サークル名<span class="required-mark">*</span></label>
+        <input type="text" id="f-circle-name" placeholder="例：いもけんぴ工房">
+        <span class="field-error" id="e-circle-name">サークル名を入力してください</span>
+      </div>
+
+      <!-- 一般参加者向けサークル名（任意） -->
+      <div class="form-group" id="generalCircleNameGroup" style="display:none;">
+        <label>サークル名<span style="font-size:.72rem;font-weight:400;color:rgba(255,255,255,.6);margin-left:6px;">任意</span></label>
+        <input type="text" id="f-general-circle-name" placeholder="サークルに所属している場合はご記入ください">
       </div>
 
       <!-- 優先連絡方法（先に選ぶ） -->
@@ -1094,6 +1119,10 @@ footer a{color:var(--potato-light);text-decoration:none;}
                 <span class="sample-price-badge sample-price-free" id="samplePriceBadge">初回無料</span>
               </div>
               <div class="sample-trial-note" id="sampleTrialNote"></div>
+              <div style="font-size:.8rem;color:rgba(255,255,255,.85);line-height:1.7;margin-top:5px;">
+                本番と同じイラストを端材に試し刷りし、仕上がりイメージを事前に確認できます。<br>
+                <strong>こんな方にオススメ：</strong>レーザー刻印が初めての方・どんな仕上がりになるか不安な方・大量発注予定のサークル参加者
+              </div>
             </div>
           </label>
           <div class="sample-warn-box" id="sampleWarnBox">
@@ -1107,9 +1136,12 @@ footer a{color:var(--potato-light);text-decoration:none;}
             <div>
               <div class="completion-img-title">1点目が完成した時点で仕上がり確認画像を受け取る <span class="sample-price-badge sample-price-free">無料</span></div>
               <div class="completion-img-note">刻印が完了した段階で画像をお送りします。問題がなく、OKのご連絡をいただいたらそのままのデータで製作を進めます。</div>
+              <div style="font-size:.8rem;color:rgba(255,255,255,.85);line-height:1.7;margin-top:5px;">
+                <strong>こんな方にオススメ：</strong>大体の仕上がりはイメージできていて、より丁寧に仕上がりを確認したい方。端材サンプルと組み合わせて使うこともできます。
+              </div>
             </div>
           </label>
-          <div id="completionImgNote" style="display:none;margin-top:8px;background:rgba(255,200,100,.12);border:1px solid rgba(255,200,100,.3);border-radius:6px;padding:8px 12px;font-size:.8rem;color:rgba(255,220,120,.85);line-height:1.6;">
+          <div id="completionImgNote" style="display:none;margin-top:8px;background:rgba(255,200,100,.12);border:1px solid rgba(255,200,100,.3);border-radius:6px;padding:8px 12px;font-size:.8rem;color:rgba(255,235,160,1);line-height:1.6;">
             ⚠️ 修正希望のご連絡をいただくか、修正原稿をお送りいただいた場合は、上の「端材サンプル試し刷り」の2回目以降の扱いと同様に <strong>¥300</strong> が発生します。製作点数が1点増えることと、作業料ということでご理解いただければ幸いです。
           </div>
         </div>
@@ -1145,26 +1177,26 @@ footer a{color:var(--potato-light);text-decoration:none;}
     <span class="inquiry-toggle-arrow">▼</span>
   </div>
   <div class="inquiry-body">
-    <p style="font-size:.88rem;color:var(--muted);line-height:1.7;">
+    <p style="font-size:.88rem;color:rgba(255,255,255,.78);line-height:1.7;">
       注文時に使用したメールアドレスまたはXアカウントで検索すると、引換コードを再表示できます。
     </p>
     <div class="inquiry-form">
       <div style="display:flex;flex-direction:column;gap:6px;">
-        <label style="font-size:.8rem;font-weight:700;color:var(--muted);">おなまえ</label>
+        <label style="font-size:.8rem;font-weight:700;color:rgba(255,255,255,.78);">おなまえ</label>
         <input class="inquiry-input" id="iq-name" type="text" placeholder="ポコ太郎">
       </div>
       <div style="display:flex;flex-direction:column;gap:6px;">
-        <label style="font-size:.8rem;font-weight:700;color:var(--muted);">メールアドレス または Xアカウント（@なし）</label>
+        <label style="font-size:.8rem;font-weight:700;color:rgba(255,255,255,.78);">メールアドレス または Xアカウント（@なし）</label>
         <input class="inquiry-input" id="iq-contact" type="text" placeholder="example@mail.com または username">
       </div>
     </div>
     <div style="margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
       <button class="inquiry-btn" onclick="searchOrder()">🔍 検索する</button>
-      <span style="font-size:.8rem;color:var(--muted);" id="iq-hint"></span>
+      <span style="font-size:.8rem;color:rgba(255,255,255,.78);" id="iq-hint"></span>
     </div>
     <div class="inquiry-result" id="iqResult"></div>
 
-    <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);font-size:.84rem;color:var(--muted);line-height:1.7;">
+    <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);font-size:.84rem;color:rgba(255,255,255,.78);line-height:1.7;">
       ❓ 検索しても見つからない場合は、以下からお問い合わせください。<br>
       注文番号または注文日時、おなまえをお伝えいただけるとスムーズです。
       <div style="margin-top:8px;display:flex;gap:12px;flex-wrap:wrap;">
@@ -1180,8 +1212,8 @@ footer a{color:var(--potato-light);text-decoration:none;}
     <div class="admin-label">🔒 管理パネル</div>
 
     <!-- 簡易グラフ -->
-    <div style="background:var(--card);border-radius:12px;padding:16px;margin-bottom:16px;">
-      <div style="font-size:.8rem;font-weight:700;color:var(--muted);margin-bottom:12px;">📊 注文サマリー</div>
+    <div style="background:var(--potato-dark);border-radius:12px;padding:16px;margin-bottom:16px;">
+      <div style="font-size:.8rem;font-weight:700;color:rgba(255,255,255,.85);margin-bottom:12px;">📊 注文サマリー</div>
       <div id="adminChartArea" style="display:flex;flex-direction:column;gap:10px;"></div>
     </div>
     <div class="verify-box">
@@ -1230,7 +1262,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
     <!-- ラベル印刷セクション -->
     <div class="label-print-section" style="margin-top:24px">
       <div class="label-print-title">🏷️ 展示ラベル印刷（80×20mm）</div>
-      <div style="font-size:.82rem;color:var(--muted);margin-bottom:14px;line-height:1.6;">
+      <div style="font-size:.82rem;color:rgba(255,255,255,.78);margin-bottom:14px;line-height:1.6;">
         注文データからラベルを生成します。チェックを入れた参加者のラベルをA4で印刷できます。
       </div>
       <div id="labelEntryList" class="label-entry-list"></div>
@@ -1281,7 +1313,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
   <div class="modal" style="max-width:520px;text-align:left;">
     <div class="modal-icon">📝</div>
     <h3 class="modal-title" style="text-align:center;" id="msgModalTitle">送信文面</h3>
-    <p style="font-size:.75rem;color:var(--muted);margin-bottom:8px;text-align:center;" id="msgModalHint"></p>
+    <p style="font-size:.75rem;color:rgba(255,255,255,.78);margin-bottom:8px;text-align:center;" id="msgModalHint"></p>
     <textarea id="msgModalText" style="width:100%;box-sizing:border-box;min-height:220px;font-size:.83rem;line-height:1.7;padding:12px;border-radius:8px;border:1.5px solid var(--border);background:#fff;color:var(--text);resize:vertical;font-family:var(--sans);"></textarea>
     <div style="display:flex;gap:10px;margin-top:12px;justify-content:center;flex-wrap:wrap;">
       <button class="code-action-btn" style="font-size:.9rem;padding:10px 20px;" onclick="copyMsgText()">📋 コピー</button>
@@ -1329,7 +1361,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
       </div>
     </div>
     <div id="successQR" style="margin:16px auto 0;text-align:center;display:none;">
-      <div style="font-size:.75rem;color:var(--muted);margin-bottom:6px;">📱 当日はQRでも提示できます</div>
+      <div style="font-size:.75rem;color:rgba(255,255,255,.78);margin-bottom:6px;">📱 当日はQRでも提示できます</div>
       <div id="successQRCanvas" style="display:inline-block;padding:8px;background:#fff;border-radius:8px;border:1.5px solid var(--border);"></div>
     </div>
     <canvas id="codeCanvas" width="400" height="240" style="display:none"></canvas>
@@ -1407,7 +1439,7 @@ async function sbUploadImage(file, filename) {
 async function sbInsert(order) {
   const payload = {
     ref: order.ref, code: order.code, type: order.type,
-    date: order.date, name: order.name, email: order.email,
+    date: order.date, name: order.name, circle_name: order.circleName||'', circle_space: order.circleSpace||'', email: order.email,
     x_account: order.xAccount||'', contact_pref: order.contactPref||'email',
     shape: order.shape, qty: order.qty, total: order.total,
     early_bird: order.earlyBird||false,
@@ -1437,7 +1469,7 @@ async function sbFetch() {
   // DBのスネークケース → ローカルのキャメルケースに変換
   return rows.map(r => ({
     ref: r.ref, code: r.code, type: r.type,
-    date: r.date, name: r.name, email: r.email,
+    date: r.date, name: r.name, circleName: r.circle_name||'', circleSpace: r.circle_space||'', email: r.email,
     xAccount: r.x_account||'', contactPref: r.contact_pref||'email',
     shape: r.shape, qty: r.qty, total: r.total,
     earlyBird: r.early_bird, sampleRequested: r.sample_requested,
@@ -1686,6 +1718,13 @@ function applyModeUI() {
     ebNote.classList.remove('show');
   }
   document.getElementById('generalImageNotice').style.display = isC ? 'none' : 'block';
+  // サークル名フィールドの表示切替
+  const circleNameGroup = document.getElementById('circleNameGroup');
+  if (circleNameGroup) circleNameGroup.style.display = isC ? '' : 'none';
+  const circleSpaceGroup = document.getElementById('circleSpaceGroup');
+  if (circleSpaceGroup) circleSpaceGroup.style.display = isC ? '' : 'none';
+  const generalCircleNameGroup = document.getElementById('generalCircleNameGroup');
+  if (generalCircleNameGroup) generalCircleNameGroup.style.display = isC ? 'none' : '';
   document.getElementById('f-sample').checked = false;
   // 問い合わせセクションの連絡先リンクを設定（運営のXアカウント等があれば）
   document.getElementById('inquiryContactLinks').innerHTML =
@@ -2017,8 +2056,10 @@ function showError(id,msg){const e=document.getElementById('e-'+id);if(e&&msg)e.
 function clearError(id){document.getElementById('e-'+id)?.classList.remove('visible');document.getElementById('f-'+id)?.classList.remove('invalid');}
 function validateForm(){
   let ok=true;
-  ['name','email','qty','image','xaccount'].forEach(id=>clearError(id));
+  ['name','circle-name','circle-space','email','qty','image','xaccount'].forEach(id=>clearError(id));
   if(!document.getElementById('f-name').value.trim()){showError('name','おなまえを入力してください');ok=false;}
+  if(currentMode === 'circle' && !document.getElementById('f-circle-name').value.trim()){showError('circle-name','サークル名を入力してください');ok=false;}
+  if(currentMode === 'circle' && !document.getElementById('f-circle-space').value.trim()){showError('circle-space','サークルスペースを入力してください');ok=false;}
   const contactPref = document.querySelector('input[name="contact-pref"]:checked')?.value || 'email';
   const em = document.getElementById('f-email').value.trim();
   const xa = document.getElementById('f-xaccount').value.trim();
@@ -2093,6 +2134,8 @@ document.getElementById('orderForm').addEventListener('submit', async e => {
     ref, code, type: currentMode,
     date: new Date().toLocaleString('ja-JP'),
     name: document.getElementById('f-name').value.trim(),
+    circleName: currentMode === 'circle' ? document.getElementById('f-circle-name').value.trim() : (document.getElementById('f-general-circle-name').value.trim() || ''),
+    circleSpace: currentMode === 'circle' ? document.getElementById('f-circle-space').value.trim() : '',
     email: document.getElementById('f-email').value.trim(),
     xAccount: document.getElementById('f-xaccount').value.trim().replace(/^@/, ''),
     contactPref: document.querySelector('input[name="contact-pref"]:checked')?.value || 'email',
@@ -2220,9 +2263,9 @@ function renderOrders() {
     const adj = o.adjustment || 0;
     const contactInfo = o.contactPref === 'x'
       ? `<span style="color:#1d9bf0;font-weight:700">𝕏 @${o.xAccount||'?'}</span>`
-      : `<span style="color:var(--muted)">✉ ${o.email}</span>`;
+      : `<span style="color:rgba(255,255,255,.78)">✉ ${o.email}</span>`;
     const xExtra = o.xAccount && o.contactPref !== 'x'
-      ? `<span style="color:var(--muted);font-size:.76rem">𝕏 @${o.xAccount}</span>` : '';
+      ? `<span style="color:rgba(255,255,255,.78);font-size:.76rem">𝕏 @${o.xAccount}</span>` : '';
 
     return `<div class="order-card">
       <!-- 行1: ヘッダー -->
@@ -2233,14 +2276,14 @@ function renderOrders() {
           ${o.earlyBird ? '<span style="color:var(--gold);font-size:.8rem;font-weight:700">⭐早割</span>' : ''}
           ${o.codeUsed ? '<span class="used-badge">使用済</span>' : ''}
         </div>
-        <span style="font-size:.76rem;color:var(--muted);white-space:nowrap">${o.date}</span>
+        <span style="font-size:.76rem;color:rgba(255,255,255,.78);white-space:nowrap">${o.date}</span>
       </div>
 
       <!-- 行2: 引換コード・ステータス -->
       <div class="order-card-row" style="justify-content:space-between">
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
           <span style="font-family:monospace;font-size:1.4rem;font-weight:700;letter-spacing:.2em;color:var(--potato-dark)">${o.code||'—'}</span>
-          <span style="font-size:.8rem;color:var(--muted)">引換コード</span>
+          <span style="font-size:.8rem;color:rgba(255,255,255,.78)">引換コード</span>
         </div>
         <select class="status-select" onchange="updateStatus('${o.ref}',this.value)">
           <option value="new" ${o.status==='new'?'selected':''}>新規</option>
@@ -2253,13 +2296,19 @@ function renderOrders() {
       <div class="order-card-row">
         <div class="oc-group">
           <div class="oc-label">氏名・連絡先</div>
-          <div class="oc-val" style="font-weight:700">${o.name}</div>
+          <div class="oc-val" style="font-weight:700">${o.name}${o.circleName ? ` <span style="font-size:.78rem;color:var(--circle-color);font-weight:400;">（${o.circleSpace ? o.circleSpace+'・' : ''}${o.circleName}）</span>` : ''}</div>
           <div style="font-size:.8rem">${contactInfo}</div>
           ${xExtra ? `<div style="font-size:.76rem">${xExtra}</div>` : ''}
         </div>
         <div class="oc-group">
           <div class="oc-label">形状・点数</div>
           <div class="oc-val">${o.shape} × ${o.qty}点</div>
+          <div class="sample-ctrl" style="margin-top:4px;">
+            <button class="sample-ctrl-btn" onclick="updateOrderQty('${o.ref}',-1)" title="-1点">−</button>
+            <span class="sample-ctrl-count">${o.qty}点</span>
+            <button class="sample-ctrl-btn" onclick="updateOrderQty('${o.ref}',1)" title="+1点">＋</button>
+            ${o.earlyBird ? `<span style="font-size:.65rem;color:var(--gold);margin-left:4px;">⭐早割</span>` : ''}
+          </div>
         </div>
         <div class="oc-group">
           <div class="oc-label">合計金額</div>
@@ -2280,7 +2329,7 @@ function renderOrders() {
               <button class="sample-ctrl-btn" onclick="updateSampleCount('${o.ref}',1)">＋</button>
             </div>
             <div class="sample-cost-note">${o.sampleFreeEligible?'初回無料':'有料のみ'} / ¥${sCostNow.toLocaleString()}</div>
-          ` : '<span style="font-size:.78rem;color:var(--muted)">なし</span>'}
+          ` : '<span style="font-size:.78rem;color:rgba(255,255,255,.78)">なし</span>'}
         </div>
         ${o.wantsCompletionImage ? `
         <div class="oc-group">
@@ -2305,8 +2354,8 @@ function renderOrders() {
           ${o.completionImageSent ? '✓ 完成画像送信済み' : '○ 完成画像未送信'}
         </button>
         <button class="sent-btn" style="background:rgba(255,200,80,.15);border-color:var(--gold-border);font-size:.75rem;padding:5px 10px;" onclick="showMsgModal('completion','${o.ref}')">📝 文面</button>` : ''}
-        ${!o.sampleRequested && !o.wantsCompletionImage ? '<span style="font-size:.78rem;color:var(--muted)">送信予定なし</span>' : ''}
-        ${o.note ? `<span style="font-size:.8rem;color:var(--muted);margin-left:auto">💬 ${o.note}</span>` : ''}
+        ${!o.sampleRequested && !o.wantsCompletionImage ? '<span style="font-size:.78rem;color:rgba(255,255,255,.78)">送信予定なし</span>' : ''}
+        ${o.note ? `<span style="font-size:.8rem;color:rgba(255,255,255,.78);margin-left:auto">💬 ${o.note}</span>` : ''}
       </div>
     </div>`;
   }).join('')}</div>`;
@@ -2330,6 +2379,26 @@ async function toggleCompletionImageSent(ref) {
   if (sbReady()) { try { await sbPatch(ref, { completionImageSent: o.completionImageSent }); } catch(e) {} }
   renderOrders();
   showToast(o.completionImageSent ? '✓ 完成画像送信済みにしました' : '完成画像未送信に戻しました');
+}
+
+async function updateOrderQty(ref, delta) {
+  const o = orders.find(o => o.ref === ref);
+  if (!o) return;
+  const maxQty = o.mode === 'circle' ? 20 : 2;
+  const newQty = Math.max(1, Math.min(maxQty, (o.qty || 1) + delta));
+  if (newQty === o.qty) { showToast(`点数の上限は${maxQty}点です`); return; }
+  // 早割フラグがある場合は注文時の価格（earlyBird=true）で再計算
+  const { total } = calcCost(o.mode, newQty, o.sampleRequested, o.sampleFreeEligible, o.sampleCount);
+  const adjTotal = total + (o.adjustment || 0);
+  o.qty = newQty;
+  o.total = adjTotal;
+  saveOrders();
+  if (sbReady()) {
+    try { await sbPatch(ref, { qty: newQty, total: adjTotal }); }
+    catch (err) { console.warn('点数更新失敗:', err); }
+  }
+  renderOrders();
+  showToast(`点数を${newQty}点に変更 / 合計¥${adjTotal.toLocaleString()}${o.earlyBird ? ' ⭐早割価格' : ''}`);
 }
 
 async function updateAdjustment(ref, delta) {
@@ -2550,7 +2619,7 @@ async function searchOrder() {
   result.innerHTML = matches.map(o => {
     const total = calcOrderTotal(o);
     return `<div class="inquiry-result-card">
-      <div style="font-size:.78rem;color:var(--muted);text-align:center;">${o.ref} — ${o.date}</div>
+      <div style="font-size:.78rem;color:rgba(255,255,255,.78);text-align:center;">${o.ref} — ${o.date}</div>
       <div class="inquiry-result-code">${o.code}</div>
       <div class="inquiry-result-meta">
         ${o.shape} × ${o.qty}点　${total === 0 ? '無料' : '¥' + total.toLocaleString()}
@@ -2655,7 +2724,7 @@ function renderInterestsAdmin() {
       const src = avatarUrl(i.x_account, i.display_name);
       const date = i.created_at ? new Date(i.created_at).toLocaleString('ja-JP') : '—';
       return `<tr>
-        <td style="font-size:.76rem;color:var(--muted);white-space:nowrap">${date}</td>
+        <td style="font-size:.76rem;color:rgba(255,255,255,.78);white-space:nowrap">${date}</td>
         <td><span class="type-badge ${typeBadgeClass(i.type)}">${typeLabel[i.type || 'general'] || i.type}</span></td>
         <td style="font-size:.85rem">${i.x_account ? `@${i.x_account}` : '—'}</td>
         <td style="font-size:.85rem">${i.display_name || '—'}</td>
@@ -2698,7 +2767,7 @@ function getLabelContributors() {
   const seen = new Map();
   orders.forEach(o => {
     const key = o.xAccount ? o.xAccount.toLowerCase() : o.name;
-    if (!seen.has(key)) seen.set(key, { name: o.name, xAccount: o.xAccount || '' });
+    if (!seen.has(key)) seen.set(key, { name: o.name, circleName: o.circleName||'', circleSpace: o.circleSpace||'', xAccount: o.xAccount || '' });
   });
   return Array.from(seen.values());
 }
@@ -2708,7 +2777,7 @@ function renderLabelEntries() {
   if (!list) return;
   const contributors = getLabelContributors();
   if (!contributors.length) {
-    list.innerHTML = '<div style="font-size:.82rem;color:var(--muted);font-style:italic;">注文データがありません</div>';
+    list.innerHTML = '<div style="font-size:.82rem;color:rgba(255,255,255,.78);font-style:italic;">注文データがありません</div>';
     return;
   }
   list.innerHTML = contributors.map((c, i) => `
@@ -2719,9 +2788,11 @@ function renderLabelEntries() {
         style="flex:1;background:var(--bg);border:1.5px solid var(--border);border-radius:6px;padding:5px 9px;font-size:.85rem;font-family:var(--sans);color:var(--ink);outline:none;min-width:0;"
         placeholder="表示名"
         title="印刷に使う名前を編集できます">
+      ${c.circleSpace ? `<span style="font-size:.72rem;color:var(--muted);flex-shrink:0;">${c.circleSpace}</span>` : ''}
+      ${c.circleName ? `<span style="font-size:.75rem;color:var(--circle-color);flex-shrink:0;">${c.circleName}</span>` : ''}
       ${c.xAccount
         ? `<span class="label-entry-x">𝕏 @${c.xAccount}</span>`
-        : `<span style="font-size:.76rem;color:var(--muted)">Xなし</span>`}
+        : `<span style="font-size:.76rem;color:rgba(255,255,255,.78)">Xなし</span>`}
     </div>
   `).join('');
   updateLabelHint();
@@ -2767,7 +2838,7 @@ async function openLabelPreview() {
       const cb = document.getElementById(`lc-${i}`);
       const nameInput = document.getElementById(`ln-${i}`);
       if (!cb || !cb.checked) return null;
-      return { name: nameInput ? nameInput.value.trim() : c.name, xAccount: c.xAccount };
+      return { name: nameInput ? nameInput.value.trim() : c.name, circleName: c.circleName||'', circleSpace: c.circleSpace||'', xAccount: c.xAccount };
     })
     .filter(Boolean);
 
@@ -2784,8 +2855,8 @@ async function openLabelPreview() {
     item.className = 'label-print-item';
     item.innerHTML = `
       <div class="lp-text">
-        <div class="lp-by">かいたひと</div>
         <div class="lp-name">${c.name || ''}</div>
+        ${(c.circleSpace || c.circleName) ? `<div class="lp-circle">${[c.circleSpace, c.circleName].filter(Boolean).join(' ')}</div>` : ''}
         ${c.xAccount ? `<div class="lp-handle">𝕏 @${c.xAccount}</div>` : ''}
       </div>
       <div class="lp-divider"></div>
@@ -3070,7 +3141,7 @@ function showCodeQR(code) {
 // 管理パネル 簡易グラフ
 function renderAdminChart() {
   const el = document.getElementById('adminChartArea');
-  if (!el || !orders.length) { if(el) el.innerHTML = '<div style="font-size:.8rem;color:var(--muted);">注文なし</div>'; return; }
+  if (!el || !orders.length) { if(el) el.innerHTML = '<div style="font-size:.8rem;color:rgba(255,255,255,.78);">注文なし</div>'; return; }
 
   const total     = orders.length;
   const circle    = orders.filter(o => o.mode === 'circle').length;
@@ -3084,10 +3155,10 @@ function renderAdminChart() {
     const pct = max > 0 ? Math.round(val / max * 100) : 0;
     return `<div>
       <div style="display:flex;justify-content:space-between;font-size:.75rem;margin-bottom:3px;">
-        <span style="color:var(--muted);font-weight:700;">${label}</span>
+        <span style="color:rgba(255,255,255,.78);font-weight:700;">${label}</span>
         <span style="font-weight:700;">${val.toLocaleString()}${suffix}</span>
       </div>
-      <div style="background:rgba(0,0,0,.08);border-radius:4px;height:10px;overflow:hidden;">
+      <div style="background:rgba(255,255,255,.15);border-radius:4px;height:10px;overflow:hidden;">
         <div style="background:${color};width:${pct}%;height:100%;border-radius:4px;transition:width .4s;"></div>
       </div>
     </div>`;
@@ -3099,10 +3170,10 @@ function renderAdminChart() {
     bar('製作中', making, total, '#f0a040'),
     bar('受け渡し済み', delivered, total, 'var(--green)'),
     `<div style="display:flex;justify-content:space-between;font-size:.8rem;padding:6px 0 0;border-top:1px solid var(--border);margin-top:4px;">
-      <span style="color:var(--muted);font-weight:700;">総注文数</span><span style="font-weight:900;">${total} 件 / ${maxQty} 点</span>
+      <span style="color:rgba(255,255,255,.78);font-weight:700;">総注文数</span><span style="font-weight:900;">${total} 件 / ${maxQty} 点</span>
     </div>`,
     `<div style="display:flex;justify-content:space-between;font-size:.8rem;">
-      <span style="color:var(--muted);font-weight:700;">売上合計</span><span style="font-weight:900;color:var(--accent);">¥${revenue.toLocaleString()}</span>
+      <span style="color:rgba(255,255,255,.78);font-weight:700;">売上合計</span><span style="font-weight:900;color:var(--accent);">¥${revenue.toLocaleString()}</span>
     </div>`,
   ].join('');
 }
@@ -3357,7 +3428,7 @@ const TRANSLATIONS = {
     generalPerks: ['1点まで ただだべ', '追加1点：¥400', '最大2点まで', '1人1イラスト上限だかい'],
     pcolGeneralLabel: '🎫 ふつうの参加者', pcolCircleLabel: '🪑 サークルの参加者',
     participantPre: '👥 参加中：', participantSuf: '人だべ',
-    interestPre: '💬 興味あるべ：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
+    interestPre: '💬 そうだねだべ：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
     heartBubble: 'そうだね押してみてだべ♡',
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日だべ', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日だべ',
     circleName: 'サークルの参加者', circleSub: '頒布もOKだべさ', circleCta: 'つくってみよさ →',
@@ -3374,7 +3445,7 @@ const TRANSLATIONS = {
     generalPerks: ['1点まで ただだが', '追加1点：¥400', '最大2点まで', '1人1イラスト上限だが'],
     pcolGeneralLabel: '🎫 ふつうの参加者', pcolCircleLabel: '🪑 サークルの参加者',
     participantPre: '👥 参加中：', participantSuf: '人だが',
-    interestPre: '💬 興味あるだが：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
+    interestPre: '💬 そうだねだが：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
     heartBubble: 'そうだね押してみてだが♡',
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日だが', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日だが',
     circleName: 'サークルの参加者', circleSub: '頒布もOKだが', circleCta: 'つぐってみっか →',
@@ -3391,7 +3462,7 @@ const TRANSLATIONS = {
     generalPerks: ['1点まで ただだら', '追加1点：¥400', '最大2点まで', '1人1イラスト上限だもんで'],
     pcolGeneralLabel: '🎫 ふつうの参加者', pcolCircleLabel: '🪑 サークルの参加者',
     participantPre: '👥 参加中：', participantSuf: '人だら',
-    interestPre: '💬 興味あるじゃん：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
+    interestPre: '💬 そうだねじゃん：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
     heartBubble: 'そうだね押してみてだら♡',
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日だら', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日だもんで',
     circleName: 'サークルの参加者', circleSub: '頒布もOKだもんで', circleCta: 'つくるだら →',
@@ -3408,7 +3479,7 @@ const TRANSLATIONS = {
     generalPerks: ['1点まで ただじゃき', '追加1点：¥400', '最大2点まで', '1人1イラスト上限ぜよ'],
     pcolGeneralLabel: '🎫 ふつうの参加者', pcolCircleLabel: '🪑 サークルの参加者',
     participantPre: '👥 参加中：', participantSuf: '人ぜよ',
-    interestPre: '💬 興味あるき：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
+    interestPre: '💬 そうだねぜよ：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
     heartBubble: 'そうだね押してみてぜよ♡',
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日ぜよ', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日じゃき',
     circleName: 'サークルの参加者ぜよ', circleSub: '頒布もOKじゃき', circleCta: 'つくるぜよ →',
@@ -3425,7 +3496,7 @@ const TRANSLATIONS = {
     generalPerks: ['1点まーでぃ無料さ', '追加1点：¥400', '最大2点までやいびーん', '1人1いらすとぅ上限'],
     pcolGeneralLabel: '🎫 なんくるないさーなひとぅ', pcolCircleLabel: '🪑 サークルぬひとぅ',
     participantPre: '👥 参加中：', participantSuf: 'ちゅ',
-    interestPre: '💬 興味あいびーん：', interestSuf: 'ちゅ', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
+    interestPre: '💬 そうだねさぁ：', interestSuf: 'ちゅ', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
     heartBubble: 'そうだね押してみてさぁ♡',
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: 'ちちやいびーん', deadlineNote: '⏰ 申し込み締め切りまであと {n} ちちやいびーん',
     circleName: 'サークルぬひとぅ', circleSub: '頒布もOKさぁ', circleCta: 'つくいんど →',
@@ -3441,8 +3512,8 @@ const TRANSLATIONS = {
     generalRestrict: '📖 カタログ買うて入場する人はこっちやで',
     generalPerks: ['1点まで ただやで', '追加1点：¥400', '最大2点まで', '1人1イラスト上限やねん'],
     pcolGeneralLabel: '🎫 いっぱん参加者', pcolCircleLabel: '🪑 サークル参加者',
-    participantPre: '👥 参加中：', participantSuf: '人',
-    interestPre: '💬 興味あり：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
+    participantPre: '👥 参加中：', participantSuf: '人やで',
+    interestPre: '💬 そうだねやで：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
     heartBubble: 'そうだね押してみてや♡',
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日やで', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日やで',
     circleName: 'サークル参加者', circleSub: '頒布もOKやで', circleCta: 'つくってもらうで →',
@@ -3458,8 +3529,8 @@ const TRANSLATIONS = {
     generalRestrict: '📖 カタログ買うて来た人はこっちたい',
     generalPerks: ['1点まで ただたい', '追加1点：¥400', '最大2点まで', '1人1イラスト上限ばい'],
     pcolGeneralLabel: '🎫 いっぱん参加者', pcolCircleLabel: '🪑 サークル参加者',
-    participantPre: '👥 参加中：', participantSuf: '人',
-    interestPre: '💬 興味あり：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
+    participantPre: '👥 参加中：', participantSuf: '人たい',
+    interestPre: '💬 そうだねたい：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
     heartBubble: 'そうだね押してみてたい♡',
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日たい', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日ばい',
     circleName: 'サークル参加者', circleSub: '頒布もOKたい', circleCta: 'つくってもらうばい →',
@@ -3475,8 +3546,8 @@ const TRANSLATIONS = {
     generalRestrict: '📖 カタログ買って来た人はこっちだがね',
     generalPerks: ['1点まで ただだがや', '追加1点：¥400', '最大2点まで', '1人1イラスト上限だぎゃ'],
     pcolGeneralLabel: '🎫 いっぱん参加者', pcolCircleLabel: '🪑 サークル参加者',
-    participantPre: '👥 参加中：', participantSuf: '人',
-    interestPre: '💬 興味あり：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
+    participantPre: '👥 参加中：', participantSuf: '人だがね',
+    interestPre: '💬 そうだねだがね：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
     heartBubble: 'そうだね押してみてだがね♡',
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日だがね', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日だぎゃ',
     circleName: 'サークル参加者', circleSub: '頒布もOKだがね', circleCta: 'つくってちょ →',
@@ -3492,8 +3563,8 @@ const TRANSLATIONS = {
     generalRestrict: '📖 カタログ買って来た人はこっちらね',
     generalPerks: ['1点まで ただっけ', '追加1点：¥400', '最大2点まで', '1人1イラスト上限だっけ'],
     pcolGeneralLabel: '🎫 いっぱん参加者', pcolCircleLabel: '🪑 サークル参加者',
-    participantPre: '👥 参加中：', participantSuf: '人',
-    interestPre: '💬 興味あり：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
+    participantPre: '👥 参加中：', participantSuf: '人っけ',
+    interestPre: '💬 そうだねっけ：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
     heartBubble: 'そうだね押してみてっけ♡',
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日っけ', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日っけ',
     circleName: 'サークル参加者', circleSub: '頒布もOKっけ', circleCta: 'つくってもらうっけ →',
@@ -3509,8 +3580,8 @@ const TRANSLATIONS = {
     generalRestrict: '📖 カタログ買って入場する人はこっちじゃん',
     generalPerks: ['1点まで ただじゃん', '追加1点：¥400', '最大2点まで', '1人1イラスト上限ね'],
     pcolGeneralLabel: '🎫 いっぱん参加者', pcolCircleLabel: '🪑 サークル参加者',
-    participantPre: '👥 参加中：', participantSuf: '人',
-    interestPre: '💬 興味あり：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
+    participantPre: '👥 参加中：', participantSuf: '人じゃん',
+    interestPre: '💬 そうだねじゃん：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
     heartBubble: 'そうだね押してみてじゃん♡',
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日じゃん', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日じゃん',
     circleName: 'サークル参加者', circleSub: '頒布もOKじゃん', circleCta: 'つくってもらっちゃお →',
@@ -3526,8 +3597,8 @@ const TRANSLATIONS = {
     generalRestrict: '📖 カタログ買って来た人はこっちじゃん',
     generalPerks: ['1点まで ただじゃん', '追加1点：¥400', '最大2点まで', '1人1イラスト上限じゃん'],
     pcolGeneralLabel: '🎫 いっぱん参加者', pcolCircleLabel: '🪑 サークル参加者',
-    participantPre: '👥 参加中：', participantSuf: '人',
-    interestPre: '💬 興味あり：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
+    participantPre: '👥 参加中：', participantSuf: '人じゃん',
+    interestPre: '💬 そうだねじゃん：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
     heartBubble: 'そうだね押してみてじゃん♡',
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日じゃん', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日じゃん',
     circleName: 'サークル参加者', circleSub: '頒布もOKじゃん', circleCta: 'つくってもらおうじゃん →',
@@ -3543,8 +3614,8 @@ const TRANSLATIONS = {
     generalRestrict: '📖 カタログ買って来た人はこっちだんべ',
     generalPerks: ['1点まで ただだっぺ', '追加1点：¥400', '最大2点まで', '1人1イラスト上限だんべ'],
     pcolGeneralLabel: '🎫 いっぱん参加者', pcolCircleLabel: '🪑 サークル参加者',
-    participantPre: '👥 参加中：', participantSuf: '人',
-    interestPre: '💬 興味あり：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
+    participantPre: '👥 参加中：', participantSuf: '人だっぺ',
+    interestPre: '💬 そうだねだっぺ：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
     heartBubble: 'そうだね押してみてだっぺ♡',
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日だっぺ', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日だっぺ',
     circleName: 'サークル参加者', circleSub: '頒布もOKだっぺ', circleCta: 'つくってもらっぺ →',
@@ -3561,7 +3632,7 @@ const TRANSLATIONS = {
     generalPerks: ['1点まで ただじゃ', '追加1点：¥400のじゃ', '最大2点まで', '1人1イラスト上限じゃ'],
     pcolGeneralLabel: '🎫 いっぱん参加者', pcolCircleLabel: '🪑 サークル参加者',
     participantPre: '👥 参加中：', participantSuf: '人のじゃ',
-    interestPre: '💬 興味あり：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
+    interestPre: '💬 そうだねなのじゃ：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
     heartBubble: 'そうだねを押すのじゃ♡',
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日のじゃ', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日じゃ',
     circleName: 'サークル参加者', circleSub: '頒布もOKなのじゃ', circleCta: 'つくってもらうのじゃ →',
@@ -3595,7 +3666,7 @@ const TRANSLATIONS = {
     generalPerks: ['1点まで ただなんですけど♡', '追加1点：¥400だけ〜', '最大2点まで', '1人1イラスト上限なんですけど？'],
     pcolGeneralLabel: '🎫 いっぱん参加者', pcolCircleLabel: '🪑 サークル参加者',
     participantPre: '👥 参加中：', participantSuf: '人もいるんですけど〜',
-    interestPre: '💬 興味あり：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
+    interestPre: '💬 そうだね：', interestSuf: '人なんですけど', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
     heartBubble: 'そうだねしてね♡',
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日しかないんですけど〜', deadlineNote: '⏰ 締め切りまであと {n} 日なんですけど？',
     circleName: 'サークル参加者', circleSub: '頒布もOKなんですけど♡', circleCta: 'つくってもらうんですけど →',
@@ -3628,8 +3699,8 @@ const TRANSLATIONS = {
     generalRestrict: '📖 カタログ買って来たやつはこっちだってば',
     generalPerks: ['1点まで タダだってばよ♡', '追加1点：¥400だってば', '最大2点まで', '1人1イラスト上限だってばよ'],
     pcolGeneralLabel: '🎫 いっぱん参加者', pcolCircleLabel: '🪑 サークル参加者',
-    participantPre: '👥 参加中：', participantSuf: '人だってばよ',
-    interestPre: '💬 興味あり：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
+    participantPre: '👥 参加中だってばよ：', participantSuf: '人',
+    interestPre: '💬 そうだねだってばよ：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
     heartBubble: 'そうだね押してくれってばよ♡',
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日だってばよ', deadlineNote: '⏰ 締め切りまであと {n} 日だってばよ',
     circleName: 'サークル参加者', circleSub: '頒布もOKだってばよ', circleCta: '製作するってばよ →',
@@ -3645,8 +3716,8 @@ const TRANSLATIONS = {
     generalRestrict: '…カタログ購入者はこちら。',
     generalPerks: ['…1点まで無料。', '…追加1点：¥400。', '…最大2点。', '…1人1イラスト。'],
     pcolGeneralLabel: '🎫 いっぱん参加者', pcolCircleLabel: '🪑 サークル参加者',
-    participantPre: '👥 参加中：', participantSuf: '名。',
-    interestPre: '…興味あり：', interestSuf: '名。', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
+    participantPre: '…参加中：', participantSuf: '名。',
+    interestPre: '…そうだね：', interestSuf: '名。', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
     heartBubble: '…そうだね。押せ。',
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日。', deadlineNote: '…締め切りまで {n} 日。',
     circleName: 'サークル参加者', circleSub: '…頒布可。', circleCta: '…製作する。',
@@ -3662,8 +3733,8 @@ const TRANSLATIONS = {
     generalRestrict: '📖 カタログ買って来たやつはこっちだぞ',
     generalPerks: ['1点まで タダだぞ！', '追加1点：¥400だ', '最大2点まで', '1人1イラスト上限だぞ'],
     pcolGeneralLabel: '🎫 いっぱん参加者', pcolCircleLabel: '🪑 サークル参加者',
-    participantPre: '👥 参加中：', participantSuf: '人もいるぞ！',
-    interestPre: '💬 興味あり：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
+    participantPre: '👥 参加中だぞ：', participantSuf: '人もいるぞ！',
+    interestPre: '💬 そうだねだぞ：', interestSuf: '人だぞ', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
     heartBubble: 'オッス！そうだね押してくれぞ♡',
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日だぞ！', deadlineNote: '⏰ 締め切りまであと {n} 日だぞ',
     circleName: 'サークル参加者', circleSub: '頒布もOKだぞ', circleCta: 'つくってもらうぞ →',
@@ -3679,8 +3750,8 @@ const TRANSLATIONS = {
     generalRestrict: '📖 カタログを買ってきたひとはこっちだよ✨',
     generalPerks: ['1点まで 無料なの✨', '追加1点：¥400だよ', '最大2点まで', '1人1イラスト上限なの'],
     pcolGeneralLabel: '🎫 いっぱん参加者', pcolCircleLabel: '🪑 サークル参加者',
-    participantPre: '👥 参加中：', participantSuf: '人いるよ✨',
-    interestPre: '💬 興味あり：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
+    participantPre: '👥 参加中✨：', participantSuf: '人いるよ✨',
+    interestPre: '💬 そうだね✨：', interestSuf: '人だよ✨', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
     heartBubble: 'ぽちっとそうだねしてね✨♡',
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日だよ✨', deadlineNote: '⏰ 締め切りまであと {n} 日だよ✨',
     circleName: 'サークル参加者', circleSub: '頒布もOKだよ✨', circleCta: 'へんしんさせて →',
@@ -3697,7 +3768,7 @@ const TRANSLATIONS = {
     generalPerks: ['1点まで タダよ、べつに大盤振る舞いしたいわけじゃないし', '追加1点：¥400ね', '最大2点まで', '1人1イラスト上限よ'],
     pcolGeneralLabel: '🎫 いっぱん参加者', pcolCircleLabel: '🪑 サークル参加者',
     participantPre: '👥 参加中：', participantSuf: '人…べつにうれしくないし',
-    interestPre: '💬 興味あり：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
+    interestPre: '💬 そうだね：', interestSuf: '人…べつに数えてないけど', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
     heartBubble: 'べ、べつにそうだねしてほしい<br>わけじゃないけど…♡',
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日…べつにカウントしてないし', deadlineNote: '⏰ 締め切りまであと {n} 日よ、お、覚えておきなさいよね',
     circleName: 'サークル参加者', circleSub: 'は、頒布もOKよ、べつに…', circleCta: 'つ、つくってあげる →',
@@ -3783,6 +3854,11 @@ function setLang(code) {
   const icc = document.getElementById('interestCircleCount');
   if (icg) { const n = icg.textContent.replace(/[^0-9]/g,''); icg.textContent = (t.interestPre||'💬 興味あり：') + n + (t.interestSuf||'人'); }
   if (icc) { const n = icc.textContent.replace(/[^0-9]/g,''); icc.textContent = (t.interestPre||'💬 興味あり：') + n + (t.interestSuf||'人'); }
+  // 参加中カウントテキストを再描画（翻訳反映）
+  const pcg = document.getElementById('gateGeneralCount');
+  const pcc = document.getElementById('gateCircleCount');
+  if (pcg) { const n = pcg.textContent.replace(/[^0-9]/g,''); pcg.textContent = (t.participantPre||'👥 参加中：') + n + (t.participantSuf||'人'); }
+  if (pcc) { const n = pcc.textContent.replace(/[^0-9]/g,''); pcc.textContent = (t.participantPre||'👥 参加中：') + n + (t.participantSuf||'人'); }
   setText('gateShareMailLbl', t.shareMailLbl);
   const bubbleEl = document.getElementById('heartBubbleText');
   if (bubbleEl && t.heartBubble) bubbleEl.innerHTML = t.heartBubble;
