@@ -2584,7 +2584,7 @@ function renderOrders() {
       <!-- 行4: サンプル・増減 -->
       <div class="order-card-row">
         <div class="oc-group">
-          <div class="oc-label">端材サンプル試し刷り</div>
+          <div class="oc-label">端材サンプル</div>
           ${o.sampleRequested ? `
             <div class="sample-ctrl" style="margin-top:2px">
               <button class="sample-ctrl-btn" onclick="updateSampleCount('${o.ref}',-1)">−</button>
@@ -2596,12 +2596,13 @@ function renderOrders() {
         </div>
         ${o.wantsCompletionImage ? `
         <div class="oc-group">
-          <div class="oc-label">📷 仕上がり確認画像（増減）</div>
+          <div class="oc-label">📷 仕上がり確認</div>
           <div class="sample-ctrl" style="margin-top:2px">
             <button class="sample-ctrl-btn" onclick="updateAdjustment('${o.ref}',-300)" title="-¥300">−</button>
             <span class="sample-ctrl-count" style="min-width:52px;font-size:.78rem">${adj>=0?'+':''}¥${adj.toLocaleString()}</span>
             <button class="sample-ctrl-btn" onclick="updateAdjustment('${o.ref}',300)" title="+¥300">＋</button>
           </div>
+          <div class="sample-cost-note" style="margin-top:2px">初回無料 / ¥0</div>
         </div>` : ''}
       </div>
 
