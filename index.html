@@ -2769,61 +2769,128 @@ function copyCode(btn) {
   });
 }
 
-function saveCodeImage() {
+async function saveCodeImage() {
   const code    = document.getElementById('exchangeCodeDisplay').textContent;
   const ref     = document.getElementById('orderRef').textContent;
   const note    = document.getElementById('exchangeCodeNote').textContent;
   const canvas  = document.getElementById('codeCanvas');
   const ctx     = canvas.getContext('2d');
-  const W = 400, H = 240;
+  const W = 360, H = 540;
   canvas.width = W; canvas.height = H;
 
-  // 背景
-  ctx.fillStyle = '#e8dfc0';
-  ctx.beginPath();
-  ctx.roundRect(0, 0, W, H, 16);
-  ctx.fill();
+  // 注文データからサークル名・名前を取得
+  const orderRef = ref.replace('ORDER ', '');
+  const order = orders.find(o => o.ref === orderRef);
+  const personName = order ? (order.name || '') : '';
+  const circleName = order ? (order.circleName || '') : '';
+  const qrParts = [code];
+  if (circleName) qrParts.push(circleName);
+  if (personName) qrParts.push(personName);
+  const qrSrc = await makeLabelQR(qrParts.join('\n'), 200);
 
-  // タイトル帯
-  ctx.fillStyle = '#5c4a1e';
-  ctx.beginPath();
-  ctx.roundRect(0, 0, W, 44, [16, 16, 0, 0]);
-  ctx.fill();
-  ctx.fillStyle = '#fff';
-  ctx.font = 'bold 14px sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText('ふたば★学園祭２１ レザーコースター 引換コード', W / 2, 27);
+  const drawAll = (qrImg) => {
+    // 背景
+    ctx.fillStyle = '#e8dfc0';
+    ctx.beginPath();
+    ctx.roundRect(0, 0, W, H, 20);
+    ctx.fill();
 
-  // 注文番号
-  ctx.fillStyle = '#7a6e5a';
-  ctx.font = '12px sans-serif';
-  ctx.fillText(ref, W / 2, 66);
+    // タイトル帯
+    ctx.fillStyle = '#5c4a1e';
+    ctx.beginPath();
+    ctx.roundRect(0, 0, W, 56, [20, 20, 0, 0]);
+    ctx.fill();
+    ctx.fillStyle = '#f0e0a0';
+    ctx.font = 'bold 11px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('ふたば★学園祭２１', W / 2, 24);
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 13px sans-serif';
+    ctx.fillText('イラスト入りレザーコースター', W / 2, 44);
 
-  // コード枠
-  ctx.strokeStyle = '#c4a85a';
-  ctx.lineWidth = 2.5;
-  ctx.beginPath();
-  ctx.roundRect(60, 78, 280, 90, 10);
-  ctx.stroke();
+    // 注文番号
+    ctx.fillStyle = '#8a7a5a';
+    ctx.font = '11px sans-serif';
+    ctx.fillText(ref, W / 2, 80);
 
-  // コード値
-  ctx.fillStyle = '#5c4a1e';
-  ctx.font = 'bold 52px monospace';
-  ctx.letterSpacing = '8px';
-  ctx.fillText(code, W / 2, 140);
-  ctx.letterSpacing = '0px';
+    // 「引換コード」ラベル
+    ctx.fillStyle = '#5c4a1e';
+    ctx.font = 'bold 12px sans-serif';
+    ctx.fillText('引換コード', W / 2, 104);
 
-  // 注意書き
-  ctx.fillStyle = '#8a7060';
-  ctx.font = '11px sans-serif';
-  ctx.fillText(note, W / 2, 186);
-  ctx.fillText('当日ブースにてこのコードをご提示ください', W / 2, 204);
+    // コード枠
+    ctx.strokeStyle = '#c4a85a';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.roundRect(30, 114, W - 60, 76, 12);
+    ctx.stroke();
 
-  // ダウンロード
-  const a = document.createElement('a');
-  a.href = canvas.toDataURL('image/png');
-  a.download = `引換コード_${code}.png`;
-  a.click();
+    // コード値
+    ctx.fillStyle = '#3a2a00';
+    ctx.font = 'bold 56px monospace';
+    ctx.letterSpacing = '6px';
+    ctx.fillText(code, W / 2, 168);
+    ctx.letterSpacing = '0px';
+
+    // お支払い金額
+    ctx.fillStyle = '#7a6e5a';
+    ctx.font = '12px sans-serif';
+    ctx.fillText(note, W / 2, 210);
+
+    // サークル名・名前
+    if (circleName || personName) {
+      ctx.fillStyle = '#5c4a1e';
+      ctx.font = 'bold 12px sans-serif';
+      ctx.fillText([circleName, personName].filter(Boolean).join('　'), W / 2, 234);
+    }
+
+    // 区切り線
+    ctx.strokeStyle = '#c8b87a';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(40, 252); ctx.lineTo(W - 40, 252);
+    ctx.stroke();
+
+    // QRコード
+    if (qrImg) {
+      const qSize = 160;
+      const qx = (W - qSize) / 2;
+      const qy = 268;
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      ctx.roundRect(qx - 8, qy - 8, qSize + 16, qSize + 16, 10);
+      ctx.fill();
+      ctx.drawImage(qrImg, qx, qy, qSize, qSize);
+    }
+
+    // 注意書き
+    ctx.fillStyle = '#8a7060';
+    ctx.font = '11px sans-serif';
+    ctx.fillText('当日ブースにてこのコードをご提示ください', W / 2, 460);
+
+    // フッター帯
+    ctx.fillStyle = '#5c4a1e';
+    ctx.beginPath();
+    ctx.roundRect(0, H - 46, W, 46, [0, 0, 20, 20]);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,.7)';
+    ctx.font = '10px sans-serif';
+    ctx.fillText('🥔 大喜幸四郎 × ふたば★学園祭２１', W / 2, H - 20);
+
+    const a = document.createElement('a');
+    a.href = canvas.toDataURL('image/png');
+    a.download = `引換コード_${code}.png`;
+    a.click();
+  };
+
+  if (qrSrc) {
+    const img = new Image();
+    img.onload = () => drawAll(img);
+    img.onerror = () => drawAll(null);
+    img.src = qrSrc;
+  } else {
+    drawAll(null);
+  }
 }
 
 function mailCode() {
