@@ -611,6 +611,45 @@ footer a{color:var(--potato-light);text-decoration:none;}
       <div class="gate-participants-count">現在の参加者：<span id="gateCount">0</span> 人</div>
       <div class="gate-avatars" id="gateAvatars"></div>
     </div>
+    <!-- 言語切り替え・ウェルカムメッセージ（共有ボタン下） -->
+    <!-- 言語切り替え -->
+    <div style="display:flex;align-items:center;gap:8px;justify-content:center;margin-bottom:14px;">
+      <div class="lang-switcher" style="margin-bottom:0;">
+        <button class="lang-btn" onclick="toggleLangMenu(event)">🌍 言語 / Language</button>
+      <div class="lang-menu" id="langMenu">
+        <div class="lang-menu-arrow top hidden" id="langArrowTop">▲</div>
+        <button class="lang-menu-item active" id="lang-ja"      onclick="setLang('ja')">      <span class="lang-flag">🇯🇵</span>日本語</button>
+        <button class="lang-menu-item"        id="lang-en"      onclick="setLang('en')">      <span class="lang-flag">🇬🇧</span>English</button>
+        <hr class="lang-menu-divider">
+        <button class="lang-menu-item"        id="lang-hokkaido" onclick="setLang('hokkaido')"><span class="lang-flag">🐻</span>北海道弁</button>
+        <button class="lang-menu-item"        id="lang-akita"   onclick="setLang('akita')">   <span class="lang-flag">🐕</span>秋田弁</button>
+        <button class="lang-menu-item"        id="lang-niigata" onclick="setLang('niigata')"> <span class="lang-flag">🌾</span>新潟弁</button>
+        <button class="lang-menu-item"        id="lang-gunma"   onclick="setLang('gunma')">   <span class="lang-flag">🐎</span>群馬弁</button>
+        <button class="lang-menu-item"        id="lang-tokyo"   onclick="setLang('tokyo')">   <span class="lang-flag">🗼</span>東京弁</button>
+        <button class="lang-menu-item"        id="lang-kanagawa" onclick="setLang('kanagawa')"><span class="lang-flag">⚓</span>神奈川弁</button>
+        <button class="lang-menu-item"        id="lang-nagoya"  onclick="setLang('nagoya')">  <span class="lang-flag">🦐</span>名古屋弁</button>
+        <button class="lang-menu-item"        id="lang-shizuoka" onclick="setLang('shizuoka')"><span class="lang-flag">🗻</span>静岡弁</button>
+        <button class="lang-menu-item"        id="lang-osaka"   onclick="setLang('osaka')">   <span class="lang-flag">🦁</span>大阪弁</button>
+        <button class="lang-menu-item"        id="lang-tosa"    onclick="setLang('tosa')">    <span class="lang-flag">🐟</span>土佐弁</button>
+        <button class="lang-menu-item"        id="lang-hakata"  onclick="setLang('hakata')">  <span class="lang-flag">🍜</span>博多弁</button>
+        <button class="lang-menu-item"        id="lang-okinawa" onclick="setLang('okinawa')"> <span class="lang-flag">🌺</span>沖縄弁</button>
+          <hr class="lang-menu-divider">
+          <button class="lang-menu-item"        id="lang-nojya"   onclick="setLang('nojya')">   <span class="lang-flag">🧙</span>のじゃロリ語</button>
+          <button class="lang-menu-item"        id="lang-king"    onclick="setLang('king')">    <span class="lang-flag">👑</span>王様語</button>
+          <button class="lang-menu-item"        id="lang-mesugaki" onclick="setLang('mesugaki')"><span class="lang-flag">😈</span>メスガキ</button>
+          <button class="lang-menu-item"        id="lang-gal"     onclick="setLang('gal')">     <span class="lang-flag">💅</span>ギャル語</button>
+          <hr class="lang-menu-divider">
+          <button class="lang-menu-item"        id="lang-ninja"   onclick="setLang('ninja')">   <span class="lang-flag">🍥</span>忍者語</button>
+          <button class="lang-menu-item"        id="lang-silent"  onclick="setLang('silent')">  <span class="lang-flag">🤖</span>無口系語</button>
+          <button class="lang-menu-item"        id="lang-monk"    onclick="setLang('monk')">    <span class="lang-flag">🐒</span>修行僧語</button>
+          <button class="lang-menu-item"        id="lang-mahou"   onclick="setLang('mahou')">   <span class="lang-flag">✨</span>魔法少女語</button>
+          <button class="lang-menu-item"        id="lang-tsundere" onclick="setLang('tsundere')"><span class="lang-flag">💢</span>ツンデレ語</button>
+          <button class="lang-menu-item"        id="lang-chuuni"  onclick="setLang('chuuni')">  <span class="lang-flag">🌙</span>中二病語</button>
+          <div class="lang-menu-arrow bottom" id="langArrowBottom">▼</div>
+      </div>
+    </div>
+      <button class="lang-btn" onclick="setRandomLang()" title="ランダムな言語に切り替え" style="padding:0 10px;height:30px;line-height:1;">🎲</button>
+    </div>
     <div class="gate-event-countdown" id="gateEventCountdown"></div>
     <div class="gate-deadline-note" id="gateDeadlineNote"></div>
     <hr class="gate-divider">
@@ -719,45 +758,6 @@ footer a{color:var(--potato-light);text-decoration:none;}
       </div>
     </div>
 
-    <!-- 言語切り替え・ウェルカムメッセージ（共有ボタン下） -->
-    <!-- 言語切り替え -->
-    <div style="display:flex;align-items:center;gap:8px;justify-content:center;margin-top:18px;margin-bottom:14px;">
-      <div class="lang-switcher" style="margin-bottom:0;">
-        <button class="lang-btn" onclick="toggleLangMenu(event)">🌍 言語 / Language</button>
-      <div class="lang-menu" id="langMenu">
-        <div class="lang-menu-arrow top hidden" id="langArrowTop">▲</div>
-        <button class="lang-menu-item active" id="lang-ja"      onclick="setLang('ja')">      <span class="lang-flag">🇯🇵</span>日本語</button>
-        <button class="lang-menu-item"        id="lang-en"      onclick="setLang('en')">      <span class="lang-flag">🇬🇧</span>English</button>
-        <hr class="lang-menu-divider">
-        <button class="lang-menu-item"        id="lang-hokkaido" onclick="setLang('hokkaido')"><span class="lang-flag">🐻</span>北海道弁</button>
-        <button class="lang-menu-item"        id="lang-akita"   onclick="setLang('akita')">   <span class="lang-flag">🐕</span>秋田弁</button>
-        <button class="lang-menu-item"        id="lang-niigata" onclick="setLang('niigata')"> <span class="lang-flag">🌾</span>新潟弁</button>
-        <button class="lang-menu-item"        id="lang-gunma"   onclick="setLang('gunma')">   <span class="lang-flag">🐎</span>群馬弁</button>
-        <button class="lang-menu-item"        id="lang-tokyo"   onclick="setLang('tokyo')">   <span class="lang-flag">🗼</span>東京弁</button>
-        <button class="lang-menu-item"        id="lang-kanagawa" onclick="setLang('kanagawa')"><span class="lang-flag">⚓</span>神奈川弁</button>
-        <button class="lang-menu-item"        id="lang-nagoya"  onclick="setLang('nagoya')">  <span class="lang-flag">🦐</span>名古屋弁</button>
-        <button class="lang-menu-item"        id="lang-shizuoka" onclick="setLang('shizuoka')"><span class="lang-flag">🗻</span>静岡弁</button>
-        <button class="lang-menu-item"        id="lang-osaka"   onclick="setLang('osaka')">   <span class="lang-flag">🦁</span>大阪弁</button>
-        <button class="lang-menu-item"        id="lang-tosa"    onclick="setLang('tosa')">    <span class="lang-flag">🐟</span>土佐弁</button>
-        <button class="lang-menu-item"        id="lang-hakata"  onclick="setLang('hakata')">  <span class="lang-flag">🍜</span>博多弁</button>
-        <button class="lang-menu-item"        id="lang-okinawa" onclick="setLang('okinawa')"> <span class="lang-flag">🌺</span>沖縄弁</button>
-          <hr class="lang-menu-divider">
-          <button class="lang-menu-item"        id="lang-nojya"   onclick="setLang('nojya')">   <span class="lang-flag">🧙</span>のじゃロリ語</button>
-          <button class="lang-menu-item"        id="lang-king"    onclick="setLang('king')">    <span class="lang-flag">👑</span>王様語</button>
-          <button class="lang-menu-item"        id="lang-mesugaki" onclick="setLang('mesugaki')"><span class="lang-flag">😈</span>メスガキ</button>
-          <button class="lang-menu-item"        id="lang-gal"     onclick="setLang('gal')">     <span class="lang-flag">💅</span>ギャル語</button>
-          <hr class="lang-menu-divider">
-          <button class="lang-menu-item"        id="lang-ninja"   onclick="setLang('ninja')">   <span class="lang-flag">🍥</span>忍者語</button>
-          <button class="lang-menu-item"        id="lang-silent"  onclick="setLang('silent')">  <span class="lang-flag">🤖</span>無口系語</button>
-          <button class="lang-menu-item"        id="lang-monk"    onclick="setLang('monk')">    <span class="lang-flag">🐒</span>修行僧語</button>
-          <button class="lang-menu-item"        id="lang-mahou"   onclick="setLang('mahou')">   <span class="lang-flag">✨</span>魔法少女語</button>
-          <button class="lang-menu-item"        id="lang-tsundere" onclick="setLang('tsundere')"><span class="lang-flag">💢</span>ツンデレ語</button>
-          <button class="lang-menu-item"        id="lang-chuuni"  onclick="setLang('chuuni')">  <span class="lang-flag">🌙</span>中二病語</button>
-          <div class="lang-menu-arrow bottom" id="langArrowBottom">▼</div>
-      </div>
-    </div>
-      <button class="lang-btn" onclick="setRandomLang()" title="ランダムな言語に切り替え" style="padding:0 10px;height:30px;line-height:1;">🎲</button>
-    </div>
     <div class="gate-visitor-count" id="gateVisitorCount"></div>
   </div>
 </div>
@@ -4301,10 +4301,11 @@ async function loadGateParticipants() {
         return { ...r, thumb: (local && local.thumb) || '' };
       });
       localStorage.setItem('bc_orders', JSON.stringify(pool));
-      // グローバルのordersも更新してrenderInterestsを再実行（参加中カウントを正確に反映）
+      // グローバルのordersも更新（renderInterestsが正確なカウントを出せるように）
       orders = pool;
       renderGateParticipants(pool);
-      renderInterests(_interestsList);
+      // _interestsList がロード済みなら再描画（ロード前なら loadInterests が後で呼ぶ）
+      if (_interestsList.length > 0) renderInterests(_interestsList);
     } catch(e) { /* ローカルのまま */ }
   }
 }
@@ -4340,8 +4341,10 @@ function renderGroupAvatars(countId, avatarsId, participants) {
 // init
 initDatesUI();
 switchPricingTab('general');
-loadGateParticipants();
-loadInterests();
+(async () => {
+  await loadGateParticipants();
+  await loadInterests();
+})();
 if (localStorage.getItem('bc_interest_liked_circle'))  applyHeartState('circle',  true);
 if (localStorage.getItem('bc_interest_liked_general')) applyHeartState('general', true);
 if (localStorage.getItem('bc_participant_circle'))  applyParticipantState('circle',  true);
