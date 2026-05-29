@@ -513,14 +513,14 @@ footer a{color:var(--potato-light);text-decoration:none;}
 .print-labels-grid{display:grid;grid-template-columns:repeat(2,80mm);gap:4mm 6mm;}
 .label-print-item{width:80mm;height:20mm;display:flex;align-items:center;border:.3mm solid #000;background:#fff;overflow:hidden;padding:1mm 1mm 1mm 2.5mm;gap:1.5mm;page-break-inside:avoid;font-family:'Helvetica Neue',Arial,'Hiragino Sans',sans-serif;}
 .lp-text{flex:1;display:flex;flex-direction:column;justify-content:center;min-width:0;overflow:hidden;}
-.lp-by{font-size:5.5pt;color:#555;white-space:nowrap;}
+.lp-by{font-size:5.5pt;color:#000;white-space:nowrap;}
 .lp-name{font-size:11pt;font-weight:700;color:#000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.15;margin-top:.3mm;}
-.lp-circle{font-size:6pt;color:#5a6aaa;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:.3mm;font-weight:600;}
-.lp-handle{font-size:5.5pt;color:#333;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:.5mm;}
-.lp-divider{width:.2mm;background:#bbb;height:16mm;flex-shrink:0;}
+.lp-circle{font-size:6pt;color:#000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:.3mm;font-weight:600;}
+.lp-handle{font-size:5.5pt;color:#000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:.5mm;}
+.lp-divider{width:.2mm;background:#000;height:16mm;flex-shrink:0;}
 .lp-qr{flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5mm;}
 .lp-qr img,.lp-qr canvas{width:16mm!important;height:16mm!important;}
-.lp-qr-cap{font-size:4.5pt;color:#555;}
+.lp-qr-cap{font-size:4.5pt;color:#000;}
 @media print{
   body>*:not(#labelPrintOverlay){display:none!important;}
   #labelPrintOverlay{display:block!important;position:static!important;padding:0;}
@@ -3198,7 +3198,7 @@ async function openLabelPreview() {
     const qrSrc = qrLines.length ? await makeLabelQR(qrText, 128) : '';
     const item = document.createElement('div');
     item.className = 'label-print-item';
-    item.innerHTML = `
+    item.innerHTML = qrSrc ? `
       <div class="lp-text">
         <div class="lp-name">${c.name || ''}</div>
         ${(c.circleSpace || c.circleName) ? `<div class="lp-circle">${[c.circleSpace, c.circleName].filter(Boolean).join(' ')}</div>` : ''}
@@ -3206,8 +3206,14 @@ async function openLabelPreview() {
       </div>
       <div class="lp-divider"></div>
       <div class="lp-qr">
-        ${qrSrc ? `<img src="${qrSrc}" width="64" height="64" alt="QR">` : '<div style="width:16mm;height:16mm;border:.2mm solid #ccc;display:flex;align-items:center;justify-content:center;font-size:5pt;color:#aaa;">QRなし</div>'}
+        <img src="${qrSrc}" width="64" height="64" alt="QR">
         <div class="lp-qr-cap">Xをフォロー</div>
+      </div>
+    ` : `
+      <div class="lp-text" style="flex:1;">
+        <div class="lp-name" style="font-size:14pt;">${c.name || ''}</div>
+        ${(c.circleSpace || c.circleName) ? `<div class="lp-circle" style="font-size:8pt;">${[c.circleSpace, c.circleName].filter(Boolean).join(' ')}</div>` : ''}
+        ${c.xAccount ? `<div class="lp-handle" style="font-size:7pt;">𝕏 @${c.xAccount}</div>` : ''}
       </div>
     `;
     grid.appendChild(item);
