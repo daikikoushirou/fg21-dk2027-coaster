@@ -28,13 +28,17 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15p
 #gate.hidden{opacity:0;pointer-events:none;}
 .gate-inner{max-width:580px;width:100%;text-align:center;margin:auto;}
 .gate-logo{width:72px;height:72px;margin:0 auto 16px;background:var(--potato-dark);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:2rem;}
-.gate-title{font-size:clamp(1.1rem,4vw,1.5rem);font-weight:700;color:var(--potato-dark);margin-bottom:4px;line-height:1.4;}
+.gate-title{font-size:clamp(1.1rem,4vw,1.5rem);font-weight:700;color:var(--potato-dark);margin-bottom:4px;line-height:1.4;min-height:2.8em;display:flex;flex-direction:column;justify-content:center;}
 .gate-sub{font-size:.85rem;color:var(--muted);margin-bottom:20px;}
 .gate-sub-baka{
   font-size:clamp(.95rem,3.5vw,1.15rem);
   font-weight:700;
   margin-bottom:20px;
   line-height:1.6;
+  min-height:3.2em;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
   animation:baka-pulse 2s ease-in-out infinite;
 }
 .baka-inner{
@@ -49,6 +53,10 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15p
 }
 @keyframes baka-rainbow{0%{background-position:0% 50%}100%{background-position:300% 50%}}
 @keyframes baka-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+.baka-marquee-wrap{overflow:hidden;width:100%;}
+.baka-marquee{display:flex;width:max-content;animation:bakaScroll 12s linear infinite;}
+.baka-marquee-inner{white-space:nowrap;padding-right:3em;}
+@keyframes bakaScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 .baka-arrow{
   display:inline-block;
   animation:baka-arrow 0.6s ease-in-out infinite alternate;
@@ -61,7 +69,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15p
 .gate-participants{margin-bottom:20px;display:flex;flex-direction:column;align-items:center;gap:10px;}
 .gate-participants-count{font-size:.82rem;font-weight:700;color:var(--muted);letter-spacing:.04em;}
 .gate-participants-count span{color:var(--potato-dark);font-size:1.1rem;}
-.gate-avatars{display:flex;flex-wrap:wrap;justify-content:center;gap:0;}
+.gate-avatars{display:flex;flex-wrap:wrap;justify-content:flex-start;gap:0;}
 .gate-avatar{width:38px;height:38px;border-radius:50%;border:2.5px solid var(--potato-bg);overflow:hidden;margin-left:-8px;background:var(--border);flex-shrink:0;transition:transform .15s;cursor:default;}
 .gate-avatar:first-child{margin-left:0;}
 .gate-avatar:hover{transform:scale(1.15);z-index:10;position:relative;}
@@ -116,12 +124,24 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15p
 .gate-participants-row{margin-top:10px;}
 .gate-participants-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 @media(max-width:440px){.gate-participants-grid{grid-template-columns:1fr;}}
-.gate-pcol{display:flex;flex-direction:column;gap:5px;background:rgba(255,255,255,.65);border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;}
-.gate-pcol-label{font-size:.76rem;font-weight:700;}
-.gate-pcol-count{font-size:.72rem;font-weight:700;color:var(--muted);}
+.gate-pcol{display:flex;flex-direction:column;gap:5px;background:rgba(255,255,255,.65);border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;text-align:left;}
+.gate-pcol-section{display:flex;flex-direction:row;align-items:stretch;gap:6px;}
+.gate-pcol-section-body{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0;justify-content:flex-end;}
+.gate-pcol-section>.soudane-btn{align-self:flex-end;flex-shrink:0;}
+.gate-pcol-label{font-size:.76rem;font-weight:700;text-align:center;padding-bottom:6px;border-bottom:1px solid var(--border);margin-bottom:2px;}
+.gate-pcol-count{font-size:.72rem;font-weight:700;color:var(--muted);line-height:1.4;}
+.gate-pcol-count.interest{color:#e05080;}
 .gate-pcol-divider{border:none;border-top:1px dashed var(--border);margin:6px 0;}
 .gate-pcol-interest-head{display:flex;align-items:flex-end;justify-content:space-between;gap:4px;}
-.gate-pcol-interest-head .heart-bubble-wrap,.gate-pcol-interest-head>.heart-btn{align-self:flex-end;}
+.gate-pcol-interest-head .heart-bubble-wrap,.gate-pcol-interest-head>.heart-btn,.gate-pcol-interest-head>.soudane-btn{align-self:flex-end;}
+.soudane-btn{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1.5px solid var(--border);border-radius:8px;overflow:hidden;cursor:pointer;padding:0;transition:border-color .15s,box-shadow .15s;}
+.soudane-btn:hover{border-color:#e05080;box-shadow:0 0 0 2px rgba(224,80,128,.15);}
+.soudane-btn.liked{border-color:#e05080;box-shadow:0 0 0 2px rgba(224,80,128,.15);}
+.soudane-cell{background:var(--card);font-size:.72rem;font-weight:900;color:var(--muted);width:18px;height:18px;display:flex;align-items:center;justify-content:center;transition:background .15s,color .15s;line-height:1;}
+.soudane-btn:hover .soudane-cell,.soudane-btn.liked .soudane-cell{color:#e05080;background:#fff5f7;}
+.join-btn{display:inline-flex;align-items:center;justify-content:center;background:none;border:1.5px solid var(--border);border-radius:20px;padding:3px 9px;font-size:.72rem;font-weight:700;color:var(--muted);cursor:pointer;white-space:nowrap;transition:border-color .15s,color .15s,background .15s;font-family:var(--sans);}
+.join-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(180,120,60,.08);}
+.join-btn.liked{border-color:var(--accent);color:var(--accent);background:rgba(180,120,60,.08);}
 .heart-btn{display:flex;align-items:center;gap:4px;background:none;border:1.5px solid var(--border);border-radius:20px;padding:3px 10px;cursor:pointer;font-size:.78rem;font-weight:700;color:var(--muted);transition:border-color .15s,color .15s,background .15s;font-family:var(--sans);}
 .heart-btn:hover{border-color:#e05080;color:#e05080;background:#fff5f7;}
 .heart-btn.liked{border-color:#e05080;color:#e05080;background:#fff5f7;}
@@ -132,11 +152,11 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15p
 .heart-bubble::before{content:'';position:absolute;top:-9px;right:11px;width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:9px solid #f0a0b8;}
 .heart-bubble::after{content:'';position:absolute;top:-6px;right:12px;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:7px solid #fff;}
 @keyframes bubbleFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-4px);}}
-.gate-card-icon{font-size:2rem;margin-bottom:10px;line-height:1;}
-.gate-card-name{font-size:1rem;font-weight:700;margin-bottom:3px;}
+.gate-card-icon{font-size:1.1rem;margin-bottom:0;line-height:1;display:inline;margin-right:4px;}
+.gate-card-name{font-size:1rem;font-weight:700;margin-bottom:3px;text-align:center;display:inline;}
 .gate-card.circle-type .gate-card-name{color:var(--circle-color);}
 .gate-card.general-type .gate-card-name{color:var(--general-color);}
-.gate-card-sub{font-size:.75rem;color:var(--muted);margin-bottom:10px;}
+.gate-card-sub{font-size:.75rem;color:var(--muted);margin-bottom:10px;text-align:center;}
 .gate-card-perks{list-style:none;display:flex;flex-direction:column;gap:4px;margin-bottom:12px;}
 .gate-card-perks li{font-size:.82rem;color:var(--ink);display:flex;align-items:flex-start;gap:6px;line-height:1.45;}
 .gate-card-perks li::before{content:'✓';font-size:.75rem;flex-shrink:0;margin-top:2px;color:var(--green);}
@@ -498,16 +518,16 @@ footer a{color:var(--potato-light);text-decoration:none;}
 .gate-interests-avatars{display:flex;flex-wrap:wrap;gap:0;min-height:22px;}
 .interest-modal-bg{display:none;position:fixed;inset:0;background:rgba(20,14,8,.55);z-index:2100;align-items:flex-end;justify-content:center;padding:0 0 40px;}
 .interest-modal-bg.show{display:flex;}
-.interest-modal{background:var(--card);border-radius:14px;padding:24px 22px;width:100%;max-width:380px;box-shadow:0 8px 32px rgba(0,0,0,.25);}
-.interest-modal-title{font-size:1.1rem;font-weight:700;margin-bottom:4px;}
-.interest-modal-sub{font-size:.82rem;color:var(--muted);margin-bottom:18px;}
+.interest-modal{background:var(--card);border-radius:14px;padding:24px 22px;width:100%;max-width:380px;box-shadow:0 8px 32px rgba(0,0,0,.25);color:#1a1208;}
+.interest-modal-title{font-size:1.1rem;font-weight:700;margin-bottom:4px;color:#1a1208;}
+.interest-modal-sub{font-size:.82rem;color:#5a4a30;margin-bottom:18px;}
 .interest-field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
-.interest-field label{font-size:.76rem;font-weight:700;color:var(--muted);}
-.interest-at{display:flex;align-items:center;background:var(--bg);border:1.5px solid var(--border);border-radius:7px;overflow:hidden;transition:border-color .15s;}
+.interest-field label{font-size:.76rem;font-weight:700;color:#5a4a30;}
+.interest-at{display:flex;align-items:center;background:#fff;border:1.5px solid var(--border);border-radius:7px;overflow:hidden;transition:border-color .15s;}
 .interest-at:focus-within{border-color:var(--potato);}
-.interest-at-sign{padding:9px 6px 9px 12px;font-size:.9rem;color:var(--muted);font-weight:700;flex-shrink:0;}
-.interest-at input{border:none!important;border-radius:0!important;flex:1;background:transparent!important;padding-left:2px!important;outline:none!important;}
-.interest-field input.plain{background:var(--bg);border:1.5px solid var(--border);border-radius:7px;padding:9px 12px;font-size:.92rem;font-family:var(--sans);color:var(--ink);outline:none;transition:border-color .15s;}
+.interest-at-sign{padding:9px 6px 9px 12px;font-size:.9rem;color:#5a4a30;font-weight:700;flex-shrink:0;}
+.interest-at input{border:none!important;border-radius:0!important;flex:1;background:transparent!important;padding-left:2px!important;outline:none!important;color:#1a1208;}
+.interest-field input.plain{background:#fff;border:1.5px solid var(--border);border-radius:7px;padding:9px 12px;font-size:.92rem;font-family:var(--sans);color:#1a1208;outline:none;transition:border-color .15s;}
 .interest-field input.plain:focus{border-color:var(--potato);}
 .interest-submit-btn{width:100%;background:#e05080;color:#fff;border:none;padding:11px;font-family:var(--sans);font-size:.9rem;font-weight:700;border-radius:8px;cursor:pointer;transition:background .15s;}
 .interest-submit-btn:hover{background:#c03060;}
@@ -550,11 +570,14 @@ footer a{color:var(--potato-light);text-decoration:none;}
 <div id="gate">
   <div class="gate-inner">
     <div class="gate-logo">🌿</div>
-    <div class="gate-title" id="gateTitle">ふたば★学園祭２１<br>参加型企画 イラスト入りレザーコースター</div>
+    <div class="gate-title" id="gateTitle">ふたば★学園祭２１<br><span style="font-size:.78em;font-weight:600;opacity:.85;">参加型企画 イラスト入りレザーコースター</span></div>
     <div class="gate-sub-baka" id="gateTagline">
-      ✨🎨 <span class="baka-inner" id="gateTagline1">イラストを送る</span>
-      <span class="baka-arrow" style="-webkit-text-fill-color:#ffd93d;color:#ffd93d;font-size:1.3rem;">➡️</span>
-      <span class="baka-inner" id="gateTagline2">コースターができる</span> 🥔✨<br>
+      <div class="baka-marquee-wrap">
+        <div class="baka-marquee" id="bakaMarquee">
+          <span class="baka-marquee-inner">✨🎨 <span class="baka-inner" id="gateTagline1">イラストを送る</span> <span class="baka-arrow" style="-webkit-text-fill-color:#ffd93d;color:#ffd93d;font-size:1.3rem;">➡️</span> <span class="baka-inner" id="gateTagline2">コースターができる</span> 🥔✨</span>
+          <span class="baka-marquee-inner" aria-hidden="true">✨🎨 <span class="baka-inner">イラストを送る</span> <span class="baka-arrow" style="-webkit-text-fill-color:#ffd93d;color:#ffd93d;font-size:1.3rem;">➡️</span> <span class="baka-inner">コースターができる</span> 🥔✨</span>
+        </div>
+      </div>
       <span id="gateTagline3" style="-webkit-text-fill-color:initial;color:rgba(92,74,30,.55);font-size:.75rem;font-weight:400;letter-spacing:.08em;">
         ⭐すごい⭐かんたん⭐たのしい⭐
       </span>
@@ -610,8 +633,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
     <p class="gate-prompt" id="gateWhich">どちらですか？</p>
     <div class="gate-cards">
       <div class="gate-card general-type" onclick="enterAs('general')">
-        <div class="gate-card-icon">🎫</div>
-        <div class="gate-card-name" id="gateGeneralName">一般参加者</div>
+        <div style="text-align:center;margin-bottom:3px;"><span class="gate-card-icon">🎫</span><span class="gate-card-name" id="gateGeneralName">一般参加者</span></div>
         <div class="gate-card-sub" id="gateGeneralSub">自宅用・プレゼント用</div>
         <div class="gate-card-restrict" id="gateGeneralRestrict" style="border-color:#e8b0a0;background:#fdf0ee;color:var(--red);">📖 カタログを購入して入場する方はこちら</div>
         <ul class="gate-card-perks" id="gateGeneralPerks">
@@ -623,8 +645,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
         <button class="gate-card-cta" id="gateGeneralCta">製作する →</button>
       </div>
       <div class="gate-card circle-type" onclick="enterAs('circle')">
-        <div class="gate-card-icon">🪑</div>
-        <div class="gate-card-name" id="gateCircleName">サークル参加者</div>
+        <div style="text-align:center;margin-bottom:3px;"><span class="gate-card-icon">🪑</span><span class="gate-card-name" id="gateCircleName">サークル参加者</span></div>
         <div class="gate-card-sub" id="gateCircleSub">頒布用途OK</div>
         <div class="gate-card-restrict" id="gateCircleRestrict">⚠️ ふたば★学園祭２１にサークル参加している方のみ</div>
         <ul class="gate-card-perks" id="gateCirclePerks">
@@ -645,16 +666,24 @@ footer a{color:var(--potato-light);text-decoration:none;}
         <!-- 一般列 -->
         <div class="gate-pcol">
           <div class="gate-pcol-label" id="gatePcolGeneralLabel" style="color:var(--general-color);">🎫 一般参加者</div>
-          <div class="gate-avatars" id="gateGeneralAvatars"></div>
-          <div class="gate-pcol-interest-head">
-            <div class="gate-pcol-count" id="gateGeneralCount">👥 参加中：0人</div>
+          <div class="gate-pcol-section">
+            <div class="gate-pcol-section-body">
+              <div class="gate-avatars" id="gateGeneralAvatars"></div>
+              <div class="gate-pcol-count" id="gateGeneralCount">👥 参加中：0人</div>
+            </div>
+            <button class="soudane-btn" id="participantBtnGeneral" onclick="onParticipantClick('general')" style="border-radius:8px;padding:0;display:grid;grid-template-columns:1fr;align-items:center;justify-items:center;font-size:.68rem;font-weight:700;width:38px;height:38px;flex-shrink:0;">
+              <span>＋参加</span>
+            </button>
           </div>
           <div class="gate-pcol-divider"></div>
-          <div class="gate-avatars" id="interestGeneralAvatars"></div>
-          <div class="gate-pcol-interest-head">
-            <div class="gate-pcol-count" style="color:#e05080;"><span id="gateInterestGeneralPre">💬 興味あり：</span><span id="interestGeneralCount">0</span><span id="gateInterestGeneralSuf">人</span></div>
-            <button class="heart-btn" id="heartBtnGeneral" onclick="onHeartClick('general')">
-              <span class="heart-icon" id="heartIconGeneral">♡</span>
+          <div class="gate-pcol-section">
+            <div class="gate-pcol-section-body">
+              <div class="gate-avatars" id="interestGeneralAvatars"></div>
+              <div class="gate-pcol-count interest" id="interestGeneralCount">💬 興味あり：0人</div>
+            </div>
+            <button class="soudane-btn" id="heartBtnGeneral" onclick="onHeartClick('general')" style="flex-shrink:0;">
+              <span class="soudane-cell">だ</span><span class="soudane-cell">そ</span>
+              <span class="soudane-cell">ね</span><span class="soudane-cell">う</span>
             </button>
           </div>
         </div>
@@ -662,20 +691,28 @@ footer a{color:var(--potato-light);text-decoration:none;}
         <!-- サークル列 -->
         <div class="gate-pcol">
           <div class="gate-pcol-label" id="gatePcolCircleLabel" style="color:var(--circle-color);">🪑 サークル参加者</div>
-          <div class="gate-avatars" id="gateCircleAvatars"></div>
-          <div class="gate-pcol-interest-head">
-            <div class="gate-pcol-count" id="gateCircleCount">👥 参加中：0人</div>
+          <div class="gate-pcol-section">
+            <div class="gate-pcol-section-body">
+              <div class="gate-avatars" id="gateCircleAvatars"></div>
+              <div class="gate-pcol-count" id="gateCircleCount">👥 参加中：0人</div>
+            </div>
+            <button class="soudane-btn" id="participantBtnCircle" onclick="onParticipantClick('circle')" style="border-radius:8px;padding:0;display:grid;grid-template-columns:1fr;align-items:center;justify-items:center;font-size:.68rem;font-weight:700;width:38px;height:38px;flex-shrink:0;">
+              <span>＋参加</span>
+            </button>
           </div>
           <div class="gate-pcol-divider"></div>
-          <div class="gate-avatars" id="interestCircleAvatars"></div>
-          <div class="gate-pcol-interest-head">
-            <div class="gate-pcol-count" style="color:#e05080;"><span id="gateInterestCirclePre">💬 興味あり：</span><span id="interestCircleCount">0</span><span id="gateInterestCircleSuf">人</span></div>
-            <div class="heart-bubble-wrap">
-              <button class="heart-btn" id="heartBtnCircle" onclick="onHeartClick('circle')">
-                <span class="heart-icon" id="heartIconCircle">♡</span>
+          <div class="gate-pcol-section">
+            <div class="gate-pcol-section-body">
+              <div class="gate-avatars" id="interestCircleAvatars"></div>
+              <div class="gate-pcol-count interest" id="interestCircleCount">💬 興味あり：0人</div>
+            </div>
+            <div class="heart-bubble-wrap" style="align-self:flex-end;flex-shrink:0;">
+              <button class="soudane-btn" id="heartBtnCircle" onclick="onHeartClick('circle')">
+                <span class="soudane-cell">だ</span><span class="soudane-cell">そ</span>
+                <span class="soudane-cell">ね</span><span class="soudane-cell">う</span>
               </button>
               <div class="heart-bubble" id="heartBubble">
-                <span id="heartBubbleText">注文は迷ってるけど気になってる人はここ♡</span>
+                <span id="heartBubbleText">そうだねしてね♡</span>
               </div>
             </div>
           </div>
@@ -1064,16 +1101,16 @@ footer a{color:var(--potato-light);text-decoration:none;}
           </div>
         </div>
         <!-- 仕上がり確認画像 -->
-        <div class="completion-img-area">
+        <div class="completion-img-area" id="completionImgArea">
           <label class="completion-img-head" for="f-completion-img">
             <input type="checkbox" id="f-completion-img" onchange="toggleCompletionNote()">
             <div>
               <div class="completion-img-title">1点目が完成した時点で仕上がり確認画像を受け取る <span class="sample-price-badge sample-price-free">無料</span></div>
-              <div class="completion-img-note">刻印が完了した段階で画像をお送りします。問題なければそのまま受け取り、修正希望の場合はご相談ください。</div>
+              <div class="completion-img-note">刻印が完了した段階で画像をお送りします。問題がなく、OKのご連絡をいただいたらそのままのデータで製作を進めます。</div>
             </div>
           </label>
           <div id="completionImgNote" style="display:none;margin-top:8px;background:rgba(255,200,100,.12);border:1px solid rgba(255,200,100,.3);border-radius:6px;padding:8px 12px;font-size:.8rem;color:rgba(255,220,120,.85);line-height:1.6;">
-            ⚠️ 修正を希望される場合、上の「端材サンプル試し刷り」の2回目以降の扱いと同様に <strong>¥300</strong> が発生します。
+            ⚠️ 修正希望のご連絡をいただくか、修正原稿をお送りいただいた場合は、上の「端材サンプル試し刷り」の2回目以降の扱いと同様に <strong>¥300</strong> が発生します。製作点数が1点増えることと、作業料ということでご理解いただければ幸いです。
           </div>
         </div>
       </div>
@@ -1179,8 +1216,10 @@ footer a{color:var(--potato-light);text-decoration:none;}
       <div class="admin-controls" style="margin-bottom:12px;">
         <select class="filter-select" id="interestTypeFilter" onchange="renderInterestsAdmin()">
           <option value="all">全種別</option>
-          <option value="circle">サークルのみ</option>
-          <option value="general">一般のみ</option>
+          <option value="participant_circle">参加中：サークル</option>
+          <option value="participant_general">参加中：一般</option>
+          <option value="circle">そうだね：サークル</option>
+          <option value="general">そうだね：一般</option>
         </select>
         <button class="admin-btn" onclick="reloadInterestsAdmin()">🔄 再読み込み</button>
         <button class="admin-btn danger" onclick="clearAllInterests()" style="margin-left:auto">全件削除</button>
@@ -1283,6 +1322,12 @@ footer a{color:var(--potato-light);text-decoration:none;}
     <button class="code-action-btn" style="margin:14px auto 0;display:flex;align-items:center;gap:7px;background:#000;border-color:#000;color:#fff;font-weight:700;padding:10px 22px;font-size:.95rem;" onclick="shareOrderX()">
       <span style="font-size:1.1rem;">𝕏</span> Xでシェアする
     </button>
+    <div id="successParticipantPrompt" style="display:none;margin:14px 0 0;background:rgba(180,120,60,.1);border:1.5px solid var(--gold-border);border-radius:8px;padding:12px 14px;font-size:.82rem;color:var(--ink);line-height:1.7;text-align:left;">
+      👥 ゲートページの「＋参加」ボタンからXアカウントや名前を登録すると、参加中アバターに表示されます。
+      <div style="margin-top:8px;">
+        <button class="code-action-btn" style="font-size:.8rem;padding:6px 14px;" onclick="closeModal();window.scrollTo({top:0,behavior:'smooth'})">ゲートページへ →</button>
+      </div>
+    </div>
     <div id="successQR" style="margin:16px auto 0;text-align:center;display:none;">
       <div style="font-size:.75rem;color:var(--muted);margin-bottom:6px;">📱 当日はQRでも提示できます</div>
       <div id="successQRCanvas" style="display:inline-block;padding:8px;background:#fff;border-radius:8px;border:1.5px solid var(--border);"></div>
@@ -1307,6 +1352,7 @@ const DEADLINE = (() => { const d = new Date(EVENT_DATE); d.setDate(d.getDate() 
 const EARLY_BIRD_END = (() => { const d = new Date(EVENT_DATE); d.setMonth(d.getMonth() - 1); return d; })();
 const SAMPLE_FREE_END = (() => { const d = new Date(EVENT_DATE); d.setDate(d.getDate() - 21); return d; })();
 const BULK_ORDER_END = (() => { const d = new Date(EVENT_DATE); d.setDate(d.getDate() - 14); return d; })();
+const COMPLETION_IMG_END = (() => { const d = new Date(EVENT_DATE); d.setDate(d.getDate() - 10); return d; })();
 
 // 現在時刻判定
 function now() { return new Date(); }
@@ -1511,6 +1557,7 @@ function initDatesUI() {
     { label: '早割締め切り', date: EARLY_BIRD_END, note: 'サークル ¥250→¥220', active: n < EARLY_BIRD_END, circleOnly: true },
     { label: 'サンプル無料期限', date: SAMPLE_FREE_END, note: 'これ以降のサンプル試し刷りは¥300', active: n < SAMPLE_FREE_END },
     { label: '大量注文締め切り', date: BULK_ORDER_END, note: 'サークル6点以上の申込期限', active: n < BULK_ORDER_END, circleOnly: true },
+    { label: '仕上がり確認画像 受付終了', date: COMPLETION_IMG_END, note: '開催10日前', active: n < COMPLETION_IMG_END },
     { label: '申し込み締め切り', date: DEADLINE, note: '開催2日前 朝4時', active: n < DEADLINE },
   ];
   document.getElementById('datesGrid').innerHTML = items.map(it => {
@@ -1532,7 +1579,7 @@ function initDatesUI() {
     countdownEl.innerHTML = `
       <div class="gate-countdown-label">${t.countdownLabel || 'ふたば★学園祭２１まで'}</div>
       <div class="gate-countdown-days">${eventDaysLeft}<span>${t.countdownUnit || '日'}</span></div>
-      <div class="gate-countdown-sub">${fmtDate(EVENT_DATE)}</div>`;
+      `;
   }
 
   // 申し込み締め切り（残り30日以内に小さく表示）
@@ -1647,6 +1694,16 @@ function applyModeUI() {
   switchPricingTab(currentMode);
   renderCostBreakdown();
   applyDeadlineUI();
+  // 仕上がり確認画像は開催10日前まで
+  const completionArea = document.getElementById('completionImgArea');
+  if (completionArea) {
+    if (now() > COMPLETION_IMG_END) {
+      completionArea.style.display = 'none';
+      document.getElementById('f-completion-img').checked = false;
+    } else {
+      completionArea.style.display = '';
+    }
+  }
 }
 
 // ══ FLOW ══
@@ -2077,6 +2134,10 @@ document.getElementById('orderForm').addEventListener('submit', async e => {
     (total === 0 ? 'このご注文は無料です！' : '当日お支払い金額：¥' + total.toLocaleString()) + sampleNote;
   document.getElementById('successModal').classList.add('show');
   showCodeQR(code);
+  // Xアカウント未入力の場合は参加登録の案内を表示
+  const xval = document.getElementById('f-xaccount').value.trim();
+  const prompt = document.getElementById('successParticipantPrompt');
+  if (prompt) prompt.style.display = xval ? 'none' : 'block';
 
   btn.disabled = false; btn.textContent = '製作情報送信 🔨';
 });
@@ -2584,7 +2645,8 @@ function renderInterestsAdmin() {
 
   if (!list.length) { c.innerHTML = '<div class="admin-empty">興味あり登録はありません</div>'; return; }
 
-  const typeLabel = { circle: '🪑 サークル', general: '🎫 一般' };
+  const typeLabel = { circle: '🪑 そうだね', general: '🎫 そうだね', participant_circle: '🪑 参加中', participant_general: '🎫 参加中' };
+  const typeBadgeClass = (t) => t === 'circle' ? 'type-circle' : t === 'participant_circle' ? 'type-circle' : t === 'participant_general' ? 'type-general' : 'type-general';
   c.innerHTML = `<table class="order-table">
     <thead><tr>
       <th>登録日時</th><th>種別</th><th>Xアカウント</th><th>表示名</th><th>アイコン</th><th>操作</th>
@@ -2594,7 +2656,7 @@ function renderInterestsAdmin() {
       const date = i.created_at ? new Date(i.created_at).toLocaleString('ja-JP') : '—';
       return `<tr>
         <td style="font-size:.76rem;color:var(--muted);white-space:nowrap">${date}</td>
-        <td><span class="type-badge ${i.type === 'circle' ? 'type-circle' : 'type-general'}">${typeLabel[i.type || 'general'] || i.type}</span></td>
+        <td><span class="type-badge ${typeBadgeClass(i.type)}">${typeLabel[i.type || 'general'] || i.type}</span></td>
         <td style="font-size:.85rem">${i.x_account ? `@${i.x_account}` : '—'}</td>
         <td style="font-size:.85rem">${i.display_name || '—'}</td>
         <td><img class="thumb-mini" src="${src}" alt="" onerror="this.src='${FALLBACK_AVATAR}'" style="border-radius:50%"></td>
@@ -2811,12 +2873,180 @@ function setRandomLang() {
 }
 
 // 訪問者カウンター（localStorage）
+const VISIT_MESSAGES = {
+  ja: [
+    '', // 0
+    'はじめまして！🌿',
+    'また来てくれた！',
+    '3回目ですね👀',
+    '気になってる？',
+    '常連候補🥔',
+    'だんだん顔なじみ',
+    'もう馴染みですね',
+    'すっかり常連さん',
+    'もうお馴染みです',
+    '10回目！🎉',
+    '熱心ですね',
+    'ありがとうございます',
+    '13回目、縁起いい？',
+    'もはやファン候補',
+    'ファン認定✨',
+    'ありがたい限りです',
+    '頭が下がります',
+    'いつもありがとう',
+    'もうスタッフ級では',
+    '20回目！👑',
+    '愛してます（本気）',
+    'もはや同志',
+    '頭が上がりません🙏',
+    '本当にありがとう',
+    '感無量です',
+    'コースター好きすぎる',
+    '革の匂いが恋しい？',
+    'もうレザー職人では',
+    '夢にコースター出てきた？',
+    '30回！🏆',
+    '好きすぎて怖い',
+    'ちょっと心配になってきた',
+    '大丈夫ですか？（本気）',
+    '水飲んでますか',
+    '今日のご飯は食べた？',
+    '外、出てますか',
+    '空が青いですよ',
+    '雲がきれいです',
+    '鳥が飛んでいます',
+    'コースターとは何か',
+    '革とは何か',
+    '42は宇宙の答えです',
+    'ポテトが食べたい',
+    '444、縁起悪い？',
+    'ふたばって何枚葉？',
+    'レザーの語源は古仏語',
+    '47都道府県制覇した？',
+    'もう季節変わったかも',
+    '明日も来る予感',
+    '50回！⚔️',
+    'もはや呪いでは',
+    'このサイト何が楽しい？',
+    '教えてください（真剣に）',
+    'いや聞けてよかった',
+    '55、ゾロ目ですよ',
+    'コースター、56枚注文する？',
+    'ハインツのケチャップ思い出した',
+    'なんでもない',
+    'もうすぐ60回',
+    '60回！還暦みたいなもの',
+  ],
+  hokkaido: ['', 'はじめましてだべ！🌿', 'また来たべさ！', '3回目だべ👀', '気になってるべ？', '常連候補だべ🥔', 'だんだん顔なじみだべ', 'もう馴染みだべさ', 'すっかり常連だべ', 'お馴染みさんだべ', '10回目だべ！🎉', '熱心だべねえ', 'ありがとうだべ', '13回目、縁起いいべ？', 'ファン候補だべ', 'ファン認定だべ✨', 'ありがたいべさ', '頭下がるべ', 'いつもありがとうだべ', 'もうスタッフ級だべ', '20回目だべ！👑', '愛してるべ（本気）', 'もはや同志だべ', '頭上がらないべ🙏', '本当にありがとうだべ', '感無量だべ', 'コースター好きすぎだべ', '革の匂い恋しいべ？', 'もうレザー職人だべ', '夢にコースター出たべ？', '30回だべ！🏆', '好きすぎて怖いべ', 'ちょっと心配だべ', '大丈夫だべ？（本気）', '水飲んでるべ？', '今日ご飯食べたべ？', '外出てるべ？', '空青いべよ', '雲きれいだべ', '鳥飛んでるべ', 'コースターって何だべ', '革って何だべ', '42は宇宙の答えだべ', 'ポテト食べたいべ', '444縁起悪いべ？', 'ふたばって何枚葉だべ？', 'レザーの語源は古仏語だべ', '47都道府県制覇したべ？', 'もう季節変わったべ', '明日も来るべ予感', '50回だべ！⚔️', 'もはや呪いだべ', 'このサイト何が楽しいべ？', '教えてくれべ（真剣）', '聞けてよかったべ', '55ゾロ目だべ', '56枚注文するべ？', 'ハインツのケチャップ思い出したべ', 'なんでもないべ', 'もうすぐ60回だべ', '60回！還暦みたいだべ'],
+  akita: ['', 'はじめましてだが！🌿', 'また来てくれてたが！', '3回目だが👀', '気になってるだが？', '常連候補だが🥔', 'だんだん顔なじみだが', 'もう馴染みだが', 'すっかり常連だが', 'お馴染みさんだが', '10回目だが！🎉', '熱心だがねえ', 'ありがとうだが', '13回目、縁起いいだが？', 'ファン候補だが', 'ファン認定だが✨', 'ありがたいだが', '頭下がるだが', 'いつもありがとうだが', 'もうスタッフ級だが', '20回目だが！👑', '愛してるだが（本気）', 'もはや同志だが', '頭上がらないだが🙏', '本当にありがとうだが', '感無量だが', 'コースター好きすぎだが', '革の匂い恋しいだが？', 'もうレザー職人だが', '夢にコースター出ただが？', '30回だが！🏆', '好きすぎて怖いだが', 'ちょっと心配だが', '大丈夫だが？（本気）', '水飲んでるだが？', '今日ご飯食べただが？', '外出てるだが？', '空青いだが', '雲きれいだが', '鳥飛んでるだが', 'コースターって何だが', '革って何だが', '42は宇宙の答えだが', 'ポテト食べたいだが', '444縁起悪いだが？', 'ふたばって何枚葉だが？', 'レザーの語源は古仏語だが', '47都道府県制覇しただが？', 'もう季節変わっただが', '明日も来るだが予感', '50回だが！⚔️', 'もはや呪いだが', 'このサイト何が楽しいだが？', '教えてくれだが（真剣）', '聞けてよかっただが', '55ゾロ目だが', '56枚注文するだが？', 'ハインツのケチャップ思い出しただが', 'なんでもないだが', 'もうすぐ60回だが', '60回！還暦みたいだが'],
+  niigata: ['', 'はじめましてっけ！🌿', 'また来てくれたっけ！', '3回目だっけ👀', '気になってるっけ？', '常連候補だっけ🥔', 'だんだん顔なじみっけ', 'もう馴染みだっけ', 'すっかり常連だっけ', 'お馴染みさんだっけ', '10回目だっけ！🎉', '熱心だっけねえ', 'ありがとうだっけ', '13回目、縁起いいっけ？', 'ファン候補だっけ', 'ファン認定だっけ✨', 'ありがたいっけ', '頭下がるっけ', 'いつもありがとうだっけ', 'もうスタッフ級だっけ', '20回目だっけ！👑', '愛してるっけ（本気）', 'もはや同志だっけ', '頭上がらないっけ🙏', '本当にありがとうだっけ', '感無量だっけ', 'コースター好きすぎだっけ', '革の匂い恋しいっけ？', 'もうレザー職人だっけ', '夢にコースター出たっけ？', '30回だっけ！🏆', '好きすぎて怖いっけ', 'ちょっと心配だっけ', '大丈夫だっけ？（本気）', '水飲んでるっけ？', '今日ご飯食べたっけ？', '外出てるっけ？', '空青いっけ', '雲きれいだっけ', '鳥飛んでるっけ', 'コースターって何だっけ', '革って何だっけ', '42は宇宙の答えだっけ', 'ポテト食べたいっけ', '444縁起悪いっけ？', 'ふたばって何枚葉だっけ？', 'レザーの語源は古仏語だっけ', '47都道府県制覇したっけ？', 'もう季節変わったっけ', '明日も来るっけ予感', '50回だっけ！⚔️', 'もはや呪いだっけ', 'このサイト何が楽しいっけ？', '教えてくれっけ（真剣）', '聞けてよかったっけ', '55ゾロ目だっけ', '56枚注文するっけ？', 'ハインツのケチャップ思い出したっけ', 'なんでもないっけ', 'もうすぐ60回だっけ', '60回！還暦みたいだっけ'],
+  gunma: ['', 'はじめましてだっぺ！🌿', 'また来てくれただっぺ！', '3回目だっぺ👀', '気になってるだんべ？', '常連候補だっぺ🥔', 'だんだん顔なじみだっぺ', 'もう馴染みだっぺ', 'すっかり常連だっぺ', 'お馴染みさんだっぺ', '10回目だっぺ！🎉', '熱心だっぺねえ', 'ありがとうだっぺ', '13回目、縁起いいだんべ？', 'ファン候補だっぺ', 'ファン認定だっぺ✨', 'ありがたいだっぺ', '頭下がるだっぺ', 'いつもありがとうだっぺ', 'もうスタッフ級だっぺ', '20回目だっぺ！👑', '愛してるだっぺ（本気）', 'もはや同志だっぺ', '頭上がらないだっぺ🙏', '本当にありがとうだっぺ', '感無量だっぺ', 'コースター好きすぎだっぺ', '革の匂い恋しいだんべ？', 'もうレザー職人だっぺ', '夢にコースター出ただんべ？', '30回だっぺ！🏆', '好きすぎて怖いだっぺ', 'ちょっと心配だっぺ', '大丈夫だっぺ？（本気）', '水飲んでるだっぺ？', '今日ご飯食べただんべ？', '外出てるだっぺ？', '空青いだっぺ', '雲きれいだっぺ', '鳥飛んでるだっぺ', 'コースターって何だっぺ', '革って何だっぺ', '42は宇宙の答えだっぺ', 'ポテト食べたいだっぺ', '444縁起悪いだんべ？', 'ふたばって何枚葉だんべ？', 'レザーの語源は古仏語だっぺ', '47都道府県制覇しただんべ？', 'もう季節変わっただっぺ', '明日も来るだっぺ予感', '50回だっぺ！⚔️', 'もはや呪いだっぺ', 'このサイト何が楽しいだっぺ？', '教えてくれだっぺ（真剣）', '聞けてよかっただっぺ', '55ゾロ目だっぺ', '56枚注文するだっぺ？', 'ハインツのケチャップ思い出しただっぺ', 'なんでもないだっぺ', 'もうすぐ60回だっぺ', '60回！還暦みたいだっぺ'],
+  tokyo: ['', 'はじめましてじゃん！🌿', 'また来てくれたじゃん！', '3回目じゃん👀', '気になってるじゃん？', '常連候補じゃん🥔', 'だんだん顔なじみじゃん', 'もう馴染みじゃん', 'すっかり常連じゃん', 'お馴染みさんじゃん', '10回目じゃん！🎉', '熱心じゃんねえ', 'ありがとうじゃん', '13回目、縁起いいじゃん？', 'ファン候補じゃん', 'ファン認定じゃん✨', 'ありがたいじゃん', '頭下がるじゃん', 'いつもありがとうじゃん', 'もうスタッフ級じゃん', '20回目じゃん！👑', '愛してるじゃん（本気）', 'もはや同志じゃん', '頭上がらないじゃん🙏', '本当にありがとうじゃん', '感無量じゃん', 'コースター好きすぎじゃん', '革の匂い恋しいじゃん？', 'もうレザー職人じゃん', '夢にコースター出たじゃん？', '30回じゃん！🏆', '好きすぎて怖いじゃん', 'ちょっと心配じゃん', '大丈夫じゃん？（本気）', '水飲んでるじゃん？', '今日ご飯食べたじゃん？', '外出てるじゃん？', '空青いじゃん', '雲きれいじゃん', '鳥飛んでるじゃん', 'コースターって何じゃん', '革って何じゃん', '42は宇宙の答えじゃん', 'ポテト食べたいじゃん', '444縁起悪いじゃん？', 'ふたばって何枚葉じゃん？', 'レザーの語源は古仏語じゃん', '47都道府県制覇したじゃん？', 'もう季節変わったじゃん', '明日も来るじゃん予感', '50回じゃん！⚔️', 'もはや呪いじゃん', 'このサイト何が楽しいじゃん？', '教えてよじゃん（真剣）', '聞けてよかったじゃん', '55ゾロ目じゃん', '56枚注文するじゃん？', 'ハインツのケチャップ思い出したじゃん', 'なんでもないじゃん', 'もうすぐ60回じゃん', '60回！還暦みたいじゃん'],
+  kanagawa: ['', 'はじめましてじゃん！🌿', 'また来てくれたじゃん！', '3回目じゃん👀', '気になってるじゃん？', '常連候補じゃん🥔', 'だんだん顔なじみじゃん', 'もう馴染みじゃん', 'すっかり常連じゃん', 'お馴染みさんじゃん', '10回目じゃん！🎉', '熱心じゃんねえ', 'ありがとうじゃん', '13回目、縁起いいじゃん？', 'ファン候補じゃん', 'ファン認定じゃん✨', 'ありがたいじゃん', '頭下がるじゃん', 'いつもありがとうじゃん', 'もうスタッフ級じゃん', '20回目じゃん！👑', '愛してるじゃん（本気）', 'もはや同志じゃん', '頭上がらないじゃん🙏', '本当にありがとうじゃん', '感無量じゃん', 'コースター好きすぎじゃん', '革の匂い恋しいじゃん？', 'もうレザー職人じゃん', '夢にコースター出たじゃん？', '30回じゃん！🏆', '好きすぎて怖いじゃん', 'ちょっと心配じゃん', '大丈夫じゃん？（本気）', '水飲んでるじゃん？', '今日ご飯食べたじゃん？', '外出てるじゃん？', '空青いじゃん', '雲きれいじゃん', '鳥飛んでるじゃん', 'コースターって何じゃん', '革って何じゃん', '42は宇宙の答えじゃん', 'ポテト食べたいじゃん', '444縁起悪いじゃん？', 'ふたばって何枚葉じゃん？', 'レザーの語源は古仏語じゃん', '47都道府県制覇したじゃん？', 'もう季節変わったじゃん', '明日も来るじゃん予感', '50回じゃん！⚔️', 'もはや呪いじゃん', 'このサイト何が楽しいじゃん？', '教えてよじゃん（真剣）', '聞けてよかったじゃん', '55ゾロ目じゃん', '56枚注文するじゃん？', 'ハインツのケチャップ思い出したじゃん', 'なんでもないじゃん', 'もうすぐ60回じゃん', '60回！還暦みたいじゃん'],
+  nagoya: ['', 'はじめましてだぎゃ！🌿', 'また来てくれてかんわ！', '3回目だがね👀', '気になってるだぎゃ？', '常連候補だがや🥔', 'だんだん顔なじみだがね', 'もう馴染みだぎゃ', 'すっかり常連だがね', 'お馴染みさんだぎゃ', '10回目だがね！🎉', '熱心だがねえ', 'ありがとうだぎゃ', '13回目、縁起いいだがね？', 'ファン候補だぎゃ', 'ファン認定だがね✨', 'ありがたいだぎゃ', '頭下がるだがね', 'いつもありがとうだぎゃ', 'もうスタッフ級だがね', '20回目だぎゃ！👑', '愛してるだがね（本気）', 'もはや同志だぎゃ', '頭上がらないだがね🙏', '本当にありがとうだぎゃ', '感無量だがね', 'コースター好きすぎでかんわ', '革の匂い恋しいだぎゃ？', 'もうレザー職人だがね', '夢にコースター出ただぎゃ？', '30回だがね！🏆', '好きすぎて怖いでかんわ', 'ちょっと心配だがね', '大丈夫だぎゃ？（本気）', '水飲んでるだがね？', '今日ご飯食べただぎゃ？', '外出てるだがね？', '空青いだぎゃ', '雲きれいだがね', '鳥飛んでるだぎゃ', 'コースターって何だがね', '革って何だぎゃ', '42は宇宙の答えだがね', 'ポテト食べたいでかんわ', '444縁起悪いだぎゃ？', 'ふたばって何枚葉だがね？', 'レザーの語源は古仏語だぎゃ', '47都道府県制覇しただがね？', 'もう季節変わっただぎゃ', '明日も来るだがね予感', '50回だぎゃ！⚔️', 'もはや呪いだがね', 'このサイト何が楽しいだぎゃ？', '教えてちょ（真剣）', '聞けてよかっただがね', '55ゾロ目だぎゃ', '56枚注文するだがね？', 'ハインツのケチャップ思い出しただぎゃ', 'なんでもないだがね', 'もうすぐ60回だぎゃ', '60回！還暦みたいだがね'],
+  shizuoka: ['', 'はじめましてだら！🌿', 'また来てくれたじゃん！', '3回目だもんで👀', '気になってるだら？', '常連候補だら🥔', 'だんだん顔なじみだもんで', 'もう馴染みだら', 'すっかり常連だもんで', 'お馴染みさんだら', '10回目だもんで！🎉', '熱心だもんでねえ', 'ありがとうだら', '13回目、縁起いいじゃん？', 'ファン候補だら', 'ファン認定だもんで✨', 'ありがたいだら', '頭下がるだもんで', 'いつもありがとうだら', 'もうスタッフ級だもんで', '20回目だら！👑', '愛してるだもんで（本気）', 'もはや同志だら', '頭上がらないだもんで🙏', '本当にありがとうだら', '感無量だもんで', 'コースター好きすぎだら', '革の匂い恋しいだもんで？', 'もうレザー職人だら', '夢にコースター出ただもんで？', '30回だら！🏆', '好きすぎて怖いだもんで', 'ちょっと心配だら', '大丈夫だもんで？（本気）', '水飲んでるだら？', '今日ご飯食べただもんで？', '外出てるだら？', '空青いだら', '雲きれいだもんで', '鳥飛んでるだら', 'コースターって何だもんで', '革って何だら', '42は宇宙の答えだもんで', 'ポテト食べたいだら', '444縁起悪いだもんで？', 'ふたばって何枚葉だら？', 'レザーの語源は古仏語だもんで', '47都道府県制覇しただら？', 'もう季節変わっただもんで', '明日も来るだら予感', '50回だもんで！⚔️', 'もはや呪いだら', 'このサイト何が楽しいだもんで？', '教えてだら（真剣）', '聞けてよかっただもんで', '55ゾロ目だら', '56枚注文するだもんで？', 'ハインツのケチャップ思い出しただら', 'なんでもないだもんで', 'もうすぐ60回だら', '60回！還暦みたいだもんで'],
+  osaka: ['', 'はじめましてやで！🌿', 'また来てくれたやん！', '3回目やで👀', '気になってるんちゃう？', '常連候補やで🥔', 'だんだん顔なじみやで', 'もう馴染みやんか', 'すっかり常連やで', 'お馴染みさんやで', '10回目やで！🎉', '熱心やねえ', 'ありがとうやで', '13回目、縁起ええやん？', 'ファン候補やで', 'ファン認定やで✨', 'ありがたいわ', '頭下がるわ', 'いつもありがとうやで', 'もうスタッフ級やんか', '20回目やで！👑', '愛してるで（本気）', 'もはや同志やんか', '頭上がらんわ🙏', '本当にありがとうやで', '感無量やで', 'コースター好きすぎちゃう？', '革の匂い恋しいんちゃう？', 'もうレザー職人やんか', '夢にコースター出てきたんちゃう？', '30回やで！🏆', '好きすぎて怖いわ', 'ちょっと心配やで', '大丈夫か？（本気）', '水飲んでるか？', '今日ご飯食べたか？', '外出てるか？', '空青いで', '雲きれいやで', '鳥飛んでるで', 'コースターって何やねん', '革って何やねん', '42は宇宙の答えやで', 'ポテト食べたいわ', '444縁起悪いんちゃう？', 'ふたばって何枚葉やねん？', 'レザーの語源は古仏語やで', '47都道府県制覇したか？', 'もう季節変わったで', '明日も来る予感やで', '50回やで！⚔️', 'もはや呪いやんか', 'このサイト何が楽しいねん？', '教えてや（真剣）', '聞けてよかったわ', '55ゾロ目やで', '56枚注文するんか？', 'ハインツのケチャップ思い出したわ', 'なんでもないで', 'もうすぐ60回やで', '60回！還暦みたいやで'],
+  tosa: ['', 'はじめましてじゃき！🌿', 'また来てくれたぜよ！', '3回目じゃき👀', '気になっちゅうき？', '常連候補ぜよ🥔', 'だんだん顔なじみじゃき', 'もう馴染みぜよ', 'すっかり常連じゃき', 'お馴染みさんぜよ', '10回目じゃき！🎉', '熱心やのう', 'ありがとうぜよ', '13回目、縁起ええき？', 'ファン候補じゃき', 'ファン認定ぜよ✨', 'ありがたいき', '頭下がるぜよ', 'いつもありがとうじゃき', 'もうスタッフ級ぜよ', '20回目じゃき！👑', '愛しちゅうき（本気）', 'もはや同志ぜよ', '頭上がらんき🙏', '本当にありがとうじゃき', '感無量ぜよ', 'コースター好きすぎじゃき', '革の匂い恋しいき？', 'もうレザー職人ぜよ', '夢にコースター出てきたき？', '30回じゃき！🏆', '好きすぎて怖いぜよ', 'ちょっと心配じゃき', '大丈夫かき？（本気）', '水飲んでるき？', '今日ご飯食べたき？', '外出てるき？', '空青いぜよ', '雲きれいじゃき', '鳥飛んでるぜよ', 'コースターって何ぜよ', '革って何ぜよ', '42は宇宙の答えじゃき', 'ポテト食べたいぜよ', '444縁起悪いき？', 'ふたばって何枚葉ぜよ？', 'レザーの語源は古仏語じゃき', '47都道府県制覇したき？', 'もう季節変わったぜよ', '明日も来るき予感', '50回じゃき！⚔️', 'もはや呪いぜよ', 'このサイト何が楽しいき？', '教えてくれき（真剣）', '聞けてよかったぜよ', '55ゾロ目じゃき', '56枚注文するき？', 'ハインツのケチャップ思い出したぜよ', 'なんでもないき', 'もうすぐ60回じゃき', '60回！還暦みたいぜよ'],
+  hakata: ['', 'はじめましてたい！🌿', 'また来てくれたばい！', '3回目たい👀', '気になっとうと？', '常連候補ばい🥔', 'だんだん顔なじみたい', 'もう馴染みたい', 'すっかり常連ばい', 'お馴染みさんたい', '10回目たい！🎉', '熱心やねえ', 'ありがとうばい', '13回目、縁起よかと？', 'ファン候補たい', 'ファン認定ばい✨', 'ありがたかばい', '頭下がるばい', 'いつもありがとうたい', 'もうスタッフ級ばい', '20回目たい！👑', '愛しとうばい（本気）', 'もはや同志たい', '頭上がらんばい🙏', '本当にありがとうたい', '感無量ばい', 'コースター好きすぎたい', '革の匂い恋しかと？', 'もうレザー職人ばい', '夢にコースター出てきたと？', '30回たい！🏆', '好きすぎて怖かばい', 'ちょっと心配たい', '大丈夫と？（本気）', '水飲んどうと？', '今日ご飯食べたと？', '外出とうと？', '空青いばい', '雲きれいたい', '鳥飛んどうばい', 'コースターって何たい', '革って何ばい', '42は宇宙の答えたい', 'ポテト食べたかばい', '444縁起悪かと？', 'ふたばって何枚葉たい？', 'レザーの語源は古仏語ばい', '47都道府県制覇したと？', 'もう季節変わったばい', '明日も来る予感たい', '50回たい！⚔️', 'もはや呪いばい', 'このサイト何が楽しかと？', '教えてくれんと（真剣）', '聞けてよかったばい', '55ゾロ目たい', '56枚注文すると？', 'ハインツのケチャップ思い出したばい', 'なんでもなかたい', 'もうすぐ60回ばい', '60回！還暦みたいたい'],
+  okinawa: ['', 'はじめましてさぁ！🌿', 'またきてぃくれたさぁ！', '3回目やいびーん👀', '気になっとーと？', '常連候補さぁ🥔', 'だんだん顔なじみやいびーん', 'もう馴染みさぁ', 'すっかり常連やいびーん', 'お馴染みさんさぁ', '10回目やいびーん！🎉', '熱心さぁねえ', 'にふぇーでーびる', '13回目、縁起よさそーさぁ？', 'ファン候補さぁ', 'ファン認定やいびーん✨', 'ありがたさぁ', '頭下がいびーん', 'いつもにふぇーでーびる', 'もうスタッフ級さぁ', '20回目さぁ！👑', 'ちゅらさんやいびーん（本気）', 'もはや同志さぁ', '頭上がらんさぁ🙏', '本当ににふぇーでーびる', '感無量やいびーん', 'コースター好きすぎさぁ', '革の匂い恋しいさぁ？', 'もうレザー職人やいびーん', '夢にコースター出てきたさぁ？', '30回さぁ！🏆', '好きすぎて怖いさぁ', 'ちょっと心配やいびーん', '大丈夫さぁ？（本気）', '水飲んどーさぁ？', '今日ご飯食べたさぁ？', '外出とーさぁ？', '空青いさぁ', '雲きれいやいびーん', '鳥飛んどーさぁ', 'コースターって何さぁ', '革って何さぁ', '42は宇宙の答えやいびーん', 'ポテト食べたいさぁ', '444縁起悪いさぁ？', 'ふたばって何枚葉さぁ？', 'レザーの語源は古仏語やいびーん', '47都道府県制覇したさぁ？', 'もう季節変わったさぁ', '明日も来る予感やいびーん', '50回さぁ！⚔️', 'もはや呪いやいびーん', 'このサイト何が楽しいさ぀？', '教えてくれさぁ（真剣）', '聞けてよかったさぁ', '55ゾロ目さぁ', '56枚注文するさぁ？', 'ハインツのケチャップ思い出したさぁ', 'なんでもないさぁ', 'もうすぐ60回さぁ', '60回！還暦みたいさぁ'],
+  ninja: ['', 'はじめましてだってばよ！🌿', 'また来てくれたってばよ！', '3回目だってばよ👀', '気になってるってばよ？', '常連候補だってばよ🥔', 'だんだん顔なじみだってばよ', 'もう馴染みだってばよ', 'すっかり常連だってばよ', 'お馴染みさんだってばよ', '10回目だってばよ！🎉', '熱心だってばよ', 'ありがとうだってばよ', '13回目、縁起いいってばよ？', 'ファン候補だってばよ', 'ファン認定だってばよ✨', 'ありがたいってばよ', '頭下がるってばよ', 'いつもありがとうだってばよ', 'もうスタッフ級だってばよ', '20回目だってばよ！👑', '愛してるってばよ（本気）', 'もはや同志だってばよ', '頭上がらないってばよ🙏', '本当にありがとうだってばよ', '感無量だってばよ', 'コースター好きすぎだってばよ', '革の匂い恋しいってばよ？', 'もうレザー職人だってばよ', '夢にコースター出てきたってばよ？', '30回だってばよ！🏆', '好きすぎて怖いってばよ', 'ちょっと心配だってばよ', '大丈夫かってばよ？（本気）', '水飲んでるってばよ？', '今日ご飯食べたってばよ？', '外出てるってばよ？', '空青いってばよ', '雲きれいだってばよ', '鳥飛んでるってばよ', 'コースターって何だってばよ', '革って何だってばよ', '42は宇宙の答えだってばよ', 'ポテト食べたいってばよ', '444縁起悪いってばよ？', 'ふたばって何枚葉だってばよ？', 'レザーの語源は古仏語だってばよ', '47都道府県制覇しただってばよ？', 'もう季節変わっただってばよ', '明日も来るってばよ予感', '50回だってばよ！⚔️', 'もはや呪いだってばよ', 'このサイト何が楽しいってばよ？', '信じてくれ、教えてくれってばよ（真剣）', '聞けてよかっただってばよ', '55ゾロ目だってばよ', '56枚注文するってばよ？', 'ハインツのケチャップ思い出しただってばよ', 'なんでもないってばよ', 'もうすぐ60回だってばよ', '60回！還暦みたいだってばよ'],
+  silent: ['', '…はじめまして。🌿', '…また来た。', '…3回目。👀', '…気になる。', '…常連候補。🥔', '…顔なじみになった。', '…馴染んだ。', '…常連。', '…お馴染み。', '…10回。🎉', '…熱心。', '…感謝。', '…13回。縁起は不明。', '…ファン候補。', '…ファン認定。✨', '…ありがたい。', '…頭が下がる。', '…感謝している。', '…スタッフ級。', '…20回。👑', '…愛している。（本気）', '…同志。', '…頭が上がらない。🙏', '…本当に感謝。', '…感無量。', '…好きすぎる。', '…革の匂い。', '…レザー職人。', '…夢にコースター。', '…30回。🏆', '…怖い。', '…心配。', '…大丈夫か。', '…水。', '…食事。', '…外。', '…空。青い。', '…雲。きれい。', '…鳥。飛んでいる。', '…コースターとは。', '…革とは。', '…42。宇宙の答え。', '…ポテト。', '…444。', '…ふたば。何枚葉。', '…語源。古仏語。', '…47都道府県。', '…季節。変わった。', '…明日も来る。', '…50回。⚔️', '…呪い。', '…楽しいのか。', '…教えてほしい。', '…聞けた。', '…55。ゾロ目。', '…56枚。', '…ケチャップ。', '…なんでもない。', '…60回に近い。', '…60回。還暦。'],
+  monk: ['', 'はじめましてだぞ！🌿', 'また来たぞ！', '3回目だぞ👀', '気になってるのか！？', '常連候補だぞ🥔', 'だんだん顔なじみだぞ', 'もう馴染みだぞ', 'すっかり常連だぞ', 'お馴染みさんだぞ', '10回目だぞ！🎉', '熱心だぞ', 'ありがとうだぞ', '13回目、縁起いいぞ？', 'ファン候補だぞ', 'ファン認定だぞ✨', 'ありがたいぞ', '頭下がるぞ', 'いつもありがとうだぞ', 'もうスタッフ級だぞ', '20回目だぞ！👑', '愛してるぞ（本気）', 'もはや同志だぞ', '頭上がらないぞ🙏', '本当にありがとうだぞ', '感無量だぞ', 'コースター好きすぎだぞ', '革の匂い恋しいのか！？', 'もうレザー職人だぞ', '夢にコースター出てきたのか！？', '30回だぞ！🏆', '好きすぎて怖いぞ', 'ちょっと心配だぞ', '大丈夫かぞ！？（本気）', '水飲んでるか！？', '今日ご飯食べたか！？', '外出てるか！？', '空青いぞ', '雲きれいだぞ', '鳥飛んでるぞ', 'コースターって何だぞ', '革って何だぞ', '42は宇宙の答えだぞ', 'ポテト食べたいぞ', '444縁起悪いのか！？', 'ふたばって何枚葉だぞ？', 'レザーの語源は古仏語だぞ', '47都道府県制覇したか！？', 'もう季節変わったぞ', '明日も来る予感だぞ', '50回だぞ！⚔️', 'もはや呪いだぞ', 'このサイト何が楽しいんだぞ？', '教えてくれぞ（真剣）', '聞けてよかったぞ', '55ゾロ目だぞ', '56枚注文するのか！？', 'ハインツのケチャップ思い出したぞ', 'なんでもないぞ', 'もうすぐ60回だぞ', '60回！還暦みたいだぞ'],
+  mahou: ['', 'はじめましてだよ！🌿✨', 'また来てくれたの！✨', '3回目だよ！👀✨', '気になってるの？✨', '常連候補だよ✨🥔', 'だんだん顔なじみになってきたよ✨', 'もう馴染みだよ！✨', 'すっかり常連さんだよ✨', 'お馴染みさんだよ！✨', '10回目だよ！✨🎉', '熱心なんだよ✨', 'ありがとうなの✨', '13回目、縁起よさそうだよ✨？', 'ファン候補だよ✨', 'ファン認定しちゃうよ✨', 'ありがたいんだよ✨', '頭下がっちゃうよ✨', 'いつもありがとうなの✨', 'もうスタッフ級だよ✨', '20回目だよ！✨👑', '愛してるよ✨（本気）', 'もはや同志だよ✨', '頭上がらないよ✨🙏', '本当にありがとうなの✨', '感無量だよ✨', 'コースター好きすぎだよ✨', '革の匂い恋しいの？✨', 'もうレザー職人だよ✨', '夢にコースター出てきたの？✨', '30回だよ！✨🏆', '好きすぎて怖いよ✨', 'ちょっと心配なの✨', '大丈夫だよ？✨（本気）', '水飲んでるの？✨', '今日ご飯食べたの？✨', '外出てるの？✨', '空が青いよ✨', '雲がきれいだよ✨', '鳥が飛んでるよ✨', 'コースターって何なの✨', '革って何なの✨', '42は宇宙の答えだよ✨', 'ポテト食べたいよ✨', '444縁起悪いのかな✨？', 'ふたばって何枚葉なの？✨', 'レザーの語源は古仏語だよ✨', '47都道府県制覇したの？✨', 'もう季節変わったよ✨', '明日も来る予感だよ✨', '50回だよ！✨⚔️', 'もはや呪いかも✨', 'このサイト何が楽しいの？✨', '教えてほしいな✨（真剣）', '聞けてよかったよ✨', '55ゾロ目だよ✨', '56枚注文するの？✨', 'ハインツのケチャップ思い出したよ✨', 'なんでもないよ✨', 'もうすぐ60回だよ✨', '60回！還暦みたいだよ✨'],
+  tsundere: ['', 'べ、べつに歓迎してるわけじゃないけど！🌿', 'ま、また来たの…', '3回目ね…べつに数えてないけど👀', '気になってるの？べ、べつにうれしくないし', 'も、もう常連候補？べつに🥔', 'だ、だんだん顔なじみね…べつに覚えてないけど', 'もう馴染みね…べつにうれしくないし', 'す、すっかり常連じゃない…', 'お馴染みさんね…べつに待ってたわけじゃないし', '10回目ね…べつにカウントしてないし！🎉', 'ね、熱心なのね…べつに感心してないし', 'あ、ありがとうよ…べつに感謝してるわけじゃないし', '13回目ね…縁起いいんじゃない？べつに', 'フ、ファン候補なの？べつにうれしくないし', 'フ、ファン認定よ…べつに✨', 'あ、ありがたいわね…べつに', 'あ、頭下がるわ…べつに', 'い、いつもありがとうよ…べつに', 'もうスタッフ級じゃない！べつに大したことないけど', '20回目ね！べつに祝ってないけど👑', 'あ、愛してるわよ（本気）べつに', 'もはや同志ね…べつに', '頭、上がらないわよ🙏べつに', 'ほ、本当にありがとうよ…べつに', 'か、感無量よ…べつに', 'コースター好きすぎじゃない？べつに心配してないけど', '革の匂い恋しいの？べつに聞いてないけど', 'もうレザー職人じゃない！べつに', '夢にコースター出てきたの？べつに笑ってないし', '30回ね！べつに感動してないけど🏆', '好きすぎて怖いわ…べつに心配してないけど', 'ちょっと心配よ…べつに', '大丈夫なの？べつに心配してるわけじゃないけど', '水、飲んでるの？べつに', 'ご飯食べたの？べつに確認してないけど', '外出てるの？べつに', '空が青いわよ…べつに教えたくて言ったんじゃないし', '雲がきれいじゃない…べつに', '鳥が飛んでるわよ…べつに', 'コースターって何なの…べつに気になってないし', '革って何なの…べつに', '42は宇宙の答えよ…べつに知ってたけど', 'ポテト食べたいわ…べつに関係ないけど', '444縁起悪いじゃない？べつに', 'ふたばって何枚葉なの？べつに気になってないし', 'レザーの語源は古仏語よ…べつに', '47都道府県制覇したの？べつに', 'もう季節変わったわね…べつに', '明日も来る予感がするわ…べつにうれしくないし', '50回ね！べつに⚔️', 'もはや呪いじゃない…べつに', 'このサイト何が楽しいの？べつに気になってないけど', '教えなさいよ…べつに（真剣）', '聞けてよかったわ…べつに', '55ゾロ目よ…べつに', '56枚注文するの？べつに止めないけど', 'ハインツのケチャップ思い出したわ…べつに', 'なんでもないわよ！べつに', 'もうすぐ60回ね…べつに', '60回！還暦みたいじゃない…べつに'],
+  chuuni: ['', '汝、我が封印の地へようこそ…🌿', '再び現れたか…運命の螺旋よ', '3度目の邂逅…偶然とは思えぬ👀', '引き寄せられているのか…闇の力よ', '常連候補…いや、選ばれし者🥔', 'だんだんと顔を覚えてきた…記憶の欠片', '馴染みの気配…魂が覚えている', 'すっかり常連…我が眷属か', 'お馴染みの者よ…封印が深まる', '10度目の訪問…🎉刻が満ちた', '熱心な求道者よ…', '感謝の念が溢れる…', '13度目…不吉か吉兆か', 'ファン候補…いや使徒候補', 'ファン認定…汝は使徒✨', 'この出会いに感謝する…', '頭が下がる…珍しいことだ', 'いつも感謝している…魂で', 'もはやスタッフ…いや眷属', '20度目…👑新たな力が解放された', '愛している…（本気の闇の感情）', 'もはや同志…いや同じ血', '頭が上がらぬ…🙏', '本当に感謝する…魂から', '感無量…言葉が封印される', 'コースターへの執着…業か', '革の匂いが魂に刻まれているのか', 'もはやレザーの使い手よ', '夢の中でもコースターが…呪いか祝福か', '30度目…🏆封印の第三段階', '執着が怖い…いや、美しい', '少し心配だ…珍しいことよ', '大丈夫か…（本気で心配している）', '水を…飲め', '食事を…摂れ', '外へ…出よ', '空が…青い', '雲が…きれいだ', '鳥が…飛んでいる', 'コースターとは何か…哲学的問いよ', '革とは何か…存在の問いよ', '42…宇宙と存在の答え', 'ポテトが…食べたい', '444…不吉な数字よ', 'ふたばは何枚葉なのか…', 'レザーの語源…古仏語の封印', '47の呪縛…都道府県か', '季節が変わった…時の流れよ', '明日も来る予感がする…運命よ', '50度目…⚔️伝説の扉が開く', 'もはや呪縛だ…', '何が楽しいのか…教えてほしい', '教えてほしい…（真剣）', '聞けた…封印が解けた', '55…ゾロ目の力よ', '56枚…大量注文の使い手か', 'ハインツのケチャップが頭に…なぜ', 'なんでもない…', '60の封印が近い…', '60度目…🌙還暦、いや転生か'],
+  nojya: ['', 'はじめましてなのじゃ！🌿', 'また来てくれたのじゃ！', '3回目なのじゃ👀', '気になっておるのじゃ？', '常連候補なのじゃ🥔', 'だんだん顔なじみじゃ', 'もう馴染みなのじゃ', 'すっかり常連なのじゃ', 'お馴染みさんなのじゃ', '10回目なのじゃ！🎉', '熱心なのじゃ', 'ありがとうなのじゃ', '13回目、縁起がよいのじゃ？', 'ファン候補なのじゃ', 'ファン認定なのじゃ✨', 'ありがたいのじゃ', '頭が下がるのじゃ', 'いつもありがとうなのじゃ', 'もうスタッフ級なのじゃ', '20回目なのじゃ！👑', '愛しておるのじゃ（本気）', 'もはや同志なのじゃ', '頭が上がらぬのじゃ🙏', '本当にありがとうなのじゃ', '感無量なのじゃ', 'コースターが好きすぎるのじゃ', '革の匂いが恋しいのじゃ？', 'もうレザー職人なのじゃ', '夢にコースターが出てきたのじゃ？', '30回なのじゃ！🏆', '好きすぎて怖いのじゃ', 'ちょっと心配なのじゃ', '大丈夫なのじゃ？（本気）', '水を飲んでおるか？', '今日ご飯を食べたのじゃ？', '外に出ておるのじゃ？', '空が青いのじゃ', '雲がきれいなのじゃ', '鳥が飛んでおるのじゃ', 'コースターとは何なのじゃ', '革とは何なのじゃ', '42は宇宙の答えなのじゃ', 'ポテトが食べたいのじゃ', '444は縁起が悪いのじゃ？', 'ふたばは何枚葉なのじゃ？', 'レザーの語源は古仏語なのじゃ', '47都道府県を制覇したのじゃ？', 'もう季節が変わったのじゃ', '明日も来る予感がするのじゃ', '50回なのじゃ！⚔️', 'もはや呪いなのじゃ', 'このサイトの何が楽しいのじゃ？', '教えてくれるのじゃ（真剣）', '聞けてよかったのじゃ', '55はゾロ目なのじゃ', '56枚注文するのじゃ？', 'ハインツのケチャップを思い出したのじゃ', 'なんでもないのじゃ', 'もうすぐ60回なのじゃ', '60回！還暦みたいなのじゃ'],
+  king: ['', '余の地へようこそ！🌿', 'また来たか！よきことよ！', '3度目であるな👀', '気になっておるか？', '常連候補と認めようぞ🥔', 'だんだん顔なじみになってきたぞ', 'もう馴染みの者よ', 'すっかり余の常連よ', 'お馴染みの者よ！', '10度目！🎉よきことよ！', '熱心なる者よ', '感謝するぞ', '13度目、縁起がよいかもしれぬ', 'ファン候補と認めようぞ', 'ファン認定するぞ✨', 'ありがたく思うぞ', '頭が下がるぞ', 'いつも感謝するぞ', 'もうスタッフ級の忠臣よ', '20度目！👑余は感動した', '愛しておるぞ（本気）', 'もはや同志よ', '頭が上がらぬぞ🙏', '本当に感謝するぞ', '感無量である', 'コースターへの執着が著しいぞ', '革の匂いが恋しいか？', 'もうレザー職人であるぞ', '夢にコースターが出てきたか？', '30度目！🏆余は大いに喜ぶ', '好きすぎて怖いぞ', 'ちょっと心配であるぞ', '大丈夫であるか？（本気）', '水を飲めよ', '今日食事はしたか？', '外に出よ', '空が青いぞ', '雲がきれいであるぞ', '鳥が飛んでおるぞ', 'コースターとは何かと問うか', '革とは何かと問うか', '42は宇宙の答えであるぞ', 'ポテトが食べたいぞ', '444縁起悪いかもしれぬ', 'ふたばは何枚葉じゃ？', 'レザーの語源は古仏語であるぞ', '47都道府県を制覇したか？', 'もう季節が変わったぞ', '明日も来る予感がするぞ', '50度目！⚔️伝説よ', 'もはや呪いかもしれぬ', 'このサイトの何が楽しいのじゃ？', '余に教えよ（真剣）', '聞けてよかったぞ', '55ゾロ目であるぞ', '56枚注文するつもりか？', 'ハインツのケチャップを思い出したぞ', 'なんでもないぞ', 'もうすぐ60度目であるぞ', '60度目！還暦のようなものであるぞ'],
+  mesugaki: ['', 'はじめましてなんですけど！🌿', 'また来てくれたんですね！', '3回目なんですけど👀', '気になってるんですか〜？', 'もう常連候補なんですけど🥔', 'だんだん顔なじみなんですけど', 'もう馴染みなんですけど', 'すっかり常連なんですけど', 'お馴染みさんなんですけど', '10回目なんですけど！🎉', '熱心すぎなんですけど', 'ありがとうなんですけど', '13回目縁起いいんですけど？', 'ファン候補なんですけど', 'ファン認定しちゃうんですけど✨', 'ありがたいんですけど', '頭下がるんですけど', 'いつもありがとうなんですけど', 'もうスタッフ級なんですけど', '20回目なんですけど！👑', '愛してるんですけど（本気）', 'もはや同志なんですけど', '頭上がらないんですけど🙏', '本当にありがとうなんですけど', '感無量なんですけど', 'コースター好きすぎなんですけど？', '革の匂い恋しいんですか〜？', 'もうレザー職人なんですけど', '夢にコースター出てきたんですか〜？', '30回なんですけど！🏆', '好きすぎて怖いんですけど', 'ちょっと心配なんですけど', '大丈夫なんですか〜？（本気）', '水飲んでるんですか〜？', '今日ご飯食べたんですか〜？', '外出てるんですか〜？', '空青いんですけど', '雲きれいなんですけど', '鳥飛んでるんですけど', 'コースターって何なんですけど', '革って何なんですけど', '42は宇宙の答えなんですけど', 'ポテト食べたいんですけど', '444縁起悪いんですか〜？', 'ふたばって何枚葉なんですけど？', 'レザーの語源は古仏語なんですけど', '47都道府県制覇したんですか〜？', 'もう季節変わったんですけど', '明日も来る予感なんですけど', '50回なんですけど！⚔️', 'もはや呪いなんですけど', 'このサイト何が楽しいんですか〜？', '教えてほしいんですけど（真剣）', '聞けてよかったんですけど', '55ゾロ目なんですけど', '56枚注文するんですか〜？', 'ハインツのケチャップ思い出したんですけど', 'なんでもないんですけど', 'もうすぐ60回なんですけど', '60回！還暦みたいなんですけど'],
+  gal: ['', 'はじめましてじゃん卍！🌿', 'また来てくれてうける！', '3回目じゃん👀', '気になっちゃってるじゃん？', 'もう常連候補じゃん卍🥔', 'だんだん顔なじみじゃん', 'もう馴染みじゃん', 'すっかり常連じゃん', 'お馴染みさんじゃん', '10回目！うける🎉', 'まじ熱心じゃん', 'まじありがとじゃん', '13回目、縁起よくない？', 'ファン候補じゃん', 'ファン認定しちゃうじゃん✨', 'まじありがたいじゃん', '頭下がるじゃん', 'いつもまじありがとじゃん', 'もうスタッフ級じゃん卍', '20回目！やばくない？👑', 'まじ愛してるじゃん（本気）', 'もはや同志じゃん', '頭上がらないじゃん🙏', 'まじまじありがとじゃん', '感無量じゃん卍', 'コースター好きすぎてうける', '革の匂い恋しいの？うける', 'もうレザー職人じゃん', '夢にコースター出てきたの？うける', '30回！やばすぎ🏆', '好きすぎてまじ怖い', 'ちょっと心配じゃん', '大丈夫？まじで', '水飲んでる？', 'ご飯食べた？', '外出てる？', '空青いじゃん', '雲きれいじゃん', '鳥飛んでるじゃん', 'コースターって何なの卍', '革って何なの卍', '42は宇宙の答えらしいじゃん', 'ポテト食べたいじゃん', '444縁起悪くない？', 'ふたばって何枚葉なの？', 'レザーの語源は古仏語らしいじゃん', '47都道府県制覇した？', 'もう季節変わったじゃん', '明日も来る予感じゃん', '50回！伝説じゃん⚔️', 'もはや呪いじゃん卍', 'このサイト何が楽しいの？', '教えてじゃん（まじで）', '聞けてよかったじゃん', '55ゾロ目じゃん', '56枚注文するの？うける', 'ハインツのケチャップ思い出したじゃん', 'なんでもないじゃん', 'もうすぐ60回じゃん', '60回！還暦みたいじゃん卍'],
+  en: [
+    '',
+    'Welcome! 🌿',
+    'You came back!',
+    'Third time!👀',
+    'Getting curious?',
+    'Regular candidate🥔',
+    'Starting to recognize you',
+    'You\'re a regular now',
+    'Fully a regular',
+    'An old friend!',
+    '10 visits!🎉',
+    'So dedicated',
+    'Thank you so much',
+    'Visit 13, lucky?',
+    'Almost a fan',
+    'Fan certified✨',
+    'Truly grateful',
+    'I\'m humbled',
+    'Always appreciated',
+    'Practically staff now',
+    '20 visits!👑',
+    'I love you (seriously)',
+    'We\'re comrades now',
+    'I can\'t thank you enough🙏',
+    'Truly, thank you',
+    'I\'m speechless',
+    'You love coasters too much',
+    'Do you smell leather in dreams?',
+    'You\'re a leather artisan now',
+    'Dreaming of coasters yet?',
+    '30 visits!🏆',
+    'This is getting intense',
+    'Getting a little worried',
+    'Are you okay? (seriously)',
+    'Drink some water',
+    'Did you eat today?',
+    'Have you been outside?',
+    'The sky is blue today',
+    'The clouds look nice',
+    'A bird just flew by',
+    'What even is a coaster',
+    'What even is leather',
+    '42 is the answer to everything',
+    'I want potato chips',
+    '444 — unlucky?',
+    'How many leaves is futaba?',
+    'Leather comes from Old French',
+    'Visited all 47 prefectures?',
+    'Seasons may have changed',
+    'I knew you\'d be back',
+    '50 visits!⚔️',
+    'This might be a curse',
+    'What do you enjoy here?',
+    'Please tell me (seriously)',
+    'Glad I asked',
+    '55 — matching digits!',
+    'Ordering 56 coasters?',
+    'Reminded me of Heinz ketchup',
+    'Never mind',
+    'Almost 60',
+    '60 visits! Like a jubilee',
+  ],
+};
+
+const VISIT_OVER60 = {"hokkaido": "もう何も言えないべ…🥹", "akita": "もう何も言えないだが…🥹", "niigata": "もう何も言えないっけ…🥹", "gunma": "もう何も言えないだっぺ…🥹", "tokyo": "もう何も言えないじゃん…🥹", "kanagawa": "もう何も言えないじゃん…🥹", "nagoya": "もう何も言えないでかんわ…🥹", "shizuoka": "もう何も言えないだら…🥹", "osaka": "もう何も言えへんわ…🥹", "tosa": "もう何も言えんき…🥹", "hakata": "もう何も言えんばい…🥹", "okinawa": "もう何も言えんさぁ…🥹", "ninja": "もう何も言えないってばよ…🥹", "silent": "…。🥹", "monk": "もう何も言えないぞ…🥹", "mahou": "もう何も言えないよ…🥹✨", "tsundere": "もう何も言えないわよ…べつに🥹", "chuuni": "…言葉が封印された。🥹", "nojya": "もう何も言えないのじゃ…🥹", "king": "もはや言葉が出ぬ…🥹", "mesugaki": "もう何も言えないんですけど…🥹", "gal": "もう何も言えないじゃん卍…🥹"};
+function getVisitMessage(count, lang) {
+  const msgs = VISIT_MESSAGES[lang] || VISIT_MESSAGES.ja;
+  const fallbackMsgs = VISIT_MESSAGES.ja;
+  if (count >= 61) {
+    return VISIT_OVER60[lang] || (lang === 'en' ? 'Words fail me…🥹' : 'もう何も言えない…🥹');
+  }
+  return msgs[count] || fallbackMsgs[count] || '';
+}
+
+function updateVisitorMessage() {
+  const el = document.getElementById('gateVisitorCount');
+  if (!el) return;
+  const count = parseInt(localStorage.getItem('fg21_visit_count') || '1');
+  const msg = getVisitMessage(count, _currentLang);
+  el.textContent = msg;
+}
+
 function initVisitorCount() {
   const key = 'fg21_visit_count';
   const count = parseInt(localStorage.getItem(key) || '0') + 1;
   localStorage.setItem(key, count);
-  const el = document.getElementById('gateVisitorCount');
-  if (el) el.textContent = `👁 あなたは ${count.toLocaleString()} 回目の訪問です`;
+  updateVisitorMessage();
 }
 
 // 引換コードQR生成
@@ -2959,10 +3189,22 @@ async function sbFetchInterests() {
 
 let _pendingInterestType = null;
 
+function onParticipantClick(type) {
+  const likedKey = `bc_participant_${type}`;
+  if (localStorage.getItem(likedKey)) { showToast('すでに参加登録済みです 👥'); return; }
+  _pendingInterestType = `participant_${type}`;
+  document.getElementById('interestModalTitle').textContent = '👥 参加中に登録！';
+  document.getElementById('interestModalSub').textContent = 'Xアカウントを入れると顔アイコンが表示されます（省略可）';
+  document.getElementById('interestModalBg').classList.add('show');
+  setTimeout(() => document.getElementById('interest-x').focus(), 100);
+}
+
 function onHeartClick(type) {
   const likedKey = `bc_interest_liked_${type}`;
   if (localStorage.getItem(likedKey)) { showToast('すでに登録済みです ♥'); return; }
   _pendingInterestType = type;
+  document.getElementById('interestModalTitle').textContent = '♡ 興味あり！';
+  document.getElementById('interestModalSub').textContent = 'Xアカウントを入れると顔アイコンが表示されます。空欄のまま送信すると名無しで登録されます。';
   document.getElementById('interestModalBg').classList.add('show');
   setTimeout(() => document.getElementById('interest-x').focus(), 100);
 }
@@ -2977,13 +3219,23 @@ async function submitInterest() {
   const xAccount = document.getElementById('interest-x').value.trim().replace(/^@/, '');
   const name     = document.getElementById('interest-name').value.trim();
   const type     = _pendingInterestType || 'general';
-  if (!xAccount && !name) { showToast('XアカウントまたはXに表示される名前を入力してください'); return; }
+  if (!xAccount && !name && type.startsWith('participant_')) {
+    showToast('XアカウントまたはXに表示される名前を入力してください'); return;
+  }
 
   const data = { x_account: xAccount, display_name: name, type };
   const localList = JSON.parse(localStorage.getItem('bc_interests') || '[]');
   localList.push(data);
   localStorage.setItem('bc_interests', JSON.stringify(localList));
-  localStorage.setItem(`bc_interest_liked_${type}`, '1');
+
+  // localStorageキーを type に応じて設定
+  if (type.startsWith('participant_')) {
+    localStorage.setItem(`bc_participant_${type.replace('participant_', '')}`, '1');
+    applyParticipantState(type.replace('participant_', ''), true);
+  } else {
+    localStorage.setItem(`bc_interest_liked_${type}`, '1');
+    applyHeartState(type, true);
+  }
 
   try { await sbInsertInterest(data); } catch(e) {}
 
@@ -2991,17 +3243,21 @@ async function submitInterest() {
   document.getElementById('interest-x').value = '';
   document.getElementById('interest-name').value = '';
   _pendingInterestType = null;
-  applyHeartState(type, true);
   await loadInterests();
-  showToast('登録しました ♥ ありがとうございます！');
+  showToast(type.startsWith('participant_') ? '参加登録しました 👥 ありがとうございます！' : '登録しました ♥ ありがとうございます！');
+}
+
+function applyParticipantState(type, registered) {
+  const btn = document.getElementById(`participantBtn${type === 'circle' ? 'Circle' : 'General'}`);
+  if (!btn) return;
+  btn.classList.toggle('liked', registered);
+  if (registered) btn.querySelector('span').textContent = '参加中';
 }
 
 function applyHeartState(type, liked) {
-  const btn  = document.getElementById(`heartBtn${type === 'circle' ? 'Circle' : 'General'}`);
-  const icon = document.getElementById(`heartIcon${type === 'circle' ? 'Circle' : 'General'}`);
-  if (!btn || !icon) return;
+  const btn = document.getElementById(`heartBtn${type === 'circle' ? 'Circle' : 'General'}`);
+  if (!btn) return;
   btn.classList.toggle('liked', liked);
-  icon.textContent = liked ? '♥' : '♡';
 }
 
 async function loadInterests() {
@@ -3011,24 +3267,35 @@ async function loadInterests() {
 }
 
 function renderInterests(list) {
-  // 注文済み参加者のxAccountセットを作成
-  const participantXAccounts = new Set(
-    orders
-      .filter(o => o.xAccount)
-      .map(o => o.xAccount.toLowerCase())
-  );
+  // 注文データからXアカウントを参加中に自動反映
+  const orderCircle  = orders.filter(o => o.mode === 'circle'  && o.xAccount).map(o => ({ x_account: o.xAccount, display_name: o.name, type: 'participant_circle' }));
+  const orderGeneral = orders.filter(o => o.mode === 'general' && o.xAccount).map(o => ({ x_account: o.xAccount, display_name: o.name, type: 'participant_general' }));
 
-  // 参加中の人を興味ありから除外
-  const filtered = list.filter(i =>
-    !i.x_account || !participantXAccounts.has(i.x_account.toLowerCase())
-  );
+  // ＋参加ボタンで登録した人と合算・重複除外
+  const dedup = (arr) => {
+    const seen = new Set();
+    return arr.filter(i => {
+      const key = i.x_account ? i.x_account.toLowerCase() : `_name_${i.display_name}_${Math.random()}`;
+      if (seen.has(key)) return false;
+      seen.add(key); return true;
+    });
+  };
 
-  const circleList  = filtered.filter(i => i.type === 'circle');
-  const generalList = filtered.filter(i => (i.type || 'general') === 'general');
+  const circleParticipants  = dedup([...list.filter(i => i.type === 'participant_circle'),  ...orderCircle]);
+  const generalParticipants = dedup([...list.filter(i => i.type === 'participant_general'), ...orderGeneral]);
+  const circleList  = list.filter(i => i.type === 'circle');
+  const generalList = list.filter(i => (i.type || 'general') === 'general');
 
-  document.getElementById('interestCircleCount').textContent  = circleList.length;
-  document.getElementById('interestGeneralCount').textContent = generalList.length;
+  // 参加中カウント・アバター
+  const t = TRANSLATIONS[_currentLang] || TRANSLATIONS.ja;
+  document.getElementById('gateCircleCount').textContent  = (t.participantPre || '👥 参加中：') + circleParticipants.length  + (t.participantSuf || '人');
+  document.getElementById('gateGeneralCount').textContent = (t.participantPre || '👥 参加中：') + generalParticipants.length + (t.participantSuf || '人');
+  renderInterestAvatars('gateCircleAvatars',  circleParticipants);
+  renderInterestAvatars('gateGeneralAvatars', generalParticipants);
 
+  // 興味あり（そうだね）カウント・アバター
+  document.getElementById('interestCircleCount').textContent  = (t.interestPre||'💬 興味あり：') + circleList.length  + (t.interestSuf||'人');
+  document.getElementById('interestGeneralCount').textContent = (t.interestPre||'💬 興味あり：') + generalList.length + (t.interestSuf||'人');
   renderInterestAvatars('interestCircleAvatars',  circleList);
   renderInterestAvatars('interestGeneralAvatars', generalList);
 }
@@ -3057,7 +3324,7 @@ const TRANSLATIONS = {
     pcolGeneralLabel: '🎫 一般参加者', pcolCircleLabel: '🪑 サークル参加者',
     participantPre: '👥 参加中：', participantSuf: '人',
     interestPre: '💬 興味あり：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
-    heartBubble: '注文は迷ってるけど<br>気になってる人はここ♡',
+    heartBubble: 'そうだねしてね♡',
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日',
     circleName: 'サークル参加者', circleSub: '頒布用途OK', circleCta: '製作する →',
     circleRestrict: '⚠️ ふたば★学園祭２１にサークル参加している方のみ',
@@ -3074,7 +3341,7 @@ const TRANSLATIONS = {
     pcolGeneralLabel: '🎫 General Attendees', pcolCircleLabel: '🪑 Circle Participants',
     participantPre: '👥 Attending: ', participantSuf: '',
     interestPre: '💬 Interested: ', interestSuf: '', shareMailLbl: 'Mail', shareCopyLbl: 'Copy', shareCopiedLbl: '✓ Copied',
-    heartBubble: 'Not sure yet?<br>Tap if you\'re interested♡',
+    heartBubble: 'Tap the heart<br>if you\'re interested♡',
     countdownLabel: 'Days until ふたば★学園祭２１', countdownUnit: ' days', deadlineNote: '⏰ {n} days left to apply',
     circleName: 'Circle Participant', circleSub: 'Distribution OK', circleCta: 'Get Started →',
     circleRestrict: '⚠️ ふたば★学園祭２１ circle participants only',
@@ -3091,7 +3358,7 @@ const TRANSLATIONS = {
     pcolGeneralLabel: '🎫 ふつうの参加者', pcolCircleLabel: '🪑 サークルの参加者',
     participantPre: '👥 参加中：', participantSuf: '人だべ',
     interestPre: '💬 興味あるべ：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
-    heartBubble: 'まだ迷ってるけど<br>気になってるべさ♡',
+    heartBubble: 'そうだね押してみてだべ♡',
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日だべ', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日だべ',
     circleName: 'サークルの参加者', circleSub: '頒布もOKだべさ', circleCta: 'つくってみよさ →',
     circleRestrict: '⚠️ ふたば★学園祭２１にサークルで出てる人だけだべ',
@@ -3108,7 +3375,7 @@ const TRANSLATIONS = {
     pcolGeneralLabel: '🎫 ふつうの参加者', pcolCircleLabel: '🪑 サークルの参加者',
     participantPre: '👥 参加中：', participantSuf: '人だが',
     interestPre: '💬 興味あるだが：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
-    heartBubble: 'まだ迷ってるけど<br>気になってるだが♡',
+    heartBubble: 'そうだね押してみてだが♡',
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日だが', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日だが',
     circleName: 'サークルの参加者', circleSub: '頒布もOKだが', circleCta: 'つぐってみっか →',
     circleRestrict: '⚠️ ふたば★学園祭２１のサークルの人だけだが',
@@ -3125,7 +3392,7 @@ const TRANSLATIONS = {
     pcolGeneralLabel: '🎫 ふつうの参加者', pcolCircleLabel: '🪑 サークルの参加者',
     participantPre: '👥 参加中：', participantSuf: '人だら',
     interestPre: '💬 興味あるじゃん：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
-    heartBubble: 'まだ迷ってるけど<br>気になってるだら♡',
+    heartBubble: 'そうだね押してみてだら♡',
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日だら', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日だもんで',
     circleName: 'サークルの参加者', circleSub: '頒布もOKだもんで', circleCta: 'つくるだら →',
     circleRestrict: '⚠️ ふたば★学園祭２１のサークルの人だけだら',
@@ -3142,7 +3409,7 @@ const TRANSLATIONS = {
     pcolGeneralLabel: '🎫 ふつうの参加者', pcolCircleLabel: '🪑 サークルの参加者',
     participantPre: '👥 参加中：', participantSuf: '人ぜよ',
     interestPre: '💬 興味あるき：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
-    heartBubble: 'まだ迷ってるけど<br>気になってるぜよ♡',
+    heartBubble: 'そうだね押してみてぜよ♡',
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日ぜよ', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日じゃき',
     circleName: 'サークルの参加者ぜよ', circleSub: '頒布もOKじゃき', circleCta: 'つくるぜよ →',
     circleRestrict: '⚠️ ふたば★学園祭２１にサークルで出ゆる人だけじゃき',
@@ -3159,7 +3426,7 @@ const TRANSLATIONS = {
     pcolGeneralLabel: '🎫 なんくるないさーなひとぅ', pcolCircleLabel: '🪑 サークルぬひとぅ',
     participantPre: '👥 参加中：', participantSuf: 'ちゅ',
     interestPre: '💬 興味あいびーん：', interestSuf: 'ちゅ', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
-    heartBubble: 'まだ迷ってるけど<br>気になってるさぁ♡',
+    heartBubble: 'そうだね押してみてさぁ♡',
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: 'ちちやいびーん', deadlineNote: '⏰ 申し込み締め切りまであと {n} ちちやいびーん',
     circleName: 'サークルぬひとぅ', circleSub: '頒布もOKさぁ', circleCta: 'つくいんど →',
     circleRestrict: '⚠️ ふたば★学園祭２１んかいサークルぬひとぅぬみやいびーん',
@@ -3176,7 +3443,7 @@ const TRANSLATIONS = {
     pcolGeneralLabel: '🎫 いっぱん参加者', pcolCircleLabel: '🪑 サークル参加者',
     participantPre: '👥 参加中：', participantSuf: '人',
     interestPre: '💬 興味あり：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
-    heartBubble: 'まだ迷ってるけど<br>気になってるで♡',
+    heartBubble: 'そうだね押してみてや♡',
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日やで', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日やで',
     circleName: 'サークル参加者', circleSub: '頒布もOKやで', circleCta: 'つくってもらうで →',
     circleRestrict: '⚠️ ふたば★学園祭２１にサークルで出てる人だけやで',
@@ -3193,7 +3460,7 @@ const TRANSLATIONS = {
     pcolGeneralLabel: '🎫 いっぱん参加者', pcolCircleLabel: '🪑 サークル参加者',
     participantPre: '👥 参加中：', participantSuf: '人',
     interestPre: '💬 興味あり：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
-    heartBubble: 'まだ迷ってるけど<br>気になってるたい♡',
+    heartBubble: 'そうだね押してみてたい♡',
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日たい', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日ばい',
     circleName: 'サークル参加者', circleSub: '頒布もOKたい', circleCta: 'つくってもらうばい →',
     circleRestrict: '⚠️ ふたば★学園祭２１にサークルで出ようとる人だけたい',
@@ -3210,7 +3477,7 @@ const TRANSLATIONS = {
     pcolGeneralLabel: '🎫 いっぱん参加者', pcolCircleLabel: '🪑 サークル参加者',
     participantPre: '👥 参加中：', participantSuf: '人',
     interestPre: '💬 興味あり：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
-    heartBubble: 'まだ迷ってるけど<br>気になってるだがね♡',
+    heartBubble: 'そうだね押してみてだがね♡',
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日だがね', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日だぎゃ',
     circleName: 'サークル参加者', circleSub: '頒布もOKだがね', circleCta: 'つくってちょ →',
     circleRestrict: '⚠️ ふたば★学園祭２１にサークルで出とる人だけだぎゃ',
@@ -3227,7 +3494,7 @@ const TRANSLATIONS = {
     pcolGeneralLabel: '🎫 いっぱん参加者', pcolCircleLabel: '🪑 サークル参加者',
     participantPre: '👥 参加中：', participantSuf: '人',
     interestPre: '💬 興味あり：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
-    heartBubble: 'まだ迷ってるけど<br>気になってるっけ♡',
+    heartBubble: 'そうだね押してみてっけ♡',
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日っけ', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日っけ',
     circleName: 'サークル参加者', circleSub: '頒布もOKっけ', circleCta: 'つくってもらうっけ →',
     circleRestrict: '⚠️ ふたば★学園祭２１にサークルで出てる人だけっけ',
@@ -3244,7 +3511,7 @@ const TRANSLATIONS = {
     pcolGeneralLabel: '🎫 いっぱん参加者', pcolCircleLabel: '🪑 サークル参加者',
     participantPre: '👥 参加中：', participantSuf: '人',
     interestPre: '💬 興味あり：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
-    heartBubble: 'まだ迷ってるけど\n気になってるじゃん♡',
+    heartBubble: 'そうだね押してみてじゃん♡',
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日じゃん', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日じゃん',
     circleName: 'サークル参加者', circleSub: '頒布もOKじゃん', circleCta: 'つくってもらっちゃお →',
     circleRestrict: '⚠️ ふたば★学園祭２１にサークルで出てる人だけじゃん',
@@ -3261,7 +3528,7 @@ const TRANSLATIONS = {
     pcolGeneralLabel: '🎫 いっぱん参加者', pcolCircleLabel: '🪑 サークル参加者',
     participantPre: '👥 参加中：', participantSuf: '人',
     interestPre: '💬 興味あり：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
-    heartBubble: 'まだ迷ってるけど<br>気になってるじゃん♡',
+    heartBubble: 'そうだね押してみてじゃん♡',
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日じゃん', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日じゃん',
     circleName: 'サークル参加者', circleSub: '頒布もOKじゃん', circleCta: 'つくってもらおうじゃん →',
     circleRestrict: '⚠️ ふたば★学園祭２１にサークルで出てる人だけじゃん',
@@ -3278,7 +3545,7 @@ const TRANSLATIONS = {
     pcolGeneralLabel: '🎫 いっぱん参加者', pcolCircleLabel: '🪑 サークル参加者',
     participantPre: '👥 参加中：', participantSuf: '人',
     interestPre: '💬 興味あり：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
-    heartBubble: 'まだ迷ってるけど<br>気になってるだっぺ♡',
+    heartBubble: 'そうだね押してみてだっぺ♡',
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日だっぺ', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日だっぺ',
     circleName: 'サークル参加者', circleSub: '頒布もOKだっぺ', circleCta: 'つくってもらっぺ →',
     circleRestrict: '⚠️ ふたば★学園祭２１にサークルで出てる人だけだっぺよ',
@@ -3295,7 +3562,7 @@ const TRANSLATIONS = {
     pcolGeneralLabel: '🎫 いっぱん参加者', pcolCircleLabel: '🪑 サークル参加者',
     participantPre: '👥 参加中：', participantSuf: '人のじゃ',
     interestPre: '💬 興味あり：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
-    heartBubble: 'まだ注文は迷うておるが<br>気になっておるのじゃ♡',
+    heartBubble: 'そうだねを押すのじゃ♡',
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日のじゃ', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日じゃ',
     circleName: 'サークル参加者', circleSub: '頒布もOKなのじゃ', circleCta: 'つくってもらうのじゃ →',
     circleRestrict: '⚠️ ふたば★学園祭２１にサークルで出ておる者だけじゃ',
@@ -3312,7 +3579,7 @@ const TRANSLATIONS = {
     pcolGeneralLabel: '🎫 いっぱんの民', pcolCircleLabel: '🪑 サークルの者ども',
     participantPre: '👥 参加中：', participantSuf: '名',
     interestPre: '💬 興味ある者：', interestSuf: '名', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
-    heartBubble: '注文はまだ決めかねるが<br>興味はある者はこちらへ',
+    heartBubble: 'そうだねを押すがよい',
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日である', deadlineNote: '⏰ 申し込み締め切りまで {n} 日しかないぞ',
     circleName: 'サークルの者ども', circleSub: '頒布も許可する', circleCta: '製作を命ずる →',
     circleRestrict: '⚠️ ふたば★学園祭２１にサークル参加しておる者のみ許可する',
@@ -3329,7 +3596,7 @@ const TRANSLATIONS = {
     pcolGeneralLabel: '🎫 いっぱん参加者', pcolCircleLabel: '🪑 サークル参加者',
     participantPre: '👥 参加中：', participantSuf: '人もいるんですけど〜',
     interestPre: '💬 興味あり：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
-    heartBubble: 'まだ迷ってるんですけど<br>気になってる人はここ♡',
+    heartBubble: 'そうだねしてね♡',
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日しかないんですけど〜', deadlineNote: '⏰ 締め切りまであと {n} 日なんですけど？',
     circleName: 'サークル参加者', circleSub: '頒布もOKなんですけど♡', circleCta: 'つくってもらうんですけど →',
     circleRestrict: '⚠️ ふたば★学園祭２１のサークルの人だけなんですけど〜？',
@@ -3346,7 +3613,7 @@ const TRANSLATIONS = {
     pcolGeneralLabel: '🎫 ぃっぱん参ヵ者', pcolCircleLabel: '🪑 サークル参ヵ者',
     participantPre: '👥 参ヵ中：', participantSuf: '人もぃてうける',
     interestPre: '💬 気になってる：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
-    heartBubble: 'まだ迷ってるけど<br>気になってるじゃん♡',
+    heartBubble: 'そうだね押してみてじゃん♡',
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日じゃん卍', deadlineNote: '⏰ 締め切りまじあと {n} 日しかないじゃん',
     circleName: 'サークル参ヵ者', circleSub: '頒布もOKじゃん♡', circleCta: 'つくってもらっちゃ →',
     circleRestrict: '⚠️ ふたば★学園祭２１乃サークル乃人だけなんよ〜',
@@ -3363,7 +3630,7 @@ const TRANSLATIONS = {
     pcolGeneralLabel: '🎫 いっぱん参加者', pcolCircleLabel: '🪑 サークル参加者',
     participantPre: '👥 参加中：', participantSuf: '人だってばよ',
     interestPre: '💬 興味あり：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
-    heartBubble: 'まだ迷ってるけど<br>信じてくれ！気になってるってばよ♡',
+    heartBubble: 'そうだね押してくれってばよ♡',
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日だってばよ', deadlineNote: '⏰ 締め切りまであと {n} 日だってばよ',
     circleName: 'サークル参加者', circleSub: '頒布もOKだってばよ', circleCta: '製作するってばよ →',
     circleRestrict: '⚠️ ふたば★学園祭２１のサークルのやつだけだってばよ',
@@ -3380,7 +3647,7 @@ const TRANSLATIONS = {
     pcolGeneralLabel: '🎫 いっぱん参加者', pcolCircleLabel: '🪑 サークル参加者',
     participantPre: '👥 参加中：', participantSuf: '名。',
     interestPre: '…興味あり：', interestSuf: '名。', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
-    heartBubble: '…まだ決めていない。<br>…でも気になる。',
+    heartBubble: '…そうだね。押せ。',
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日。', deadlineNote: '…締め切りまで {n} 日。',
     circleName: 'サークル参加者', circleSub: '…頒布可。', circleCta: '…製作する。',
     circleRestrict: '…サークル参加者のみ。',
@@ -3397,7 +3664,7 @@ const TRANSLATIONS = {
     pcolGeneralLabel: '🎫 いっぱん参加者', pcolCircleLabel: '🪑 サークル参加者',
     participantPre: '👥 参加中：', participantSuf: '人もいるぞ！',
     interestPre: '💬 興味あり：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
-    heartBubble: 'まだ迷ってるけど<br>オッス！気になってるぞ♡',
+    heartBubble: 'オッス！そうだね押してくれぞ♡',
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日だぞ！', deadlineNote: '⏰ 締め切りまであと {n} 日だぞ',
     circleName: 'サークル参加者', circleSub: '頒布もOKだぞ', circleCta: 'つくってもらうぞ →',
     circleRestrict: '⚠️ ふたば★学園祭２１のサークルのやつだけだぞ',
@@ -3414,7 +3681,7 @@ const TRANSLATIONS = {
     pcolGeneralLabel: '🎫 いっぱん参加者', pcolCircleLabel: '🪑 サークル参加者',
     participantPre: '👥 参加中：', participantSuf: '人いるよ✨',
     interestPre: '💬 興味あり：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
-    heartBubble: 'まだ迷ってるけど<br>気になってるの✨ぽちっとしてね♡',
+    heartBubble: 'ぽちっとそうだねしてね✨♡',
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日だよ✨', deadlineNote: '⏰ 締め切りまであと {n} 日だよ✨',
     circleName: 'サークル参加者', circleSub: '頒布もOKだよ✨', circleCta: 'へんしんさせて →',
     circleRestrict: '⚠️ ふたば★学園祭２１のサークルのひとだけなの',
@@ -3431,7 +3698,7 @@ const TRANSLATIONS = {
     pcolGeneralLabel: '🎫 いっぱん参加者', pcolCircleLabel: '🪑 サークル参加者',
     participantPre: '👥 参加中：', participantSuf: '人…べつにうれしくないし',
     interestPre: '💬 興味あり：', interestSuf: '人', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
-    heartBubble: 'べ、べつに気になってる<br>わけじゃないけど…♡',
+    heartBubble: 'べ、べつにそうだねしてほしい<br>わけじゃないけど…♡',
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日…べつにカウントしてないし', deadlineNote: '⏰ 締め切りまであと {n} 日よ、お、覚えておきなさいよね',
     circleName: 'サークル参加者', circleSub: 'は、頒布もOKよ、べつに…', circleCta: 'つ、つくってあげる →',
     circleRestrict: '⚠️ ふたば★学園祭２１のサークルの人だけよ、ちゃんと確認しなさい',
@@ -3448,7 +3715,7 @@ const TRANSLATIONS = {
     pcolGeneralLabel: '🎫 一般の使徒', pcolCircleLabel: '🪑 サークルの眷属',
     participantPre: '👥 契約済み：', participantSuf: '名の使徒',
     interestPre: '💬 魂が揺れる者：', interestSuf: '名', shareMailLbl: 'メール', shareCopyLbl: 'コピー', shareCopiedLbl: '✓ コピー',
-    heartBubble: '…まだ契約は迷うが<br>我が魂が引き寄せられる…♡',
+    heartBubble: '…そうだねを押せ。<br>運命がそう言っている…',
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日…刻一刻と迫る', deadlineNote: '⏰ 封印の刻まであと {n} 日…',
     circleName: 'サークルの眷属', circleSub: '頒布という名の布教も可', circleCta: '刻印を授かる →',
     circleRestrict: '⚠️ ふたば★学園祭２１の眷属のみ許された儀式',
@@ -3490,10 +3757,20 @@ function setLang(code) {
     if (el && arr) el.innerHTML = arr.map(s => `<li>${s}</li>`).join('');
   };
 
-  setHtml('gateTitle', t.title);
+  const titleEl = document.getElementById('gateTitle');
+  if (titleEl && t.title) {
+    const parts = t.title.split('<br>');
+    titleEl.innerHTML = parts[0] + (parts[1] ? `<br><span style="font-size:.78em;font-weight:600;opacity:.85;">${parts[1]}</span>` : '');
+  }
   setText('gateTagline1', t.tagline1);
   setText('gateTagline2', t.tagline2);
   setText('gateTagline3', t.tagline3);
+  // マーキー複製テキストを同期
+  const marquee = document.getElementById('bakaMarquee');
+  if (marquee && t.tagline1 && t.tagline2) {
+    const inner = `✨🎨 <span class="baka-inner">${t.tagline1}</span> <span class="baka-arrow" style="-webkit-text-fill-color:#ffd93d;color:#ffd93d;font-size:1.3rem;">➡️</span> <span class="baka-inner">${t.tagline2}</span> 🥔✨`;
+    marquee.querySelectorAll('.baka-marquee-inner').forEach(el => { el.innerHTML = inner; });
+  }
   setText('gateWhich', t.which);
   setText('gatePcolGeneralLabel', t.pcolGeneralLabel);
   setText('gatePcolCircleLabel',  t.pcolCircleLabel);
@@ -3501,9 +3778,15 @@ function setLang(code) {
   setText('gateInterestGeneralSuf', t.interestSuf);
   setText('gateInterestCirclePre',  t.interestPre);
   setText('gateInterestCircleSuf',  t.interestSuf);
+  // 興味ありカウントテキストを再描画（翻訳反映）
+  const icg = document.getElementById('interestGeneralCount');
+  const icc = document.getElementById('interestCircleCount');
+  if (icg) { const n = icg.textContent.replace(/[^0-9]/g,''); icg.textContent = (t.interestPre||'💬 興味あり：') + n + (t.interestSuf||'人'); }
+  if (icc) { const n = icc.textContent.replace(/[^0-9]/g,''); icc.textContent = (t.interestPre||'💬 興味あり：') + n + (t.interestSuf||'人'); }
   setText('gateShareMailLbl', t.shareMailLbl);
   const bubbleEl = document.getElementById('heartBubbleText');
   if (bubbleEl && t.heartBubble) bubbleEl.innerHTML = t.heartBubble;
+  updateVisitorMessage();
   const copyLbl = document.getElementById('gateShareCopyLabel');
   if (copyLbl && !document.getElementById('gateShareCopyBtn')?.classList.contains('copied')) {
     copyLbl.textContent = t.shareCopyLbl || 'コピー';
@@ -3517,7 +3800,7 @@ function setLang(code) {
     countdownEl2.innerHTML = `
       <div class="gate-countdown-label">${t.countdownLabel || 'ふたば★学園祭２１まで'}</div>
       <div class="gate-countdown-days">${eventDaysLeft2}<span>${t.countdownUnit || '日'}</span></div>
-      <div class="gate-countdown-sub">${fmtDate(EVENT_DATE)}</div>`;
+      `;
   }
   const daysLeft2 = Math.ceil((DEADLINE - n2) / 86400000);
   const deadlineEl2 = document.getElementById('gateDeadlineNote');
@@ -3626,14 +3909,16 @@ loadGateParticipants();
 loadInterests();
 if (localStorage.getItem('bc_interest_liked_circle'))  applyHeartState('circle',  true);
 if (localStorage.getItem('bc_interest_liked_general')) applyHeartState('general', true);
+if (localStorage.getItem('bc_participant_circle'))  applyParticipantState('circle',  true);
+if (localStorage.getItem('bc_participant_general')) applyParticipantState('general', true);
 initCanvasDrag();
 initVisitorCount();
 </script>
 <!-- INTEREST MODAL -->
 <div class="interest-modal-bg" id="interestModalBg" onclick="closeInterestModal(event)">
   <div class="interest-modal" onclick="event.stopPropagation()">
-    <div class="interest-modal-title">♡ 興味あり！</div>
-    <div class="interest-modal-sub">Xアカウントを入れると顔アイコンが表示されます（省略可）</div>
+    <div class="interest-modal-title" id="interestModalTitle">♡ 興味あり！</div>
+    <div class="interest-modal-sub" id="interestModalSub">Xアカウントを入れると顔アイコンが表示されます（省略可）</div>
     <div class="interest-field">
       <label>X アカウント（@なし・省略可）</label>
       <div class="interest-at">
