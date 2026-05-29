@@ -296,9 +296,6 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:0;}
 .form-section .section-title{color:#fff;}
 .form-section .section-title::before{background:var(--potato-light);}
 .form-section .section-sub{color:rgba(255,255,255,.8);}
-.form-mode-bar{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:8px;margin-bottom:22px;font-size:.83rem;font-weight:700;}
-.form-mode-bar.circle-mode{background:var(--circle-bg);color:var(--circle-color);}
-.form-mode-bar.general-mode{background:var(--general-bg);color:var(--general-color);}
 .form-deadline-note{display:none;background:#8a1010;color:#fff;border-radius:8px;padding:14px 16px;margin-bottom:16px;font-size:.88rem;font-weight:700;line-height:1.6;}
 .form-deadline-note.show{display:block;}
 .form-earlybird-note{display:none;background:var(--gold-bg);border:1.5px solid var(--gold-border);border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:.88rem;color:var(--gold);font-weight:700;line-height:1.6;}
@@ -1021,7 +1018,6 @@ footer a{color:var(--potato-light);text-decoration:none;}
     <div class="section-sub">画像をアップロードして仕上がりを確認しながら注文できます</div>
     <div class="form-deadline-note" id="formDeadlineNote">🚫 申し込みは締め切りました。ありがとうございました！</div>
     <div class="form-earlybird-note" id="formEarlyBirdNote"></div>
-    <div class="form-mode-bar" id="formModeBar"></div>
     <form class="order-form" id="orderForm" novalidate>
       <div class="form-group full">
         <label>おなまえ<span class="required-mark">*</span></label>
@@ -1043,6 +1039,11 @@ footer a{color:var(--potato-light);text-decoration:none;}
       </div>
 
       <!-- 一般参加者向けサークル名（任意） -->
+      <div class="form-group" id="generalCircleSpaceGroup" style="display:none;">
+        <label>サークルスペース<span style="font-size:.72rem;font-weight:400;color:rgba(255,255,255,.6);margin-left:6px;">任意</span></label>
+        <input type="text" id="f-general-circle-space" placeholder="例：A-01A" oninput="this.value=this.value.replace(/[^A-Za-z0-9\-]/g,'').toUpperCase()" autocomplete="off" inputmode="text">
+        <span style="font-size:.68rem;color:rgba(255,255,255,.6);margin-top:2px;display:block;">半角英数字・自動大文字変換</span>
+      </div>
       <div class="form-group" id="generalCircleNameGroup" style="display:none;">
         <label>サークル名<span style="font-size:.72rem;font-weight:400;color:rgba(255,255,255,.6);margin-left:6px;">任意</span></label>
         <input type="text" id="f-general-circle-name" placeholder="サークルに所属している場合はご記入ください">
@@ -1729,19 +1730,7 @@ function applyModeUI() {
   const ribbon = document.getElementById('modeRibbon');
   ribbon.className = 'mode-ribbon ' + (isC ? 'circle-mode' : 'general-mode');
   ribbon.textContent = isC ? '🪑 サークル参加者モードで表示中' : '🎫 一般参加者モードで表示中';
-  const bar = document.getElementById('formModeBar');
-  bar.className = 'form-mode-bar ' + (isC ? 'circle-mode' : 'general-mode');
-  bar.style.display = isC ? '' : 'none';
   const maxQ = getMaxQty(currentMode);
-  bar.textContent = isC
-    ? (() => {
-        const eb = isEarlyBird();
-        const p1 = discountedPrice(200); // 4〜10点
-        const p2 = discountedPrice(250); // 11点〜
-        const priceStr = p1 === p2 ? `追加¥${p1}〜` : `追加¥${p1}〜¥${p2}`;
-        return `🪑 サークル参加者（ふたば★学園祭２１限定）— 3点無料 / ${priceStr} / 最大${maxQ}点${eb ? ' ⭐早割適用中' : ''}`;
-      })()
-    : '🎫 一般参加者 — 1点無料 / 追加¥400 / 最大2点（1人1イラスト上限）';
   document.getElementById('f-qty').max = maxQ;
   const qtyHint = document.getElementById('qtyHint');
   if (isC) {
@@ -1767,6 +1756,8 @@ function applyModeUI() {
   if (circleSpaceGroup) circleSpaceGroup.style.display = isC ? '' : 'none';
   const generalCircleNameGroup = document.getElementById('generalCircleNameGroup');
   if (generalCircleNameGroup) generalCircleNameGroup.style.display = isC ? 'none' : '';
+  const generalCircleSpaceGroup = document.getElementById('generalCircleSpaceGroup');
+  if (generalCircleSpaceGroup) generalCircleSpaceGroup.style.display = isC ? 'none' : '';
   document.getElementById('f-sample').checked = false;
   // 問い合わせセクションの連絡先リンクを設定（運営のXアカウント等があれば）
   document.getElementById('inquiryContactLinks').innerHTML =
@@ -1973,6 +1964,11 @@ function switchPricingTab(tab) {
   });
   // カレンダーをタブに合わせて再描画
   renderCalendar(tab);
+  // フォーム表示中なら製作依頼フォームのモードも切り替える
+  if (currentMode !== null && currentMode !== tab) {
+    currentMode = tab;
+    applyModeUI();
+  }
 }
 
 // ══ SHAPE ══
@@ -2348,7 +2344,7 @@ document.getElementById('orderForm').addEventListener('submit', async e => {
     date: new Date().toLocaleString('ja-JP'),
     name: document.getElementById('f-name').value.trim(),
     circleName: currentMode === 'circle' ? document.getElementById('f-circle-name').value.trim() : (document.getElementById('f-general-circle-name').value.trim() || ''),
-    circleSpace: currentMode === 'circle' ? document.getElementById('f-circle-space').value.trim() : '',
+    circleSpace: currentMode === 'circle' ? document.getElementById('f-circle-space').value.trim() : (document.getElementById('f-general-circle-space').value.trim() || ''),
     email: document.getElementById('f-email').value.trim(),
     xAccount: document.getElementById('f-xaccount').value.trim().replace(/^@/, ''),
     contactPref: document.querySelector('input[name="contact-pref"]:checked')?.value || 'email',
@@ -2931,16 +2927,18 @@ function renderInterestsAdmin() {
   const typeBadgeClass = (t) => t === 'circle' ? 'type-circle' : t === 'participant_circle' ? 'type-circle' : t === 'participant_general' ? 'type-general' : 'type-general';
   c.innerHTML = `<table class="order-table">
     <thead><tr>
-      <th>登録日時</th><th>種別</th><th>Xアカウント</th><th>表示名</th><th>アイコン</th><th>操作</th>
+      <th>登録日時</th><th>種別</th><th>Xアカウント</th><th>表示名</th><th>IPアドレス</th><th>アイコン</th><th>操作</th>
     </tr></thead>
     <tbody>${list.map(i => {
       const src = avatarUrl(i.x_account, i.display_name);
       const date = i.created_at ? new Date(i.created_at).toLocaleString('ja-JP') : '—';
+      const ip = i.ip_address || '—';
       return `<tr>
         <td style="font-size:.76rem;color:rgba(255,255,255,.78);white-space:nowrap">${date}</td>
         <td><span class="type-badge ${typeBadgeClass(i.type)}">${typeLabel[i.type || 'general'] || i.type}</span></td>
         <td style="font-size:.85rem">${i.x_account ? `@${i.x_account}` : '—'}</td>
         <td style="font-size:.85rem">${i.display_name || '—'}</td>
+        <td style="font-size:.72rem;color:rgba(255,255,255,.6);font-family:monospace;white-space:nowrap">${ip}</td>
         <td><img class="thumb-mini" src="${src}" alt="" onerror="this.src='${FALLBACK_AVATAR}'" style="border-radius:50%"></td>
         <td>${i.id ? `<button class="admin-btn danger" style="padding:4px 10px;font-size:.72rem" onclick="deleteInterest(${i.id})">削除</button>` : '—'}</td>
       </tr>`;
@@ -3500,6 +3498,14 @@ function closeInterestModal(e) {
   _pendingInterestType = null;
 }
 
+async function fetchClientIP() {
+  try {
+    const res = await fetch('https://api.ipify.org?format=json');
+    const d = await res.json();
+    return d.ip || '';
+  } catch { return ''; }
+}
+
 async function submitInterest() {
   const xAccount = document.getElementById('interest-x').value.trim().replace(/^@/, '');
   const name     = document.getElementById('interest-name').value.trim();
@@ -3508,7 +3514,8 @@ async function submitInterest() {
     showToast('XアカウントまたはXに表示される名前を入力してください'); return;
   }
 
-  const data = { x_account: xAccount, display_name: name, type };
+  const ip = await fetchClientIP();
+  const data = { x_account: xAccount, display_name: name, type, ip_address: ip };
   const localList = JSON.parse(localStorage.getItem('bc_interests') || '[]');
   localList.push(data);
   localStorage.setItem('bc_interests', JSON.stringify(localList));
