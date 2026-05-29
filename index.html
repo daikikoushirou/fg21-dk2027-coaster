@@ -206,11 +206,15 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:0;}
 .dates-box-title{font-size:.85rem;font-weight:700;color:var(--potato-dark);margin-bottom:12px;display:flex;align-items:center;gap:6px;}
 .dates-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;}
 .date-item{display:flex;flex-direction:column;gap:2px;}
-.date-item-label{font-size:.72rem;color:var(--muted);font-weight:700;}
+.date-item-label{font-size:.72rem;color:var(--muted);font-weight:700;display:flex;align-items:center;gap:4px;}
 .date-item-value{font-size:.88rem;font-weight:700;color:var(--ink);}
 .date-item-value.active{color:var(--green);}
 .date-item-value.expired{color:var(--red);}
 .date-item-note{font-size:.72rem;color:var(--muted);}
+.tip-icon{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;background:var(--muted);color:#fff;font-size:9px;font-weight:700;cursor:pointer;flex-shrink:0;position:relative;line-height:1;user-select:none;}
+.tip-icon:hover .tip-popup,.tip-icon:focus .tip-popup{display:block;}
+.tip-popup{display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:#2c2418;color:#fff;font-size:.75rem;line-height:1.6;padding:8px 12px;border-radius:7px;width:220px;font-weight:400;z-index:100;pointer-events:none;white-space:normal;box-shadow:0 4px 16px rgba(0,0,0,.25);}
+.tip-popup::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#2c2418;}
 
 /* EARLY BIRD BADGE */
 .early-bird-badge{display:inline-flex;align-items:center;gap:5px;background:var(--gold-bg);border:1.5px solid var(--gold-border);color:var(--gold);font-size:.78rem;font-weight:700;padding:4px 10px;border-radius:6px;margin-left:8px;}
@@ -939,8 +943,8 @@ footer a{color:var(--potato-light);text-decoration:none;}
     <div class="dates-grid" id="datesGrid"></div>
   </div>
   <div class="pricing-tabs" id="pricingTabs">
-    <button class="pricing-tab circle-tab" onclick="switchPricingTab('circle')">🪑 サークル参加者</button>
     <button class="pricing-tab general-tab" onclick="switchPricingTab('general')">🎫 一般参加者</button>
+    <button class="pricing-tab circle-tab" onclick="switchPricingTab('circle')">🪑 サークル参加者</button>
   </div>
   <div class="pricing-panel" id="pricePanel-circle">
     <table class="price-tier-table" id="circlePriceTable">
@@ -959,8 +963,9 @@ footer a{color:var(--potato-light);text-decoration:none;}
       🔬 <strong>端材サンプル試し刷り</strong>：3週間前まで の申込者 または 11点以上 の申込者は初回無料。それ以外は¥300。端材を使用するため形状が不完全・非平坦な場合があります。
     </div>
     <div class="shape-note" style="margin-top:8px;background:#fff8f0;border-left:3px solid #e8b060;border-radius:0 8px 8px 0;font-size:.82rem;line-height:1.75;color:var(--ink);">
-      📝 <strong>価格変更の可能性について：</strong>家内制手工業のため、作業量が著しく増えた場合、各種オプションや単価が上がる可能性があります。前回の学園祭では開催10日前ごろに申し込みが集中し、現場がかなりバタバタしました。今回は早割も導入しましたので、<strong>早ければ早いほど安い</strong>と思っていただいて間違いありません。数を作ってみたいサークルの方も、まずは少部数で早めの申し込みをいただけると大変助かります。
+      📝 <strong>価格変更の可能性について：</strong>1人で製作しているため、作業量が著しく増えた場合、各種オプションや単価が上がる可能性があります。前回の学園祭では開催10日前ごろに申し込みが集中し、現場がかなりバタバタしました。今回は早割も導入しましたので、<strong>早ければ早いほど安い</strong>と思っていただいて間違いありません。数を作ってみたいサークルの方も、まずは少部数で早めの申し込みをいただけると大変助かります。
     </div>
+  </div>
   <div class="pricing-panel" id="pricePanel-general">
     <table class="price-tier-table">
       <thead><tr><th>点数</th><th>1点あたり</th><th>備考</th></tr></thead>
@@ -975,9 +980,10 @@ footer a{color:var(--potato-light);text-decoration:none;}
       🔬 <strong>端材サンプル試し刷り</strong>：3週間前まで の申込者は初回無料。それ以外は¥300。端材を使用するため形状が不完全・非平坦な場合があります。
     </div>
     <div class="shape-note" style="margin-top:8px;background:#fff8f0;border-left:3px solid #e8b060;border-radius:0 8px 8px 0;font-size:.82rem;line-height:1.75;color:var(--ink);">
-      📝 <strong>価格変更の可能性について：</strong>家内制手工業のため、作業量が著しく増えた場合、単価が上がる可能性があります。早めのお申し込みをお待ちしております。
+      📝 <strong>価格変更の可能性について：</strong>1人で製作しているため、作業量が著しく増えた場合、単価が上がる可能性があります。早めのお申し込みをお待ちしております。
     </div>
   </div>
+</div>
 
 <hr class="divider">
 
@@ -1586,16 +1592,22 @@ function initDatesUI() {
   document.getElementById('eventDateDisplay').textContent = fmtDate(EVENT_DATE);
   const n = now();
   const items = [
-    { label: '早割締め切り', date: EARLY_BIRD_END, note: 'サークル ¥250→¥220', active: n < EARLY_BIRD_END, circleOnly: true },
-    { label: 'サンプル無料期限', date: SAMPLE_FREE_END, note: 'これ以降のサンプル試し刷りは¥300', active: n < SAMPLE_FREE_END },
-    { label: '大量注文締め切り', date: BULK_ORDER_END, note: 'サークル6点以上の申込期限', active: n < BULK_ORDER_END, circleOnly: true },
-    { label: '仕上がり確認画像 受付終了', date: COMPLETION_IMG_END, note: '開催10日前', active: n < COMPLETION_IMG_END },
-    { label: '申し込み締め切り', date: DEADLINE, note: '開催2日前 朝4時', active: n < DEADLINE },
+    { label: '早割締め切り', date: EARLY_BIRD_END, note: 'サークル ¥250→¥220', active: n < EARLY_BIRD_END, circleOnly: true,
+      tip: '開催1か月前まで申し込むと、サークル参加者の有料分（4点目以降）が¥250→¥220に割引されます。' },
+    { label: 'サンプル無料期限', date: SAMPLE_FREE_END, note: 'これ以降のサンプル試し刷りは¥300', active: n < SAMPLE_FREE_END,
+      tip: '端材サンプル試し刷りとは、本番と同じイラストを端材（はぎれ素材）に試し刷りし、仕上がりイメージを事前に確認できるオプションです。この期限内の申込者は初回1回が無料。' },
+    { label: '大量注文締め切り', date: BULK_ORDER_END, note: 'サークル6点以上の申込期限', active: n < BULK_ORDER_END, circleOnly: true,
+      tip: 'この期日までに申し込んだサークル参加者のみ、6点以上（最大20点）の注文が可能です。以降は最大5点に制限されます。' },
+    { label: '仕上がり確認画像 受付終了', date: COMPLETION_IMG_END, note: '開催10日前', active: n < COMPLETION_IMG_END,
+      tip: '1点目の刻印完了後に画像をお送りするオプションです。確認・OKをいただいてから残りを製作します。開催10日前を過ぎると、製作スケジュールの都合でこのオプションを受け付けられなくなります。' },
+    { label: '申し込み締め切り', date: DEADLINE, note: '開催2日前 朝4時', active: n < DEADLINE,
+      tip: 'コースターの製作には時間が必要なため、開催2日前の朝4時を申し込み締め切りとしています。お早めにどうぞ。' },
   ];
   document.getElementById('datesGrid').innerHTML = items.map(it => {
     const expired = !it.active;
+    const tipHtml = it.tip ? `<span class="tip-icon" tabindex="0">ⓘ<span class="tip-popup">${it.tip}</span></span>` : '';
     return `<div class="date-item${it.circleOnly ? ' circle-only-date' : ''}">
-      <div class="date-item-label">${it.label}</div>
+      <div class="date-item-label">${it.label}${tipHtml}</div>
       <div class="date-item-value ${expired ? 'expired' : 'active'}">${fmtDate(it.date)} ${expired ? '（終了）' : '（受付中）'}</div>
       <div class="date-item-note">${it.note}</div>
     </div>`;
@@ -3980,7 +3992,7 @@ function renderGroupAvatars(countId, avatarsId, participants) {
 
 // init
 initDatesUI();
-switchPricingTab('circle');
+switchPricingTab('general');
 loadGateParticipants();
 loadInterests();
 if (localStorage.getItem('bc_interest_liked_circle'))  applyHeartState('circle',  true);
