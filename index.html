@@ -2556,13 +2556,17 @@ function renderOrders() {
         </select>
       </div>
 
-      <!-- 行3: 氏名・連絡先・注文内容 -->
+      <!-- 行3: 氏名・合計金額・形状点数・元画像 -->
       <div class="order-card-row">
-        <div class="oc-group">
+        <div class="oc-group" style="flex:2;min-width:0;">
           <div class="oc-label">氏名・連絡先</div>
           <div class="oc-val" style="font-weight:700">${o.name}${o.circleName ? ` <span style="font-size:.78rem;color:var(--circle-color);font-weight:400;">（${o.circleSpace ? o.circleSpace+'・' : ''}${o.circleName}）</span>` : ''}</div>
           <div style="font-size:.8rem">${contactInfo}</div>
           ${xExtra ? `<div style="font-size:.76rem">${xExtra}</div>` : ''}
+        </div>
+        <div class="oc-group">
+          <div class="oc-label">合計金額</div>
+          <div class="oc-val" style="font-size:1rem;font-weight:700;color:var(--potato-dark)">${tot===0?'<span style="color:var(--green)">無料</span>':'¥'+tot.toLocaleString()}</div>
         </div>
         <div class="oc-group">
           <div class="oc-label">形状・点数</div>
@@ -2574,54 +2578,56 @@ function renderOrders() {
             ${o.earlyBird ? `<span style="font-size:.65rem;color:var(--gold);margin-left:4px;">⭐早割</span>` : ''}
           </div>
         </div>
-        <div class="oc-group">
-          <div class="oc-label">合計金額</div>
-          <div class="oc-val" style="font-size:1rem;font-weight:700;color:var(--potato-dark)">${tot===0?'<span style="color:var(--green)">無料</span>':'¥'+tot.toLocaleString()}</div>
+        <div class="oc-group" style="align-items:center;">
+          <div class="oc-label">元画像</div>
+          ${o.thumb ? `<img class="thumb-mini ${o.shape==='サークル'?'ci':'sq'}" src="${o.thumb}" alt="" onclick="zoomImg('${o.thumb}')">` : '<span style="font-size:.78rem;color:rgba(255,255,255,.5)">なし</span>'}
+          ${o.image_url ? `<a href="${o.image_url}" target="_blank" rel="noopener" style="font-size:.78rem;color:var(--circle-color);font-weight:700;margin-top:2px;">元画像↗</a>` : ''}
         </div>
-        ${o.thumb ? `<img class="thumb-mini ${o.shape==='サークル'?'ci':''}" src="${o.thumb}" alt="" onclick="zoomImg('${o.thumb}')" style="margin-left:auto">` : ''}
-        ${o.image_url ? `<a href="${o.image_url}" target="_blank" rel="noopener" style="font-size:.78rem;color:var(--circle-color);font-weight:700;white-space:nowrap;">元画像↗</a>` : ''}
       </div>
 
-      <!-- 行4: サンプル・増減 -->
-      <div class="order-card-row">
-        <div class="oc-group">
-          <div class="oc-label">端材サンプル</div>
-          ${o.sampleRequested ? `
-            <div class="sample-ctrl" style="margin-top:2px">
-              <button class="sample-ctrl-btn" onclick="updateSampleCount('${o.ref}',-1)">−</button>
-              <span class="sample-ctrl-count">${sc}回</span>
-              <button class="sample-ctrl-btn" onclick="updateSampleCount('${o.ref}',1)">＋</button>
-            </div>
-            <div class="sample-cost-note">${o.sampleFreeEligible?'初回無料':'有料のみ'} / ¥${sCostNow.toLocaleString()}</div>
-          ` : '<span style="font-size:.78rem;color:rgba(255,255,255,.78)">なし</span>'}
-        </div>
+      <!-- 行4: オプション（端材サンプル | 仕上がり確認） -->
+      ${(o.sampleRequested || o.wantsCompletionImage) ? `
+      <div class="order-card-row" style="align-items:stretch;gap:0;padding:0;">
+        ${o.sampleRequested ? `
+        <div style="flex:1;padding:10px 12px;display:flex;flex-direction:column;gap:6px;">
+          <div class="oc-label">🔬 端材サンプル</div>
+          <div class="sample-ctrl">
+            <button class="sample-ctrl-btn" onclick="updateSampleCount('${o.ref}',-1)">−</button>
+            <span class="sample-ctrl-count">${sc}回</span>
+            <button class="sample-ctrl-btn" onclick="updateSampleCount('${o.ref}',1)">＋</button>
+          </div>
+          <div class="sample-cost-note">${o.sampleFreeEligible?'初回無料':'有料のみ'} / ¥${sCostNow.toLocaleString()}</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:2px;">
+            <button class="sent-btn ${o.sampleSent?'done':''}" onclick="toggleSampleSent('${o.ref}')">
+              ${o.sampleSent ? '✓ 送信済み' : '○ 未送信'}
+            </button>
+            <button class="sent-btn" style="background:rgba(255,200,80,.15);border-color:var(--gold-border);font-size:.75rem;padding:5px 10px;" onclick="showMsgModal('sample','${o.ref}')">📝 文面</button>
+          </div>
+        </div>` : ''}
+        ${o.sampleRequested && o.wantsCompletionImage ? `<div style="width:1px;background:rgba(255,255,255,.15);align-self:stretch;"></div>` : ''}
         ${o.wantsCompletionImage ? `
-        <div class="oc-group">
+        <div style="flex:1;padding:10px 12px;display:flex;flex-direction:column;gap:6px;">
           <div class="oc-label">📷 仕上がり確認</div>
-          <div class="sample-ctrl" style="margin-top:2px">
+          <div class="sample-ctrl">
             <button class="sample-ctrl-btn" onclick="updateAdjustment('${o.ref}',-300)" title="-¥300">−</button>
             <span class="sample-ctrl-count" style="min-width:52px;font-size:.78rem">${adj>=0?'+':''}¥${adj.toLocaleString()}</span>
             <button class="sample-ctrl-btn" onclick="updateAdjustment('${o.ref}',300)" title="+¥300">＋</button>
           </div>
-          <div class="sample-cost-note" style="margin-top:2px">初回無料 / ¥0</div>
+          <div class="sample-cost-note">初回無料 / ¥0</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:2px;">
+            <button class="sent-btn ${o.completionImageSent?'done':''}" onclick="toggleCompletionImageSent('${o.ref}')">
+              ${o.completionImageSent ? '✓ 送信済み' : '○ 未送信'}
+            </button>
+            <button class="sent-btn" style="background:rgba(255,200,80,.15);border-color:var(--gold-border);font-size:.75rem;padding:5px 10px;" onclick="showMsgModal('completion','${o.ref}')">📝 文面</button>
+          </div>
         </div>` : ''}
-      </div>
+      </div>` : ''}
 
-      <!-- 行5: 送信状況 -->
-      <div class="order-card-row" style="gap:10px;flex-wrap:wrap">
-        ${o.sampleRequested ? `
-        <button class="sent-btn ${o.sampleSent?'done':''}" onclick="toggleSampleSent('${o.ref}')">
-          ${o.sampleSent ? '✓ サンプル送信済み' : '○ サンプル未送信'}
-        </button>
-        <button class="sent-btn" style="background:rgba(255,200,80,.15);border-color:var(--gold-border);font-size:.75rem;padding:5px 10px;" onclick="showMsgModal('sample','${o.ref}')">📝 文面</button>` : ''}
-        ${o.wantsCompletionImage ? `
-        <button class="sent-btn ${o.completionImageSent?'done':''}" onclick="toggleCompletionImageSent('${o.ref}')">
-          ${o.completionImageSent ? '✓ 完成画像送信済み' : '○ 完成画像未送信'}
-        </button>
-        <button class="sent-btn" style="background:rgba(255,200,80,.15);border-color:var(--gold-border);font-size:.75rem;padding:5px 10px;" onclick="showMsgModal('completion','${o.ref}')">📝 文面</button>` : ''}
-        ${!o.sampleRequested && !o.wantsCompletionImage ? '<span style="font-size:.78rem;color:rgba(255,255,255,.78)">送信予定なし</span>' : ''}
-        ${o.note ? `<span style="font-size:.8rem;color:rgba(255,255,255,.78);margin-left:auto">💬 ${o.note}</span>` : ''}
-      </div>
+      <!-- メモ -->
+      ${o.note ? `
+      <div class="order-card-row">
+        <span style="font-size:.8rem;color:rgba(255,255,255,.78)">💬 ${o.note}</span>
+      </div>` : ''}
     </div>`;
   }).join('')}</div>`;
 }
