@@ -4301,7 +4301,10 @@ async function loadGateParticipants() {
         return { ...r, thumb: (local && local.thumb) || '' };
       });
       localStorage.setItem('bc_orders', JSON.stringify(pool));
+      // グローバルのordersも更新してrenderInterestsを再実行（参加中カウントを正確に反映）
+      orders = pool;
       renderGateParticipants(pool);
+      renderInterests(_interestsList);
     } catch(e) { /* ローカルのまま */ }
   }
 }
