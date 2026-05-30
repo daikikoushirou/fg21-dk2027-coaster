@@ -1551,6 +1551,32 @@ let currentMode = null;
 let imgObj = null, flipHState = false, flipVState = false, invertState = false;
 let orders = JSON.parse(localStorage.getItem('bc_orders') || '[]');
 
+// ══ MAKE.COM 通知 ══
+const MAKE_WEBHOOK_URL = 'https://hook.us2.make.com/lktqrjux15nnvq5mqavk2x7d6in4c3as';
+async function notifyMake(order) {
+  if (!MAKE_WEBHOOK_URL) return;
+  try {
+    await fetch(MAKE_WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name:         order.name,
+        circle_name:  order.circleName  || '',
+        circle_space: order.circleSpace || '',
+        shape:        order.shape,
+        qty:          order.qty,
+        total:        order.total,
+        order_type:   order.type,
+        code:         order.code,
+        ref:          order.ref,
+        email:        order.email,
+        x_account:    order.xAccount   || '',
+        early_bird:   order.earlyBird ? '早割' : '',
+      })
+    });
+  } catch(e) { console.warn('Make通知失敗:', e); }
+}
+
 // ══ PRICING ══
 const PRICING_BASE = {
   circle:  { freeQty: 3, tiers: [{max: 10, price: 200}, {max: 20, price: 250}] },
@@ -2390,6 +2416,8 @@ document.getElementById('orderForm').addEventListener('submit', async e => {
       cloudSaveFailed = true;
     }
   }
+  // Make.com に注文情報を通知
+  notifyMake(order);
 
   // 常にlocalStorageにも保存（バックアップ）
   orders.unshift(order);
