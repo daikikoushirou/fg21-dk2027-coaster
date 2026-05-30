@@ -1548,7 +1548,7 @@ async function sbPatch(ref, patch) {
 
 // ══ STATE ══
 let currentMode = null;
-let imgObj = null, flipHState = false, flipVState = false, invertState = false;
+let imgObj = null, _droppedFile = null, flipHState = false, flipVState = false, invertState = false;
 let orders = JSON.parse(localStorage.getItem('bc_orders') || '[]');
 
 // ══ MAKE.COM 通知 ══
@@ -2019,8 +2019,8 @@ function onShapeChange() {
 const uploadArea = document.getElementById('uploadArea');
 uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.classList.add('dragover'); });
 uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
-uploadArea.addEventListener('drop', e => { e.preventDefault(); uploadArea.classList.remove('dragover'); const f=e.dataTransfer.files[0]; if(f) loadImageFile(f); });
-function onImageSelect(e) { const f=e.target.files[0]; if(f) loadImageFile(f); }
+uploadArea.addEventListener('drop', e => { e.preventDefault(); uploadArea.classList.remove('dragover'); const f=e.dataTransfer.files[0]; if(f) { _droppedFile = f; loadImageFile(f); } });
+function onImageSelect(e) { _droppedFile = null; const f=e.target.files[0]; if(f) loadImageFile(f); }
 function isPsdAi(file) {
   return /\.(psd|ai)$/i.test(file.name);
 }
@@ -2362,18 +2362,18 @@ document.getElementById('orderForm').addEventListener('submit', async e => {
   let imageUrl = '';
   if (sbReady() && imgObj) {
     try {
-      // ファイル入力 → なければCanvasからBlob生成（ドラッグ&ドロップ対応）
-      let uploadFile = document.getElementById('f-image').files[0];
-      if (!uploadFile) {
-        uploadFile = await new Promise(resolve => {
-          document.getElementById('previewCanvas').toBlob(
-            blob => resolve(blob ? new File([blob], `${ref}.jpg`, { type: 'image/jpeg' }) : null),
-            'image/jpeg', 0.9
-          );
-        });
-      }
+      // 優先順位: ①ファイル入力 ②ドラッグ&ドロップで保存したファイル ③Canvasからblob生成
+      let uploadFile = document.getElementById('f-image').files[0]
+        || _droppedFile
+        || await new Promise(resolve => {
+            document.getElementById('previewCanvas').toBlob(
+              blob => resolve(blob ? new File([blob], `${ref}.jpg`, { type: 'image/jpeg' }) : null),
+              'image/jpeg', 0.9
+            );
+          });
       if (uploadFile) {
-        const ext = uploadFile.name.includes('.') ? uploadFile.name.split('.').pop().toLowerCase() : 'jpg';
+        const origName = uploadFile.name || '';
+        const ext = origName.includes('.') ? origName.split('.').pop().toLowerCase() : 'jpg';
         imageUrl = await sbUploadImage(uploadFile, `${ref}.${ext}`);
       }
     } catch (err) {
