@@ -275,16 +275,20 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:0;}
 .price-tier-table td{padding:11px 14px;border-bottom:1px solid var(--border);}
 .price-tier-table tr:last-child td{border-bottom:none;}
 .price-tier-table tr.free-row td{background:var(--green-bg);}
-.price-tier-table tr.extra-row td{background:#fff8ee;}
-.price-tier-table tr.upper-row td{background:#fff3e8;}
+.price-tier-table tr.extra-row td{background:#fffae6;}
+.price-tier-table tr.mid1-row td{background:#fff2cc;}
+.price-tier-table tr.mid2-row td{background:#ffe8b0;}
+.price-tier-table tr.upper-row td{background:#ffd990;}
 .price-tier-table tr.early-row td{background:var(--gold-bg);}
 .price-big{font-size:1.05rem;font-weight:700;color:var(--potato-dark);}
 .price-small{font-size:.8rem;color:var(--muted);}
 .price-strike{text-decoration:line-through;color:var(--muted);font-size:.85rem;margin-right:4px;}
 .tier-badge{display:inline-block;padding:2px 9px;border-radius:4px;font-size:.72rem;font-weight:700;}
 .badge-free{background:#b8e0a0;color:#2a5a10;}
-.badge-extra{background:#fde0a8;color:#7a4010;}
-.badge-upper{background:#f8cca0;color:#6a3010;}
+.badge-extra{background:#fde8a0;color:#7a4010;}
+.badge-mid1{background:#f8d47a;color:#6a3800;}
+.badge-mid2{background:#f4bc50;color:#5a2800;}
+.badge-upper{background:#eda830;color:#4a1800;}
 .badge-early{background:var(--gold-bg);color:var(--gold);border:1px solid var(--gold-border);}
 .shape-note{margin-top:14px;font-size:.84rem;color:var(--muted);background:var(--potato-bg);border-radius:8px;padding:10px 14px;}
 
@@ -673,8 +677,8 @@ footer a{color:var(--potato-light);text-decoration:none;}
         <div class="gate-card-restrict" id="gateCircleRestrict">⚠️ ふたば★学園祭２１にサークル参加している方のみ</div>
         <ul class="gate-card-perks" id="gateCirclePerks">
           <li>3点まで無料</li>
-          <li>4〜10点目：¥200/点</li>
-          <li>11点目以降：¥250/点</li>
+          <li>4〜8点目：¥220/点〜</li>
+          <li>9点目以降：¥230/点〜</li>
           <li>1か月前まで：早割あり</li>
           <li id="gateCircleMax">最大20点まで</li>
         </ul>
@@ -1012,8 +1016,10 @@ footer a{color:var(--potato-light);text-decoration:none;}
       <thead><tr><th>点数</th><th>通常価格</th><th>早割価格（1か月前まで）</th><th>備考</th></tr></thead>
       <tbody>
         <tr class="free-row"><td>1〜3点目</td><td><span class="price-big">無料</span></td><td><span class="price-big">無料</span></td><td><span class="tier-badge badge-free">FREE</span></td></tr>
-        <tr class="extra-row"><td>4〜10点目</td><td><span class="price-big">¥200</span><span class="price-small">/点</span></td><td><span class="price-big">¥200</span><span class="price-small">/点</span></td><td><span class="tier-badge badge-extra">EXTRA</span></td></tr>
-        <tr class="upper-row"><td>11〜20点目</td><td><span class="price-big">¥250</span><span class="price-small">/点</span></td><td><span class="price-big">¥220</span><span class="price-small">/点</span></td><td><span class="tier-badge badge-upper">UPPER</span> 最大20点</td></tr>
+        <tr class="extra-row"><td>4〜8点目</td><td><span class="price-big">¥220</span><span class="price-small">/点</span></td><td><span class="price-big">¥200</span><span class="price-small">/点</span></td><td><span class="tier-badge badge-extra">EXTRA</span></td></tr>
+        <tr class="mid1-row"><td>9〜12点目</td><td><span class="price-big">¥230</span><span class="price-small">/点</span></td><td><span class="price-big">¥210</span><span class="price-small">/点</span></td><td></td></tr>
+        <tr class="mid2-row"><td>13〜16点目</td><td><span class="price-big">¥240</span><span class="price-small">/点</span></td><td><span class="price-big">¥220</span><span class="price-small">/点</span></td><td></td></tr>
+        <tr class="upper-row"><td>17〜20点目</td><td><span class="price-big">¥250</span><span class="price-small">/点</span></td><td><span class="price-big">¥230</span><span class="price-small">/点</span></td><td><span class="tier-badge badge-upper">UPPER</span> 最大20点</td></tr>
       </tbody>
     </table>
     <div class="shape-note">形状はスクエア（85×85mm）・サークル（φ90mm）から選択できます。どちらも同じ料金です。</div>
@@ -1409,7 +1415,8 @@ footer a{color:var(--potato-light);text-decoration:none;}
 </div>
 
 <div class="modal-backdrop" id="successModal">
-  <div class="modal">
+  <div class="modal" style="position:relative;">
+    <button onclick="closeModal()" style="position:sticky;top:0;float:right;margin:-8px -8px 0 0;background:var(--potato-dark);color:#fff;border:none;border-radius:50%;width:32px;height:32px;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;z-index:10;">✕</button>
     <div class="modal-icon">🎉</div>
     <h3 class="modal-title">製作依頼を受け付けました！</h3>
     <p class="modal-body">引換コードを保存して、当日ブースでご提示ください。</p>
@@ -1616,14 +1623,17 @@ async function notifyMake(order) {
 
 // ══ PRICING ══
 const PRICING_BASE = {
-  circle:  { freeQty: 3, tiers: [{max: 10, price: 200}, {max: 20, price: 250}] },
+  circle:  { freeQty: 3, tiers: [{max: 8, price: 220}, {max: 12, price: 230}, {max: 16, price: 240}, {max: 20, price: 250}] },
   general: { freeQty: 1, tiers: [{max: 2,  price: 400}] }
 };
 const SAMPLE_PRICE = 300;
 
 function discountedPrice(price) {
   // 早割：¥250→¥220、¥200はそのまま
-  if (price === 250) return 220;
+  if (price === 220) return 200;
+  if (price === 230) return 210;
+  if (price === 240) return 220;
+  if (price === 250) return 230;
   return price;
 }
 
@@ -3884,7 +3894,7 @@ const TRANSLATIONS = {
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日',
     circleName: 'サークル参加者', circleSub: '頒布用途OK', circleCta: '製作する →',
     circleRestrict: '⚠️ ふたば★学園祭２１にサークル参加している方のみ',
-    circlePerks: ['3点まで無料', '4〜10点目：¥200/点', '11点目以降：¥250/点', '1か月前まで：早割（¥250→¥220）'],
+    circlePerks: ['3点まで無料', '4〜8点目：¥220/点〜', '9点目以降：¥230/点〜', '1か月前まで：早割（¥250→¥220）'],
   },
   en: {
     title: 'ふたば★学園祭２１<br>Community Project · Illustrated Leather Coasters',
