@@ -2578,7 +2578,7 @@ function renderOrders() {
           ${o.earlyBird ? '<span style="color:var(--gold);font-size:.8rem;font-weight:700">⭐早割</span>' : ''}
           ${o.codeUsed ? '<span class="used-badge">使用済</span>' : ''}
         </div>
-        <span style="font-size:.76rem;color:rgba(255,255,255,.78);white-space:nowrap">${o.date}</span>
+        <span style="font-size:.76rem;color:var(--muted);white-space:nowrap">${o.date}</span>
       </div>
 
       <!-- 行2: 引換コード・ステータス -->
@@ -2662,9 +2662,9 @@ function renderOrders() {
       </div>` : ''}
 
       <!-- メモ -->
-      ${o.note && o.note.trim() ? `
+      ${o.note && String(o.note).trim() ? `
       <div class="order-card-row">
-        <span style="font-size:.8rem;color:rgba(255,255,255,.78)">💬 ${o.note.trim()}</span>
+        <span style="font-size:.8rem;color:var(--muted)">💬 ${String(o.note).trim()}</span>
       </div>` : ''}
     </div>`;
   }).join('')}</div>`;
@@ -3560,10 +3560,10 @@ function renderAdminChart() {
     bar('製作中', making, total, '#f0a040'),
     bar('受け渡し済み', delivered, total, 'var(--green)'),
     `<div style="display:flex;justify-content:space-between;font-size:.8rem;padding:6px 0 0;border-top:1px solid var(--border);margin-top:4px;">
-      <span style="color:rgba(255,255,255,.78);font-weight:700;">総注文数</span><span style="font-weight:900;">${total} 件 / ${maxQty} 点</span>
+      <span style="color:rgba(255,255,255,.78);font-weight:700;">総注文数</span><span style="font-weight:900;color:#fff;">${total} 件 / ${maxQty} 点</span>
     </div>`,
     `<div style="display:flex;justify-content:space-between;font-size:.8rem;">
-      <span style="color:rgba(255,255,255,.78);font-weight:700;">売上合計</span><span style="font-weight:900;color:var(--accent);">¥${revenue.toLocaleString()}</span>
+      <span style="color:rgba(255,255,255,.78);font-weight:700;">売上合計</span><span style="font-weight:900;color:var(--gold);">¥${revenue.toLocaleString()}</span>
     </div>`,
   ].join('');
 }
