@@ -70,11 +70,11 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15p
 .gate-participants-count{font-size:.82rem;font-weight:700;color:var(--muted);letter-spacing:.04em;}
 .gate-participants-count span{color:var(--potato-dark);font-size:1.1rem;}
 .gate-avatars{display:flex;flex-wrap:nowrap;justify-content:flex-start;gap:0;}
-.gate-avatar{width:38px;height:38px;border-radius:50%;border:2.5px solid var(--potato-bg);overflow:hidden;margin-left:-8px;background:var(--border);flex-shrink:0;transition:transform .15s;cursor:default;}
+.gate-avatar{width:28px;height:28px;border-radius:50%;border:2px solid var(--potato-bg);overflow:hidden;margin-left:-6px;background:var(--border);flex-shrink:0;transition:transform .15s;cursor:default;}
 .gate-avatar:first-child{margin-left:0;}
 .gate-avatar:hover{transform:scale(1.15);z-index:10;position:relative;}
 .gate-avatar img{width:100%;height:100%;object-fit:cover;display:block;}
-.gate-avatar-more{width:38px;height:38px;border-radius:50%;border:2.5px solid var(--potato-bg);background:var(--potato-dark);color:var(--potato-light);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;margin-left:-8px;flex-shrink:0;}
+.gate-avatar-more{width:28px;height:28px;border-radius:50%;border:2px solid var(--potato-bg);background:var(--potato-dark);color:var(--potato-light);display:flex;align-items:center;justify-content:center;font-size:.58rem;font-weight:700;margin-left:-6px;flex-shrink:0;}
 .gate-participants-loading{font-size:.78rem;color:rgba(92,74,30,.4);}font-size:.8rem;background:var(--gold-bg);border:1.5px solid var(--gold-border);border-radius:8px;padding:8px 14px;margin-bottom:20px;color:var(--gold);font-weight:700;}
 .gate-share-area{margin-bottom:20px;}
 .gate-share-btns{display:flex;flex-wrap:nowrap;justify-content:center;gap:5px;}
@@ -130,7 +130,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15p
 .gate-pcol-section>.soudane-btn{align-self:flex-end;flex-shrink:0;}
 .gate-pcol-label{font-size:.76rem;font-weight:700;text-align:center;padding-bottom:6px;border-bottom:1px solid var(--border);margin-bottom:2px;}
 .gate-pcol-count{font-size:.72rem;font-weight:700;color:var(--muted);line-height:1.4;}
-.gate-pcol-count.interest{color:#e05080;}
+.gate-pcol-count.interest{color:var(--muted);}
 .gate-pcol-divider{border:none;border-top:1px dashed var(--border);margin:6px 0;}
 .gate-pcol-interest-head{display:flex;align-items:flex-end;justify-content:space-between;gap:4px;}
 .gate-pcol-interest-head .heart-bubble-wrap,.gate-pcol-interest-head>.heart-btn,.gate-pcol-interest-head>.soudane-btn{align-self:flex-end;}
@@ -3729,12 +3729,7 @@ function applyParticipantState(type, registered) {
   const btn = document.getElementById(`participantBtn${type === 'circle' ? 'Circle' : 'General'}`);
   if (!btn) return;
   btn.classList.toggle('liked', registered);
-  if (registered) {
-    btn.style.display = 'none';
-  } else {
-    btn.style.display = '';
-    btn.querySelector('span').textContent = '参加中';
-  }
+  if (registered) btn.querySelector('span').textContent = '参加中';
 }
 
 function applyHeartState(type, liked) {
@@ -3796,7 +3791,7 @@ function renderInterests(list) {
 function renderInterestAvatars(elId, list) {
   const el = document.getElementById(elId);
   if (!el) return;
-  const MAX = 8, shown = list.slice(0, MAX), rest = list.length - MAX;
+  const MAX = 6, shown = list.slice(0, MAX), rest = list.length - MAX;
   el.innerHTML = shown.map(p => {
     const src   = avatarUrl(p.x_account, p.display_name);
     const title = p.x_account ? `@${p.x_account}` : (p.display_name || '参加者');
@@ -4417,7 +4412,7 @@ function renderGroupAvatars(countId, avatarsId, participants) {
   const t = TRANSLATIONS[_currentLang] || TRANSLATIONS.ja;
   countEl.textContent = (t.participantPre || '👥 参加中：') + participants.length + (t.participantSuf || '人');
   if (!participants.length) { avEl.innerHTML = ''; return; }
-  const MAX = 8, shown = participants.slice(0, MAX), rest = participants.length - MAX;
+  const MAX = 6, shown = participants.slice(0, MAX), rest = participants.length - MAX;
   avEl.innerHTML = shown.map(p => {
     const src   = avatarUrl(p.xAccount, p.name);
     const title = p.xAccount ? `@${p.xAccount}` : maskName(p.name);
