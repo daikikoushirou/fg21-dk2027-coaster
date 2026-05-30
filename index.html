@@ -1601,9 +1601,9 @@ function calcSampleCost(freeEligible, sampleCount) {
   return sampleCount * SAMPLE_PRICE;
 }
 
-function calcCost(mode, qty, sampleRequested, sampleFreeEligible, sampleCount) {
+function calcCost(mode, qty, sampleRequested, sampleFreeEligible, sampleCount, earlyBirdOverride) {
   const p = PRICING_BASE[mode];
-  const earlyBird = isEarlyBird() && mode === 'circle';
+  const earlyBird = (earlyBirdOverride !== undefined ? earlyBirdOverride : isEarlyBird()) && mode === 'circle';
   let total = 0, breakdown = [];
   const free = Math.min(qty, p.freeQty);
   if (free > 0) breakdown.push({ label: `無料（${free}点）`, amount: 0, cls: 'free' });
@@ -2624,7 +2624,7 @@ function renderOrders() {
       </div>
 
       <!-- 行4: オプション（端材サンプル | 仕上がり確認） -->
-      ${(o.sampleRequested || o.wantsCompletionImage) ? `
+      ${(o.sampleRequested || o.wantsCompletionImage || o.earlyBird) ? `
       <div class="order-card-row" style="align-items:stretch;gap:0;padding:0;justify-content:flex-start;">
         ${o.sampleRequested ? `
         <div style="flex:0 0 auto;min-width:140px;max-width:200px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;align-items:center;text-align:center;">
@@ -2659,6 +2659,17 @@ function renderOrders() {
             <button class="sent-btn" style="background:rgba(255,200,80,.15);border-color:var(--gold-border);font-size:.75rem;padding:5px 10px;" onclick="showMsgModal('completion','${o.ref}')">📝 文面</button>
           </div>
         </div>` : ''}
+        ${o.earlyBird ? `
+        ${(o.sampleRequested || o.wantsCompletionImage) ? '<div style="width:1px;background:rgba(255,255,255,.15);align-self:stretch;"></div>' : ''}
+        <div style="flex:0 0 auto;min-width:140px;max-width:200px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;align-items:center;text-align:center;">
+          <div class="oc-label">⭐ 早割価格で増減</div>
+          <div class="sample-ctrl">
+            <button class="sample-ctrl-btn" onclick="updateOrderQtyEarlyBird('${o.ref}',-1)">−</button>
+            <span class="sample-ctrl-count">${o.qty}点</span>
+            <button class="sample-ctrl-btn" onclick="updateOrderQtyEarlyBird('${o.ref}',1)">＋</button>
+          </div>
+          <div class="sample-cost-note" style="color:var(--gold);">早割価格で再計算</div>
+        </div>` : ''}
       </div>` : ''}
 
       <!-- メモ -->
@@ -2690,13 +2701,33 @@ async function toggleCompletionImageSent(ref) {
   showToast(o.completionImageSent ? '✓ 完成画像送信済みにしました' : '完成画像未送信に戻しました');
 }
 
+async function updateOrderQtyEarlyBird(ref, delta) {
+  const o = orders.find(o => o.ref === ref);
+  if (!o || !o.earlyBird) return;
+  const maxQty = o.type === 'circle' ? 20 : 2;
+  const newQty = Math.max(1, Math.min(maxQty, (o.qty || 1) + delta));
+  if (newQty === o.qty) { showToast(`点数の上限は${maxQty}点です`); return; }
+  // 早割価格を強制適用（earlyBirdOverride=true）
+  const { total } = calcCost(o.type, newQty, o.sampleRequested, o.sampleFreeEligible, o.sampleCount, true);
+  const adjTotal = total + (o.adjustment || 0);
+  o.qty = newQty;
+  o.total = adjTotal;
+  saveOrders();
+  if (sbReady()) {
+    try { await sbPatch(ref, { qty: newQty, total: adjTotal }); }
+    catch (err) { console.warn('点数更新失敗:', err); }
+  }
+  renderOrders();
+  showToast(`⭐ 早割価格で${newQty}点に変更 / 合計¥${adjTotal.toLocaleString()}`);
+}
+
 async function updateOrderQty(ref, delta) {
   const o = orders.find(o => o.ref === ref);
   if (!o) return;
   const maxQty = o.type === 'circle' ? 20 : 2;
   const newQty = Math.max(1, Math.min(maxQty, (o.qty || 1) + delta));
   if (newQty === o.qty) { showToast(`点数の上限は${maxQty}点です`); return; }
-  const { total } = calcCost(o.type, newQty, o.sampleRequested, o.sampleFreeEligible, o.sampleCount);
+  const { total } = calcCost(o.type, newQty, o.sampleRequested, o.sampleFreeEligible, o.sampleCount, o.earlyBird);
   const adjTotal = total + (o.adjustment || 0);
   o.qty = newQty;
   o.total = adjTotal;
