@@ -69,7 +69,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15p
 .gate-participants{margin-bottom:20px;display:flex;flex-direction:column;align-items:center;gap:10px;}
 .gate-participants-count{font-size:.82rem;font-weight:700;color:var(--muted);letter-spacing:.04em;}
 .gate-participants-count span{color:var(--potato-dark);font-size:1.1rem;}
-.gate-avatars{display:flex;flex-wrap:wrap;justify-content:flex-start;gap:0;}
+.gate-avatars{display:flex;flex-wrap:nowrap;justify-content:flex-start;gap:0;overflow:hidden;}
 .gate-avatar{width:38px;height:38px;border-radius:50%;border:2.5px solid var(--potato-bg);overflow:hidden;margin-left:-8px;background:var(--border);flex-shrink:0;transition:transform .15s;cursor:default;}
 .gate-avatar:first-child{margin-left:0;}
 .gate-avatar:hover{transform:scale(1.15);z-index:10;position:relative;}
@@ -3745,7 +3745,7 @@ function renderInterests(list) {
 function renderInterestAvatars(elId, list) {
   const el = document.getElementById(elId);
   if (!el) return;
-  const MAX = 6, shown = list.slice(0, MAX), rest = list.length - MAX;
+  const MAX = 8, shown = list.slice(0, MAX), rest = list.length - MAX;
   el.innerHTML = shown.map(p => {
     const src   = avatarUrl(p.x_account, p.display_name);
     const title = p.x_account ? `@${p.x_account}` : (p.display_name || '参加者');
@@ -4366,7 +4366,7 @@ function renderGroupAvatars(countId, avatarsId, participants) {
   const t = TRANSLATIONS[_currentLang] || TRANSLATIONS.ja;
   countEl.textContent = (t.participantPre || '👥 参加中：') + participants.length + (t.participantSuf || '人');
   if (!participants.length) { avEl.innerHTML = ''; return; }
-  const MAX = 6, shown = participants.slice(0, MAX), rest = participants.length - MAX;
+  const MAX = 8, shown = participants.slice(0, MAX), rest = participants.length - MAX;
   avEl.innerHTML = shown.map(p => {
     const src   = avatarUrl(p.xAccount, p.name);
     const title = p.xAccount ? `@${p.xAccount}` : maskName(p.name);
