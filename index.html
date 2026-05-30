@@ -1024,7 +1024,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
     </table>
     <div class="shape-note">形状はスクエア（85×85mm）・サークル（φ90mm）から選択できます。どちらも同じ料金です。</div>
     <div class="shape-note" style="margin-top:8px;background:var(--gold-bg);border-left:3px solid var(--gold-border);border-radius:0 8px 8px 0;">
-      ⭐ <strong>早割（開催1か月前まで）</strong>：有料分が割引されます（¥250→¥220）。開催2週間前を過ぎると最大5点に制限されます。
+      ⭐ <strong>早割（開催1か月前まで）</strong>：有料分が各段階で¥20割引されます（¥220→¥200・¥230→¥210・¥240→¥220・¥250→¥230）。開催2週間前を過ぎると最大5点に制限されます。
     </div>
     <div class="shape-note" style="margin-top:8px;background:#f0f8ff;border-left:3px solid #7ab8e0;border-radius:0 8px 8px 0;">
       🔬 <strong>端材サンプル試し刷り</strong>：3週間前まで の申込者 または 11点以上 の申込者は初回無料。それ以外は¥300。端材を使用するため形状が不完全・非平坦な場合があります。
@@ -1629,7 +1629,7 @@ const PRICING_BASE = {
 const SAMPLE_PRICE = 300;
 
 function discountedPrice(price) {
-  // 早割：¥250→¥220、¥200はそのまま
+  // 早割：各段階¥20割引（¥220→¥200, ¥230→¥210, ¥240→¥220, ¥250→¥230）
   if (price === 220) return 200;
   if (price === 230) return 210;
   if (price === 240) return 220;
@@ -1704,8 +1704,8 @@ function initDatesUI() {
   document.getElementById('eventDateDisplay').textContent = fmtDate(EVENT_DATE);
   const n = now();
   const items = [
-    { label: '早割締め切り', date: EARLY_BIRD_END, note: 'サークル ¥250→¥220', active: n < EARLY_BIRD_END, circleOnly: true,
-      tip: '開催1か月前まで申し込むと、サークル参加者の有料分（4点目以降）が¥250→¥220に割引されます。' },
+    { label: '早割締め切り', date: EARLY_BIRD_END, note: 'サークル 各段階¥20割引', active: n < EARLY_BIRD_END, circleOnly: true,
+      tip: '開催1か月前まで申し込むと、サークル参加者の有料分（4点目以降）が各段階で¥20割引されます。' },
     { label: 'サンプル無料期限', date: SAMPLE_FREE_END, note: 'これ以降のサンプル試し刷りは¥300', active: n < SAMPLE_FREE_END,
       tip: '端材サンプル試し刷りとは、本番と同じイラストを端材（はぎれ素材）に試し刷りし、仕上がりイメージを事前に確認できるオプションです。この期限内の申込者は初回1回が無料。' },
     { label: '大量注文締め切り', date: BULK_ORDER_END, note: 'サークル6点以上の申込期限', active: n < BULK_ORDER_END, circleOnly: true,
@@ -1773,7 +1773,13 @@ function updateSampleUI() {
     if (currentMode === 'circle') {
       const byQty = parseInt(qty) >= 11;
       const byDate = now() < SAMPLE_FREE_END;
-      note.textContent = byDate ? `3週間前以前の申込のため初回無料。2回目以降¥${SAMPLE_PRICE}。` : `11点以上申込のため初回無料。2回目以降¥${SAMPLE_PRICE}。`;
+      if (byDate && byQty) {
+        note.textContent = `3週間前以前の申込かつ11点以上申込のため初回無料。2回目以降¥${SAMPLE_PRICE}。`;
+      } else if (byDate) {
+        note.textContent = `3週間前以前の申込のため初回無料。2回目以降¥${SAMPLE_PRICE}。`;
+      } else {
+        note.textContent = `11点以上申込のため初回無料。2回目以降¥${SAMPLE_PRICE}。`;
+      }
     } else {
       note.textContent = `3週間前以前の申込のため初回無料。2回目以降¥${SAMPLE_PRICE}。`;
     }
@@ -1826,7 +1832,7 @@ function applyModeUI() {
   const ebNote = document.getElementById('formEarlyBirdNote');
   if (isC && isEarlyBird()) {
     ebNote.classList.add('show');
-    ebNote.textContent = `⭐ 早割適用中！${fmtDate(EARLY_BIRD_END)}まで有料分が割引になります（¥250→¥220）`;
+    ebNote.textContent = `⭐ 早割適用中！${fmtDate(EARLY_BIRD_END)}まで有料分が各段階で¥20割引になります`;
   } else {
     ebNote.classList.remove('show');
   }
@@ -3894,7 +3900,7 @@ const TRANSLATIONS = {
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日',
     circleName: 'サークル参加者', circleSub: '頒布用途OK', circleCta: '製作する →',
     circleRestrict: '⚠️ ふたば★学園祭２１にサークル参加している方のみ',
-    circlePerks: ['3点まで無料', '4〜8点目：¥220/点〜', '9点目以降：¥230/点〜', '1か月前まで：早割（¥250→¥220）'],
+    circlePerks: ['3点まで無料', '4〜8点目：¥220/点〜', '9点目以降：¥230/点〜', '1か月前まで：早割（各段階¥20割引）'],
   },
   en: {
     title: 'ふたば★学園祭２１<br>Community Project · Illustrated Leather Coasters',
@@ -3911,7 +3917,7 @@ const TRANSLATIONS = {
     countdownLabel: 'Days until ふたば★学園祭２１', countdownUnit: ' days', deadlineNote: '⏰ {n} days left to apply',
     circleName: 'Circle Participant', circleSub: 'Distribution OK', circleCta: 'Get Started →',
     circleRestrict: '⚠️ ふたば★学園祭２１ circle participants only',
-    circlePerks: ['First 3 — free!', '4〜10：¥200 each', '11+：¥250 each', 'Early bird：¥250→¥220 (1 month before)'],
+    circlePerks: ['First 3 — free!', '4〜8：¥220〜 each', '9+：¥230〜 each', 'Early bird：¥20 off per tier (1 month before)'],
   },
   hokkaido: {
     title: 'ふたば★学園祭２１<br>みんなで参加する企画 イラスト入りレザーコースター',
@@ -3928,7 +3934,7 @@ const TRANSLATIONS = {
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日だべ', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日だべ',
     circleName: 'サークルの参加者', circleSub: '頒布もOKだべさ', circleCta: 'つくってみよさ →',
     circleRestrict: '⚠️ ふたば★学園祭２１にサークルで出てる人だけだべ',
-    circlePerks: ['3点まで ただだべ', '4〜10点：¥200/点', '11点以降：¥250/点', '1か月前まで：早割（¥250→¥220）'],
+    circlePerks: ['3点まで ただだべ', '4〜8点目：¥220〜/点', '9点目以降：¥230〜/点', '1か月前まで：早割（各段階¥20割引）'],
   },
   akita: {
     title: 'ふたば★学園祭２１<br>みんなで参加する企画 イラスト入りレザーコースター',
@@ -3945,7 +3951,7 @@ const TRANSLATIONS = {
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日だが', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日だが',
     circleName: 'サークルの参加者', circleSub: '頒布もOKだが', circleCta: 'つぐってみっか →',
     circleRestrict: '⚠️ ふたば★学園祭２１のサークルの人だけだが',
-    circlePerks: ['3点まで ただだが', '4〜10点：¥200/点', '11点以降：¥250/点', '1か月前まで：早割（¥250→¥220）'],
+    circlePerks: ['3点まで ただだが', '4〜8点目：¥220〜/点', '9点目以降：¥230〜/点', '1か月前まで：早割（各段階¥20割引）'],
   },
   shizuoka: {
     title: 'ふたば★学園祭２１<br>参加型企画 イラスト入りレザーコースター',
@@ -3962,7 +3968,7 @@ const TRANSLATIONS = {
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日だら', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日だもんで',
     circleName: 'サークルの参加者', circleSub: '頒布もOKだもんで', circleCta: 'つくるだら →',
     circleRestrict: '⚠️ ふたば★学園祭２１のサークルの人だけだら',
-    circlePerks: ['3点まで ただだら', '4〜10点：¥200/点', '11点以降：¥250/点', '1か月前まで：早割（¥250→¥220）だもんで'],
+    circlePerks: ['3点まで ただだら', '4〜8点目：¥220〜/点', '9点目以降：¥230〜/点', '1か月前まで：早割（各段階¥20割引）だもんで'],
   },
   tosa: {
     title: 'ふたば★学園祭２１<br>参加型企画 イラスト入りレザーコースター',
@@ -3979,7 +3985,7 @@ const TRANSLATIONS = {
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日ぜよ', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日じゃき',
     circleName: 'サークルの参加者ぜよ', circleSub: '頒布もOKじゃき', circleCta: 'つくるぜよ →',
     circleRestrict: '⚠️ ふたば★学園祭２１にサークルで出ゆる人だけじゃき',
-    circlePerks: ['3点まで ただじゃき', '4〜10点：¥200/点', '11点以降：¥250/点', '1か月前まで：早割（¥250→¥220）ぜよ'],
+    circlePerks: ['3点まで ただじゃき', '4〜8点目：¥220〜/点', '9点目以降：¥230〜/点', '1か月前まで：早割（各段階¥20割引）ぜよ'],
   },
   okinawa: {
     title: 'ふたば★学園祭２１<br>いちゃりばちょーでー企画 イラスト入りレザーコースター',
@@ -3996,7 +4002,7 @@ const TRANSLATIONS = {
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: 'ちちやいびーん', deadlineNote: '⏰ 申し込み締め切りまであと {n} ちちやいびーん',
     circleName: 'サークルぬひとぅ', circleSub: '頒布もOKさぁ', circleCta: 'つくいんど →',
     circleRestrict: '⚠️ ふたば★学園祭２１んかいサークルぬひとぅぬみやいびーん',
-    circlePerks: ['3点まーでぃ無料やいびーん', '4〜10点：¥200/点', '11点以降：¥250/点', '早割あいびーん（¥250→¥220）'],
+    circlePerks: ['3点まーでぃ無料やいびーん', '4〜8点目：¥220〜/点', '9点目以降：¥230〜/点', '早割あいびーん（各段階¥20割引）'],
   },
   osaka: {
     title: 'ふたば★学園祭２１<br>参加型企画 イラスト入りレザーコースター',
@@ -4013,7 +4019,7 @@ const TRANSLATIONS = {
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日やで', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日やで',
     circleName: 'サークル参加者', circleSub: '頒布もOKやで', circleCta: 'つくってもらうで →',
     circleRestrict: '⚠️ ふたば★学園祭２１にサークルで出てる人だけやで',
-    circlePerks: ['3点まで ただやで', '4〜10点：¥200/点', '11点以降：¥250/点', '1か月前まで：早割（¥250→¥220）やで'],
+    circlePerks: ['3点まで ただやで', '4〜8点目：¥220〜/点', '9点目以降：¥230〜/点', '1か月前まで：早割（各段階¥20割引）やで'],
   },
   hakata: {
     title: 'ふたば★学園祭２１<br>参加型企画 イラスト入りレザーコースター',
@@ -4030,7 +4036,7 @@ const TRANSLATIONS = {
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日たい', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日ばい',
     circleName: 'サークル参加者', circleSub: '頒布もOKたい', circleCta: 'つくってもらうばい →',
     circleRestrict: '⚠️ ふたば★学園祭２１にサークルで出ようとる人だけたい',
-    circlePerks: ['3点まで ただたい', '4〜10点：¥200/点', '11点以降：¥250/点', '1か月前まで：早割（¥250→¥220）ばい'],
+    circlePerks: ['3点まで ただたい', '4〜8点目：¥220〜/点', '9点目以降：¥230〜/点', '1か月前まで：早割（各段階¥20割引）ばい'],
   },
   nagoya: {
     title: 'ふたば★学園祭２１<br>参加型企画 イラスト入りレザーコースター',
@@ -4047,7 +4053,7 @@ const TRANSLATIONS = {
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日だがね', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日だぎゃ',
     circleName: 'サークル参加者', circleSub: '頒布もOKだがね', circleCta: 'つくってちょ →',
     circleRestrict: '⚠️ ふたば★学園祭２１にサークルで出とる人だけだぎゃ',
-    circlePerks: ['3点まで ただだがや', '4〜10点：¥200/点', '11点以降：¥250/点', '1か月前まで：早割（¥250→¥220）だがね'],
+    circlePerks: ['3点まで ただだがや', '4〜8点目：¥220〜/点', '9点目以降：¥230〜/点', '1か月前まで：早割（各段階¥20割引）だがね'],
   },
   niigata: {
     title: 'ふたば★学園祭２１<br>参加型企画 イラスト入りレザーコースター',
@@ -4064,7 +4070,7 @@ const TRANSLATIONS = {
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日っけ', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日っけ',
     circleName: 'サークル参加者', circleSub: '頒布もOKっけ', circleCta: 'つくってもらうっけ →',
     circleRestrict: '⚠️ ふたば★学園祭２１にサークルで出てる人だけっけ',
-    circlePerks: ['3点まで ただっけ', '4〜10点：¥200/点', '11点以降：¥250/点', '1か月前まで：早割（¥250→¥220）だっけ'],
+    circlePerks: ['3点まで ただっけ', '4〜8点目：¥220〜/点', '9点目以降：¥230〜/点', '1か月前まで：早割（各段階¥20割引）だっけ'],
   },
   tokyo: {
     title: 'ふたば★学園祭２１<br>参加型企画 イラスト入りレザーコースター',
@@ -4081,7 +4087,7 @@ const TRANSLATIONS = {
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日じゃん', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日じゃん',
     circleName: 'サークル参加者', circleSub: '頒布もOKじゃん', circleCta: 'つくってもらっちゃお →',
     circleRestrict: '⚠️ ふたば★学園祭２１にサークルで出てる人だけじゃん',
-    circlePerks: ['3点まで ただじゃん', '4〜10点：¥200/点', '11点以降：¥250/点', '1か月前まで：早割（¥250→¥220）だって'],
+    circlePerks: ['3点まで ただじゃん', '4〜8点目：¥220〜/点', '9点目以降：¥230〜/点', '1か月前まで：早割（各段階¥20割引）だって'],
   },
   kanagawa: {
     title: 'ふたば★学園祭２１<br>参加型企画 イラスト入りレザーコースター',
@@ -4098,7 +4104,7 @@ const TRANSLATIONS = {
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日じゃん', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日じゃん',
     circleName: 'サークル参加者', circleSub: '頒布もOKじゃん', circleCta: 'つくってもらおうじゃん →',
     circleRestrict: '⚠️ ふたば★学園祭２１にサークルで出てる人だけじゃん',
-    circlePerks: ['3点まで ただじゃん', '4〜10点：¥200/点', '11点以降：¥250/点', '1か月前まで：早割（¥250→¥220）じゃん'],
+    circlePerks: ['3点まで ただじゃん', '4〜8点目：¥220〜/点', '9点目以降：¥230〜/点', '1か月前まで：早割（各段階¥20割引）じゃん'],
   },
   gunma: {
     title: 'ふたば★学園祭２１<br>参加型企画 イラスト入りレザーコースター',
@@ -4115,7 +4121,7 @@ const TRANSLATIONS = {
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日だっぺ', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日だっぺ',
     circleName: 'サークル参加者', circleSub: '頒布もOKだっぺ', circleCta: 'つくってもらっぺ →',
     circleRestrict: '⚠️ ふたば★学園祭２１にサークルで出てる人だけだっぺよ',
-    circlePerks: ['3点まで ただだっぺ', '4〜10点：¥200/点', '11点以降：¥250/点', '1か月前まで：早割（¥250→¥220）だんべ'],
+    circlePerks: ['3点まで ただだっぺ', '4〜8点目：¥220〜/点', '9点目以降：¥230〜/点', '1か月前まで：早割（各段階¥20割引）だんべ'],
   },
   nojya: {
     title: 'ふたば★学園祭２１<br>参加型企画 イラスト入りレザーコースター',
@@ -4132,7 +4138,7 @@ const TRANSLATIONS = {
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日のじゃ', deadlineNote: '⏰ 申し込み締め切りまであと {n} 日じゃ',
     circleName: 'サークル参加者', circleSub: '頒布もOKなのじゃ', circleCta: 'つくってもらうのじゃ →',
     circleRestrict: '⚠️ ふたば★学園祭２１にサークルで出ておる者だけじゃ',
-    circlePerks: ['3点まで ただじゃ', '4〜10点：¥200/点', '11点以降：¥250/点', '1か月前まで：早割（¥250→¥220）じゃ'],
+    circlePerks: ['3点まで ただじゃ', '4〜8点目：¥220〜/点', '9点目以降：¥230〜/点', '1か月前まで：早割（各段階¥20割引）じゃ'],
   },
   king: {
     title: 'ふたば★学園祭２１<br>参加型企画 イラスト入りレザーコースター',
@@ -4149,7 +4155,7 @@ const TRANSLATIONS = {
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日である', deadlineNote: '⏰ 申し込み締め切りまで {n} 日しかないぞ',
     circleName: 'サークルの者ども', circleSub: '頒布も許可する', circleCta: '製作を命ずる →',
     circleRestrict: '⚠️ ふたば★学園祭２１にサークル参加しておる者のみ許可する',
-    circlePerks: ['3点まで 無償である', '4〜10点：¥200/点', '11点以降：¥250/点', '1か月前まで：早割（¥250→¥220）を与えようぞ'],
+    circlePerks: ['3点まで 無償である', '4〜8点目：¥220〜/点', '9点目以降：¥230〜/点', '1か月前まで：早割（各段階¥20割引）を与えようぞ'],
   },
   mesugaki: {
     title: 'ふたば★学園祭２１<br>参加型企画 イラスト入りレザーコースター',
@@ -4166,7 +4172,7 @@ const TRANSLATIONS = {
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日しかないんですけど〜', deadlineNote: '⏰ 締め切りまであと {n} 日なんですけど？',
     circleName: 'サークル参加者', circleSub: '頒布もOKなんですけど♡', circleCta: 'つくってもらうんですけど →',
     circleRestrict: '⚠️ ふたば★学園祭２１のサークルの人だけなんですけど〜？',
-    circlePerks: ['3点まで ただなんですけど♡', '4〜10点：¥200/点', '11点以降：¥250/点', '1か月前まで：早割（¥250→¥220）あるんですけど〜'],
+    circlePerks: ['3点まで ただなんですけど♡', '4〜8点目：¥220〜/点', '9点目以降：¥230〜/点', '1か月前まで：早割（各段階¥20割引）あるんですけど〜'],
   },
   gal: {
     title: 'ふたば★学園祭２１<br>参ヵ型企画 ΙΡΑスト入りレザーコースター',
@@ -4183,7 +4189,7 @@ const TRANSLATIONS = {
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日じゃん卍', deadlineNote: '⏰ 締め切りまじあと {n} 日しかないじゃん',
     circleName: 'サークル参ヵ者', circleSub: '頒布もOKじゃん♡', circleCta: 'つくってもらっちゃ →',
     circleRestrict: '⚠️ ふたば★学園祭２１乃サークル乃人だけなんよ〜',
-    circlePerks: ['3点まで タダじゃん♡', '4〜10点：¥200/点', '11点以降：¥250/点', '1ヵ月前まで：早割（¥250→¥220）らしぃよ〜'],
+    circlePerks: ['3点まで タダじゃん♡', '4〜8点目：¥220〜/点', '9点目以降：¥230〜/点', '1ヵ月前まで：早割（各段階¥20割引）らしぃよ〜'],
   },
   ninja: {
     title: 'ふたば★学園祭２１<br>参加型企画 イラスト入りレザーコースター',
@@ -4200,7 +4206,7 @@ const TRANSLATIONS = {
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日だってばよ', deadlineNote: '⏰ 締め切りまであと {n} 日だってばよ',
     circleName: 'サークル参加者', circleSub: '頒布もOKだってばよ', circleCta: '製作するってばよ →',
     circleRestrict: '⚠️ ふたば★学園祭２１のサークルのやつだけだってばよ',
-    circlePerks: ['3点まで タダだってばよ', '4〜10点：¥200/点', '11点以降：¥250/点', '1か月前まで：早割（¥250→¥220）だってばよ'],
+    circlePerks: ['3点まで タダだってばよ', '4〜8点目：¥220〜/点', '9点目以降：¥230〜/点', '1か月前まで：早割（各段階¥20割引）だってばよ'],
   },
   silent: {
     title: 'ふたば★学園祭２１<br>参加型企画 イラスト入りレザーコースター',
@@ -4217,7 +4223,7 @@ const TRANSLATIONS = {
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日。', deadlineNote: '…締め切りまで {n} 日。',
     circleName: 'サークル参加者', circleSub: '…頒布可。', circleCta: '…製作する。',
     circleRestrict: '…サークル参加者のみ。',
-    circlePerks: ['…3点まで無料。', '…4〜10点：¥200/点。', '…11点以降：¥250/点。', '…早割あり（¥250→¥220）。'],
+    circlePerks: ['…3点まで無料。', '…4〜8点目：¥220〜/点。', '…9点目以降：¥230〜/点。', '…早割あり（各段階¥20割引）。'],
   },
   monk: {
     title: 'ふたば★学園祭２１<br>参加型企画 イラスト入りレザーコースター',
@@ -4234,7 +4240,7 @@ const TRANSLATIONS = {
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日だぞ！', deadlineNote: '⏰ 締め切りまであと {n} 日だぞ',
     circleName: 'サークル参加者', circleSub: '頒布もOKだぞ', circleCta: 'つくってもらうぞ →',
     circleRestrict: '⚠️ ふたば★学園祭２１のサークルのやつだけだぞ',
-    circlePerks: ['3点まで タダだぞ', '4〜10点：¥200/点', '11点以降：¥250/点', '1か月前まで：早割（¥250→¥220）だぞ'],
+    circlePerks: ['3点まで タダだぞ', '4〜8点目：¥220〜/点', '9点目以降：¥230〜/点', '1か月前まで：早割（各段階¥20割引）だぞ'],
   },
   mahou: {
     title: 'ふたば★学園祭２１<br>参加型企画 イラスト入りレザーコースター✨',
@@ -4251,7 +4257,7 @@ const TRANSLATIONS = {
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日だよ✨', deadlineNote: '⏰ 締め切りまであと {n} 日だよ✨',
     circleName: 'サークル参加者', circleSub: '頒布もOKだよ✨', circleCta: 'へんしんさせて →',
     circleRestrict: '⚠️ ふたば★学園祭２１のサークルのひとだけなの',
-    circlePerks: ['3点まで 無料なの✨', '4〜10点：¥200/点', '11点以降：¥250/点', '1か月前まで：早割（¥250→¥220）だよ✨'],
+    circlePerks: ['3点まで 無料なの✨', '4〜8点目：¥220〜/点', '9点目以降：¥230〜/点', '1か月前まで：早割（各段階¥20割引）だよ✨'],
   },
   tsundere: {
     title: 'ふたば★学園祭２１<br>参加型企画 イラスト入りレザーコースター',
@@ -4268,7 +4274,7 @@ const TRANSLATIONS = {
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日…べつにカウントしてないし', deadlineNote: '⏰ 締め切りまであと {n} 日よ、お、覚えておきなさいよね',
     circleName: 'サークル参加者', circleSub: 'は、頒布もOKよ、べつに…', circleCta: 'つ、つくってあげる →',
     circleRestrict: '⚠️ ふたば★学園祭２１のサークルの人だけよ、ちゃんと確認しなさい',
-    circlePerks: ['3点まで タダよ', '4〜10点：¥200/点', '11点以降：¥250/点', '1か月前まで：早割（¥250→¥220）よ、お得でしょ'],
+    circlePerks: ['3点まで タダよ', '4〜8点目：¥220〜/点', '9点目以降：¥230〜/点', '1か月前まで：早割（各段階¥20割引）よ、お得でしょ'],
   },
   chuuni: {
     title: 'ふたば★学園祭２１<br>参加型企画 イラスト入りレザーコースター',
@@ -4285,7 +4291,7 @@ const TRANSLATIONS = {
     countdownLabel: 'ふたば★学園祭２１まで', countdownUnit: '日…刻一刻と迫る', deadlineNote: '⏰ 封印の刻まであと {n} 日…',
     circleName: 'サークルの眷属', circleSub: '頒布という名の布教も可', circleCta: '刻印を授かる →',
     circleRestrict: '⚠️ ふたば★学園祭２１の眷属のみ許された儀式',
-    circlePerks: ['3点まで 無償の契約', '4〜10点：¥200/点の代償', '11点以降：¥250/点', '一月前まで：早割の祝福（¥250→¥220）'],
+    circlePerks: ['3点まで 無償の契約', '4〜8点目：¥220〜/点の代償', '9点目以降：¥230〜/点', '一月前まで：早割の祝福（各段階¥20割引）'],
   },
 };
 
