@@ -380,9 +380,9 @@ canvas.ci{border-radius:4px;}
 .code-action-btn.success-flash{background:var(--green-bg);border-color:var(--green);color:var(--green);}
 
 /* MODAL */
-.modal-backdrop{position:fixed;inset:0;background:rgba(20,14,8,.85);display:flex;align-items:center;justify-content:center;z-index:999;opacity:0;pointer-events:none;transition:opacity .3s;padding:20px;}
+.modal-backdrop{position:fixed;inset:0;background:rgba(20,14,8,.85);display:flex;align-items:flex-start;justify-content:center;z-index:999;opacity:0;pointer-events:none;transition:opacity .3s;padding:20px;overflow-y:auto;}
 .modal-backdrop.show{opacity:1;pointer-events:all;}
-.modal{background:var(--card);max-width:460px;width:100%;padding:36px 30px;border-radius:14px;text-align:center;transform:translateY(20px);transition:transform .3s;}
+.modal{background:var(--card);max-width:460px;width:100%;padding:36px 30px;border-radius:14px;text-align:center;transform:translateY(20px);transition:transform .3s;margin:auto;}
 .modal-backdrop.show .modal{transform:translateY(0);}
 .modal-icon{font-size:2.5rem;margin-bottom:14px;}
 .modal-title{font-size:1.3rem;font-weight:700;margin-bottom:8px;}
@@ -1250,26 +1250,26 @@ footer a{color:var(--potato-light);text-decoration:none;}
     <span class="inquiry-toggle-arrow">▼</span>
   </div>
   <div class="inquiry-body">
-    <p style="font-size:.88rem;color:rgba(255,255,255,.78);line-height:1.7;">
+    <p style="font-size:.88rem;color:var(--muted);line-height:1.7;">
       注文時に使用したメールアドレスまたはXアカウントで検索すると、引換コードを再表示できます。
     </p>
     <div class="inquiry-form">
       <div style="display:flex;flex-direction:column;gap:6px;">
-        <label style="font-size:.8rem;font-weight:700;color:rgba(255,255,255,.78);">おなまえ</label>
+        <label style="font-size:.8rem;font-weight:700;color:var(--muted);">おなまえ</label>
         <input class="inquiry-input" id="iq-name" type="text" placeholder="ポコ太郎">
       </div>
       <div style="display:flex;flex-direction:column;gap:6px;">
-        <label style="font-size:.8rem;font-weight:700;color:rgba(255,255,255,.78);">メールアドレス または Xアカウント（@なし）</label>
+        <label style="font-size:.8rem;font-weight:700;color:var(--muted);">メールアドレス または Xアカウント（@なし）</label>
         <input class="inquiry-input" id="iq-contact" type="text" placeholder="example@mail.com または username">
       </div>
     </div>
     <div style="margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
       <button class="inquiry-btn" onclick="searchOrder()">🔍 検索する</button>
-      <span style="font-size:.8rem;color:rgba(255,255,255,.78);" id="iq-hint"></span>
+      <span style="font-size:.8rem;color:var(--muted);" id="iq-hint"></span>
     </div>
     <div class="inquiry-result" id="iqResult"></div>
 
-    <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);font-size:.84rem;color:rgba(255,255,255,.78);line-height:1.7;">
+    <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);font-size:.84rem;color:var(--muted);line-height:1.7;">
       ❓ 検索しても見つからない場合は、以下からお問い合わせください。<br>
       注文番号または注文日時、おなまえをお伝えいただけるとスムーズです。
       <div style="margin-top:8px;display:flex;gap:12px;flex-wrap:wrap;">
