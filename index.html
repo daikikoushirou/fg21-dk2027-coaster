@@ -69,7 +69,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15p
 .gate-participants{margin-bottom:20px;display:flex;flex-direction:column;align-items:center;gap:10px;}
 .gate-participants-count{font-size:.82rem;font-weight:700;color:var(--muted);letter-spacing:.04em;}
 .gate-participants-count span{color:var(--potato-dark);font-size:1.1rem;}
-.gate-avatars{display:flex;flex-wrap:nowrap;justify-content:flex-start;gap:0;overflow:hidden;}
+.gate-avatars{display:flex;flex-wrap:nowrap;justify-content:flex-start;gap:0;}
 .gate-avatar{width:38px;height:38px;border-radius:50%;border:2.5px solid var(--potato-bg);overflow:hidden;margin-left:-8px;background:var(--border);flex-shrink:0;transition:transform .15s;cursor:default;}
 .gate-avatar:first-child{margin-left:0;}
 .gate-avatar:hover{transform:scale(1.15);z-index:10;position:relative;}
@@ -124,9 +124,9 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15p
 .gate-participants-row{margin-top:10px;}
 .gate-participants-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 @media(max-width:440px){.gate-participants-grid{grid-template-columns:1fr;}}
-.gate-pcol{display:flex;flex-direction:column;gap:5px;background:rgba(255,255,255,.65);border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;text-align:left;}
-.gate-pcol-section{display:flex;flex-direction:row;align-items:stretch;gap:6px;}
-.gate-pcol-section-body{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0;justify-content:flex-end;}
+.gate-pcol{display:flex;flex-direction:column;gap:5px;background:rgba(255,255,255,.65);border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;text-align:left;min-width:0;overflow:hidden;}
+.gate-pcol-section{display:flex;flex-direction:row;align-items:stretch;gap:6px;min-width:0;}
+.gate-pcol-section-body{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0;justify-content:flex-end;overflow:hidden;}
 .gate-pcol-section>.soudane-btn{align-self:flex-end;flex-shrink:0;}
 .gate-pcol-label{font-size:.76rem;font-weight:700;text-align:center;padding-bottom:6px;border-bottom:1px solid var(--border);margin-bottom:2px;}
 .gate-pcol-count{font-size:.72rem;font-weight:700;color:var(--muted);line-height:1.4;}
