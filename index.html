@@ -1519,7 +1519,7 @@ async function sbFetch() {
     shape: r.shape, qty: r.qty, total: r.total,
     earlyBird: r.early_bird, sampleRequested: r.sample_requested,
     sampleFreeEligible: r.sample_free_eligible,
-    sampleCount: r.sample_count, note: r.note,
+    sampleCount: r.sample_count, note: (r.note || '').trim(),
     wantsCompletionImage: r.wants_completion_image||false,
     adjustment: r.adjustment||0,
     sampleSent: r.sample_sent||false,
@@ -2635,9 +2635,9 @@ function renderOrders() {
       </div>` : ''}
 
       <!-- メモ -->
-      ${o.note ? `
+      ${o.note && o.note.trim() ? `
       <div class="order-card-row">
-        <span style="font-size:.8rem;color:rgba(255,255,255,.78)">💬 ${o.note}</span>
+        <span style="font-size:.8rem;color:rgba(255,255,255,.78)">💬 ${o.note.trim()}</span>
       </div>` : ''}
     </div>`;
   }).join('')}</div>`;
