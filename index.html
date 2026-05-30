@@ -2655,7 +2655,7 @@ function renderOrders() {
         </div>
         <div class="oc-group" style="flex:1;min-width:0;align-items:center;">
           <div class="oc-label">元画像</div>
-          ${o.thumb ? `<img class="thumb-mini ${o.shape==='サークル'?'ci':'sq'}" src="${o.thumb}" alt="" onclick="zoomImg('${o.thumb}')">` : '<span style="font-size:.78rem;color:rgba(255,255,255,.5)">なし</span>'}
+          ${(o.thumb || o.image_url) ? `<img class="thumb-mini ${o.shape==='サークル'?'ci':'sq'}" src="${o.thumb || o.image_url}" alt="" onclick="zoomImg('${o.thumb || o.image_url}')">` : '<span style="font-size:.78rem;color:rgba(255,255,255,.5)">なし</span>'}
           ${o.image_url ? `<a href="${o.image_url}" target="_blank" rel="noopener" style="font-size:.78rem;color:var(--circle-color);font-weight:700;margin-top:2px;">元画像↗</a>` : ''}
         </div>
       </div>
