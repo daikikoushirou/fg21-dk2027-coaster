@@ -2335,12 +2335,21 @@ document.getElementById('orderForm').addEventListener('submit', async e => {
 
   // 画像アップロード（Supabase設定済みの場合）
   let imageUrl = '';
-  if (sbReady()) {
+  if (sbReady() && imgObj) {
     try {
-      const file = document.getElementById('f-image').files[0];
-      if (file) {
-        const ext = (file.name.split('.').pop() || 'png').toLowerCase();
-        imageUrl = await sbUploadImage(file, `${ref}.${ext}`);
+      // ファイル入力 → なければCanvasからBlob生成（ドラッグ&ドロップ対応）
+      let uploadFile = document.getElementById('f-image').files[0];
+      if (!uploadFile) {
+        uploadFile = await new Promise(resolve => {
+          document.getElementById('previewCanvas').toBlob(
+            blob => resolve(blob ? new File([blob], `${ref}.jpg`, { type: 'image/jpeg' }) : null),
+            'image/jpeg', 0.9
+          );
+        });
+      }
+      if (uploadFile) {
+        const ext = uploadFile.name.includes('.') ? uploadFile.name.split('.').pop().toLowerCase() : 'jpg';
+        imageUrl = await sbUploadImage(uploadFile, `${ref}.${ext}`);
       }
     } catch (err) {
       console.warn('画像アップロード失敗（続行）:', err);
