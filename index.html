@@ -3729,13 +3729,28 @@ function applyParticipantState(type, registered) {
   const btn = document.getElementById(`participantBtn${type === 'circle' ? 'Circle' : 'General'}`);
   if (!btn) return;
   btn.classList.toggle('liked', registered);
-  if (registered) btn.querySelector('span').textContent = '参加中';
+  if (registered) {
+    btn.style.display = 'none';
+  } else {
+    btn.style.display = '';
+    btn.querySelector('span').textContent = '参加中';
+  }
 }
 
 function applyHeartState(type, liked) {
   const btn = document.getElementById(`heartBtn${type === 'circle' ? 'Circle' : 'General'}`);
   if (!btn) return;
   btn.classList.toggle('liked', liked);
+  // そうだね済みは吹き出しを非表示
+  const bubble = document.getElementById('heartBubble');
+  const wrap   = btn.closest('.heart-bubble-wrap');
+  if (liked) {
+    if (bubble) bubble.style.display = 'none';
+    if (wrap)   wrap.querySelector('.heart-bubble') && (wrap.querySelector('.heart-bubble').style.display = 'none');
+  } else {
+    if (bubble) bubble.style.display = '';
+    if (wrap)   wrap.querySelector('.heart-bubble') && (wrap.querySelector('.heart-bubble').style.display = '');
+  }
 }
 
 async function loadInterests() {
