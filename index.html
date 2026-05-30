@@ -1409,7 +1409,8 @@ footer a{color:var(--potato-light);text-decoration:none;}
 </div>
 
 <div class="modal-backdrop" id="successModal">
-  <div class="modal">
+  <div class="modal" style="position:relative;">
+    <button onclick="closeModal()" style="position:sticky;top:0;float:right;margin:-8px -8px 0 0;background:var(--potato-dark);color:#fff;border:none;border-radius:50%;width:32px;height:32px;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;z-index:10;">✕</button>
     <div class="modal-icon">🎉</div>
     <h3 class="modal-title">製作依頼を受け付けました！</h3>
     <p class="modal-body">引換コードを保存して、当日ブースでご提示ください。</p>
