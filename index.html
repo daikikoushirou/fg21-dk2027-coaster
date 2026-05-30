@@ -1027,7 +1027,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
 
       <!-- サークルスペース・サークル名（サークルモードのみ） -->
       <div class="form-group" id="circleSpaceGroup" style="display:none;">
-        <label>サークルスペース<span class="required-mark">*</span></label>
+        <label>サークルスペース<span style="font-size:.72rem;font-weight:400;color:rgba(255,255,255,.6);margin-left:6px;">任意</span></label>
         <input type="text" id="f-circle-space" placeholder="例：A-01A" oninput="this.value=this.value.replace(/[^A-Za-z0-9\-]/g,'').toUpperCase()" autocomplete="off" inputmode="text">
         <span class="field-error" id="e-circle-space">サークルスペースを入力してください</span>
         <span style="font-size:.68rem;color:rgba(255,255,255,.6);margin-top:2px;display:block;">半角英数字・自動大文字変換</span>
@@ -2274,10 +2274,9 @@ function showError(id,msg){const e=document.getElementById('e-'+id);if(e&&msg)e.
 function clearError(id){document.getElementById('e-'+id)?.classList.remove('visible');document.getElementById('f-'+id)?.classList.remove('invalid');}
 function validateForm(){
   let ok=true;
-  ['name','circle-name','circle-space','email','qty','image','xaccount'].forEach(id=>clearError(id));
+  ['name','circle-name','email','qty','image','xaccount'].forEach(id=>clearError(id));
   if(!document.getElementById('f-name').value.trim()){showError('name','おなまえを入力してください');ok=false;}
   if(currentMode === 'circle' && !document.getElementById('f-circle-name').value.trim()){showError('circle-name','サークル名を入力してください');ok=false;}
-  if(currentMode === 'circle' && !document.getElementById('f-circle-space').value.trim()){showError('circle-space','サークルスペースを入力してください');ok=false;}
   const contactPref = document.querySelector('input[name="contact-pref"]:checked')?.value || 'email';
   const em = document.getElementById('f-email').value.trim();
   const xa = document.getElementById('f-xaccount').value.trim();
