@@ -1153,7 +1153,11 @@ footer a{color:var(--potato-light);text-decoration:none;}
       </div>
       <div class="form-group">
         <label>点数<span class="required-mark">*</span></label>
-        <input type="number" id="f-qty" min="1" value="1" oninput="updateTotal()">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <button type="button" onclick="adjustQty(-1)" style="width:36px;height:36px;border-radius:8px;border:1.5px solid var(--border);background:var(--card);color:var(--ink);font-size:1.2rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">−</button>
+          <input type="number" id="f-qty" min="1" value="1" oninput="updateTotal()" style="text-align:center;width:60px;flex-shrink:0;">
+          <button type="button" onclick="adjustQty(1)" style="width:36px;height:36px;border-radius:8px;border:1.5px solid var(--border);background:var(--card);color:var(--ink);font-size:1.2rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">＋</button>
+        </div>
         <div class="qty-hint" id="qtyHint"></div>
         <span class="field-error" id="e-qty"></span>
       </div>
@@ -2352,6 +2356,15 @@ function toggleXDmTip() {
 // ══ VALIDATION ══
 function showError(id,msg){const e=document.getElementById('e-'+id);if(e&&msg)e.textContent=msg;e?.classList.add('visible');document.getElementById('f-'+id)?.classList.add('invalid');}
 function clearError(id){document.getElementById('e-'+id)?.classList.remove('visible');document.getElementById('f-'+id)?.classList.remove('invalid');}
+function adjustQty(delta) {
+  const input = document.getElementById('f-qty');
+  const max = parseInt(input.max) || getMaxQty(currentMode);
+  const min = parseInt(input.min) || 1;
+  const newVal = Math.min(max, Math.max(min, (parseInt(input.value) || 1) + delta));
+  input.value = newVal;
+  updateTotal();
+}
+
 function validateForm(){
   let ok=true;
   ['name','circle-name','email','qty','image','xaccount'].forEach(id=>clearError(id));
@@ -2619,9 +2632,9 @@ function renderOrders() {
     const adj = o.adjustment || 0;
     const contactInfo = o.contactPref === 'x'
       ? `<span style="color:#1d9bf0;font-weight:700">𝕏 @${o.xAccount||'?'}</span>`
-      : `<span style="color:rgba(255,255,255,.78)">✉ ${o.email}</span>`;
+      : `<span style="color:var(--muted)">✉ ${o.email}</span>`;
     const xExtra = o.xAccount && o.contactPref !== 'x'
-      ? `<span style="color:rgba(255,255,255,.78);font-size:.76rem">𝕏 @${o.xAccount}</span>` : '';
+      ? `<span style="color:var(--muted);font-size:.76rem">𝕏 @${o.xAccount}</span>` : '';
 
     return `<div class="order-card">
       <!-- 行1: ヘッダー -->
@@ -2639,7 +2652,7 @@ function renderOrders() {
       <div class="order-card-row" style="justify-content:space-between">
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
           <span style="font-family:monospace;font-size:1.4rem;font-weight:700;letter-spacing:.2em;color:var(--potato-dark)">${o.code||'—'}</span>
-          <span style="font-size:.8rem;color:rgba(255,255,255,.78)">引換コード</span>
+          <span style="font-size:.8rem;color:var(--muted)">引換コード</span>
         </div>
         <select class="status-select" onchange="updateStatus('${o.ref}',this.value)">
           <option value="new" ${o.status==='new'?'selected':''}>新規</option>
@@ -2672,7 +2685,7 @@ function renderOrders() {
         </div>
         <div class="oc-group" style="flex:1;min-width:0;align-items:center;">
           <div class="oc-label">元画像</div>
-          ${(o.thumb || o.image_url) ? `<img class="thumb-mini ${o.shape==='サークル'?'ci':'sq'}" src="${o.thumb || o.image_url}" alt="" onclick="zoomImg('${o.thumb || o.image_url}')">` : '<span style="font-size:.78rem;color:rgba(255,255,255,.5)">なし</span>'}
+          ${(o.thumb || o.image_url) ? `<img class="thumb-mini ${o.shape==='サークル'?'ci':'sq'}" src="${o.thumb || o.image_url}" alt="" onclick="zoomImg('${o.thumb || o.image_url}')">` : '<span style="font-size:.78rem;color:#bbb">なし</span>'}
           ${o.image_url ? `<a href="${o.image_url}" target="_blank" rel="noopener" style="font-size:.78rem;color:var(--circle-color);font-weight:700;margin-top:2px;">元画像↗</a>` : ''}
         </div>
       </div>
@@ -2696,7 +2709,7 @@ function renderOrders() {
             <button class="sent-btn" style="background:rgba(255,200,80,.15);border-color:var(--gold-border);font-size:.75rem;padding:5px 10px;" onclick="showMsgModal('sample','${o.ref}')">📝 文面</button>
           </div>
         </div>` : ''}
-        ${o.sampleRequested && o.wantsCompletionImage ? `<div style="width:1px;background:rgba(255,255,255,.15);align-self:stretch;"></div>` : ''}
+        ${o.sampleRequested && o.wantsCompletionImage ? `<div style="width:1px;background:rgba(0,0,0,.1);align-self:stretch;"></div>` : ''}
         ${o.wantsCompletionImage ? `
         <div style="flex:0 0 auto;min-width:140px;max-width:200px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;align-items:center;text-align:center;">
           <div class="oc-label">📷 仕上がり確認</div>
@@ -2714,7 +2727,7 @@ function renderOrders() {
           </div>
         </div>` : ''}
         ${o.earlyBird ? `
-        ${(o.sampleRequested || o.wantsCompletionImage) ? '<div style="width:1px;background:rgba(255,255,255,.15);align-self:stretch;"></div>' : ''}
+        ${(o.sampleRequested || o.wantsCompletionImage) ? '<div style="width:1px;background:rgba(0,0,0,.1);align-self:stretch;"></div>' : ''}
         <div style="flex:0 0 auto;min-width:140px;max-width:200px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;align-items:center;text-align:center;">
           <div class="oc-label">⭐ 早割価格で増減</div>
           <div class="sample-ctrl">
