@@ -1209,6 +1209,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
             <div class="ctrl-group"><div class="ctrl-label">Y位置</div><div class="ctrl-row"><input type="range" class="ctrl-slider" id="ctrl-y" min="-80" max="80" value="0" oninput="updatePreview()"><span class="ctrl-val" id="val-y">0</span></div></div>
             <div class="ctrl-group"><div class="ctrl-label">回転</div><div class="ctrl-row"><input type="range" class="ctrl-slider" id="ctrl-rot" min="-180" max="180" value="0" oninput="updatePreview()"><span class="ctrl-val" id="val-rot">0°</span></div></div>
             <div class="ctrl-group" style="align-self:flex-end"><button type="button" class="ctrl-btn" onclick="resetControls()">リセット</button></div>
+            <div class="ctrl-group" style="align-self:flex-end;" id="ctrl-snap-btn"><button type="button" class="ctrl-btn" onclick="autoSnapImage()" title="カットラインに揃える">スナップ</button></div>
             <div class="ctrl-group"><div class="ctrl-label">反転</div><div class="ctrl-row" style="gap:7px"><button type="button" class="ctrl-btn" onclick="flipH()">左右</button><button type="button" class="ctrl-btn" onclick="flipV()">上下</button></div></div>
             <div class="ctrl-group"><div class="ctrl-label">革色プレビュー</div><div class="toggle-row"><div class="toggle-track" id="invertToggle" onclick="toggleInvert()"><div class="toggle-thumb"></div></div><span class="toggle-desc" id="invertDesc">OFF</span></div></div>
           </div>
@@ -1627,7 +1628,7 @@ async function sbPatch(ref, patch) {
 
 // ══ STATE ══
 let currentMode = null;
-let imgObj = null, _droppedFile = null, flipHState = false, flipVState = false, invertState = false, leatherPreviewUsed = false;
+let imgObj = null, _droppedFile = null, flipHState = false, flipVState = false, invertState = false, leatherPreviewUsed = false, imageTooSmall = false;
 let orders = JSON.parse(localStorage.getItem('bc_orders') || '[]');
 
 // ══ MAKE.COM 通知 ══
@@ -2250,7 +2251,14 @@ function loadImageFile(file) {
       const _dw = img.width / _sf, _dh = img.height / _sf;
       if (_dw < 169 || _dh < 169) {
         const wb = document.getElementById('previewWarnBox');
-        if (wb) { wb.textContent = '⚠️ 画像の解像度がカットラインより小さいです。仕上がりが荒くなる可能性があります。'; wb.style.display = 'block'; }
+        const _shapePx = getShapePx();
+        const _lackW = Math.max(0, _shapePx - img.width);
+        const _lackH = Math.max(0, _shapePx - img.height);
+        const _lacks = [];
+        if (_lackW > 0) _lacks.push(`幅 ${_lackW}px`);
+        if (_lackH > 0) _lacks.push(`高さ ${_lackH}px`);
+        imageTooSmall = true;
+        if (wb) { wb.textContent = `⚠️ 画像の解像度がカットラインより小さいです。${_lacks.join(' ')} 大きい画像をご用意ください。`; wb.style.display = 'block'; }
       }
     };
     img.src = ev.target.result;
@@ -2259,6 +2267,7 @@ function loadImageFile(file) {
 }
 function removeImage() {
   leatherPreviewUsed = false;
+  imageTooSmall = false;
   imgObj = null;
   document.getElementById('f-image').value = '';
   document.getElementById('previewWrapper').classList.remove('visible');
@@ -2423,11 +2432,19 @@ function updatePreview() {
 function updatePreviewWarning(dw, dh, dx, dy, shape, cx, cy, C, P) {
   const warn = document.getElementById('previewWarnBox');
   if (!warn) return;
+  imageTooSmall = false; // 毎回リセットして再判定
   const msgs = [];
 
   // ① サイズ警告：画像がカットラインより小さい
   if (dw < C - 1 || dh < C - 1) {
-    msgs.push('⚠️ 画像の解像度がカットラインより小さいです。仕上がりが荒くなる可能性があります。');
+    imageTooSmall = true;
+    const shapePx = getShapePx();
+    const lackW = Math.max(0, shapePx - (imgObj ? imgObj.width : 0));
+    const lackH = Math.max(0, shapePx - (imgObj ? imgObj.height : 0));
+    const lacks = [];
+    if (lackW > 0) lacks.push(`幅 ${lackW}px`);
+    if (lackH > 0) lacks.push(`高さ ${lackH}px`);
+    msgs.push(`⚠️ 画像の解像度がカットラインより小さいです。${lacks.join(' ')} 大きい画像をご用意ください。`);
   }
 
   // ② 余白チェック：カットライン内に空白が生じる位置かどうか
@@ -2443,13 +2460,11 @@ function updatePreviewWarning(dw, dh, dx, dy, shape, cx, cy, C, P) {
     hasBlank = imgL > P + 1 || imgR < P + C - 1 || imgT > P + 1 || imgB < P + C - 1;
   }
   if (hasBlank) {
-    msgs.push('⚠️ カットライン内に余白が生じています。画像をスナップしますか？');
+    msgs.push('⚠️ カットライン内に余白が生じています。スナップを使うと片側のカットラインに画像を揃えることができます。');
   }
 
   if (msgs.length) {
-    warn.innerHTML = msgs.join('<br>') + (hasBlank
-      ? ` <button type="button" onclick="autoSnapImage()" style="margin-left:8px;padding:2px 10px;border-radius:5px;border:1px solid rgba(255,200,80,.6);background:rgba(255,200,80,.15);color:rgba(255,235,150,1);font-size:.74rem;cursor:pointer;">スナップ</button>`
-      : '');
+    warn.innerHTML = msgs.join('<br>');
     warn.style.display = 'block';
   } else {
     warn.style.display = 'none';
@@ -2619,6 +2634,7 @@ function adjustQty(delta) {
 function validateForm(){
   let ok=true;
   ['name','circle-name','email','qty','image','xaccount'].forEach(id=>clearError(id));
+  if (imageTooSmall) { showError('image', '画像の解像度がカットラインより小さいです。大きい画像をご用意ください。（プレビューの警告を確認してください）'); ok=false; }
   if(!document.getElementById('f-name').value.trim()){showError('name','おなまえを入力してください');ok=false;}
   if(currentMode === 'circle' && !document.getElementById('f-circle-name').value.trim()){showError('circle-name','サークル名を入力してください');ok=false;}
   const contactPref = document.querySelector('input[name="contact-pref"]:checked')?.value || 'email';
