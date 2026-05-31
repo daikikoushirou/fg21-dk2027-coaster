@@ -1481,9 +1481,8 @@ footer a{color:var(--potato-light);text-decoration:none;}
         <button class="code-action-btn" style="font-size:.8rem;padding:6px 14px;" onclick="retryCloudSave(this)">🔄 再送信する</button>
       </div>
     </div>
-    <div id="successQR" style="margin:16px auto 0;text-align:center;display:none;">
-      <div style="font-size:.75rem;color:rgba(255,255,255,.78);margin-bottom:6px;">📱 当日はQRでも提示できます</div>
-      <div id="successQRCanvas" style="display:inline-block;padding:8px;background:#fff;border-radius:8px;border:1.5px solid var(--border);"></div>
+    <div id="successQR" style="display:none;">
+      <div id="successQRCanvas"></div>
     </div>
     <canvas id="codeCanvas" width="400" height="240" style="display:none"></canvas>
     <button class="modal-close" onclick="closeModal()">閉じる</button>
@@ -3235,20 +3234,14 @@ async function saveCodeImage() {
   const personName = order ? (order.name || '') : '';
   const circleName = order ? (order.circleName || '') : '';
   const cutlineUrl = order ? (order.cutlineUrl || '') : '';
-  const qrParts = [code];
-  if (circleName) qrParts.push(circleName);
-  if (personName) qrParts.push(personName);
-  const qrSrc = await makeLabelQR(qrParts.join('\n'), 200);
 
   // cutline画像を事前読み込み
+  // すでにモーダル内で生成済みのQRキャンバスをそのまま使う
+  const qrContainer = document.getElementById('successQRCanvas');
+  const qrEl = qrContainer ? (qrContainer.querySelector('canvas') || qrContainer.querySelector('img')) : null;
+  const qrImg = qrEl || null;
+
   // cutline: fetchでblob取得→blobURL経由でcanvas汚染を回避
-  const loadImg = (src) => new Promise(resolve => {
-    if (!src) { resolve(null); return; }
-    const i = new Image();
-    i.onload = () => resolve(i);
-    i.onerror = () => resolve(null);
-    i.src = src;
-  });
   const loadImgViafetch = async (url) => {
     if (!url) return null;
     try {
@@ -3265,10 +3258,7 @@ async function saveCodeImage() {
     } catch { return null; }
   };
 
-  const [qrImg, cutImg] = await Promise.all([
-    loadImg(qrSrc),
-    loadImgViafetch(cutlineUrl)
-  ]);
+  const cutImg = await loadImgViafetch(cutlineUrl);
 
   // 高品質描画設定
   ctx.imageSmoothingEnabled = true;
