@@ -3670,18 +3670,45 @@ async function makeLabelQR(text, size) {
   if (labelQrCache[key]) return labelQrCache[key];
   return new Promise(resolve => {
     const tmp = document.createElement('div');
-    tmp.style.cssText = 'position:absolute;visibility:hidden;top:-9999px;left:-9999px;';
+    // visibility:hidden ではなく opacity:0 でレンダリングを妨げない
+    tmp.style.cssText = 'position:fixed;opacity:0;pointer-events:none;top:0;left:0;width:' + size + 'px;height:' + size + 'px;';
     document.body.appendChild(tmp);
+
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      obs.disconnect();
+      const el = tmp.querySelector('canvas') || tmp.querySelector('img');
+      let src = '';
+      try {
+        src = el ? (el.tagName === 'CANVAS' ? el.toDataURL() : el.src) : '';
+      } catch(e) {}
+      labelQrCache[key] = src;
+      if (document.body.contains(tmp)) document.body.removeChild(tmp);
+      resolve(src);
+    };
+
+    // MutationObserverでQRコード要素が追加されたら即取得
+    const obs = new MutationObserver(() => {
+      const el = tmp.querySelector('canvas') || tmp.querySelector('img');
+      if (!el) return;
+      if (el.tagName === 'IMG' && !el.src) return;
+      if (el.tagName === 'IMG') { el.onload ? (el.onload = finish) : finish(); return; }
+      finish(); // canvas はそのまま取得可能
+    });
+    obs.observe(tmp, { childList: true, subtree: true });
+
     try {
       new QRCode(tmp, { text, width: size, height: size, correctLevel: QRCode.CorrectLevel.M });
-    } catch(e) { document.body.removeChild(tmp); resolve(''); return; }
-    setTimeout(() => {
-      const el = tmp.querySelector('img') || tmp.querySelector('canvas');
-      const src = el ? (el.tagName === 'CANVAS' ? el.toDataURL() : el.src) : '';
-      labelQrCache[key] = src;
-      document.body.removeChild(tmp);
-      resolve(src);
-    }, 150);
+    } catch(e) {
+      done = true; obs.disconnect();
+      if (document.body.contains(tmp)) document.body.removeChild(tmp);
+      resolve(''); return;
+    }
+
+    // フォールバック: 最大1秒待つ
+    setTimeout(finish, 1000);
   });
 }
 
