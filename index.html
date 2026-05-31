@@ -1206,7 +1206,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
             <div class="ctrl-group"><div class="ctrl-label">Y位置</div><div class="ctrl-row"><input type="range" class="ctrl-slider" id="ctrl-y" min="-80" max="80" value="0" oninput="updatePreview()"><span class="ctrl-val" id="val-y">0</span></div></div>
             <div class="ctrl-group"><div class="ctrl-label">回転</div><div class="ctrl-row"><input type="range" class="ctrl-slider" id="ctrl-rot" min="-180" max="180" value="0" oninput="updatePreview()"><span class="ctrl-val" id="val-rot">0°</span></div></div>
             <div class="ctrl-group"><div class="ctrl-label">反転</div><div class="ctrl-row" style="gap:7px"><button type="button" class="ctrl-btn" onclick="flipH()">左右</button><button type="button" class="ctrl-btn" onclick="flipV()">上下</button></div></div>
-            <div class="ctrl-group"><div class="ctrl-label">白黒反転</div><div class="toggle-row"><div class="toggle-track" id="invertToggle" onclick="toggleInvert()"><div class="toggle-thumb"></div></div><span class="toggle-desc" id="invertDesc">OFF</span></div></div>
+            <div class="ctrl-group"><div class="ctrl-label">革色プレビュー</div><div class="toggle-row"><div class="toggle-track" id="invertToggle" onclick="toggleInvert()"><div class="toggle-thumb"></div></div><span class="toggle-desc" id="invertDesc">OFF</span></div></div>
             <div class="ctrl-group" style="margin-left:auto;align-self:flex-end"><button type="button" class="ctrl-btn" onclick="resetControls()">リセット</button></div>
           </div>
         </div>
@@ -2306,18 +2306,49 @@ function updatePreview() {
   ctx.drawImage(imgObj, -dw / 2, -dh / 2, dw, dh);
   ctx.restore();
 
-  // 4. 白黒反転（コースター領域のみ）
+  // 4. 革色トーンマッピング＋テクスチャノイズ（グレスケ→焦げ）
   if (invertState) {
-    ctx.save();
-    if (shape === 'ci') {
-      ctx.beginPath(); ctx.arc(cx, cy, C / 2, 0, Math.PI * 2); ctx.clip();
-    } else {
-      ctx.beginPath(); ctx.rect(P, P, C, C); ctx.clip();
+    // バリューノイズ: 2点間を滑らかに補間
+    const _h = (xi, yi) => {
+      const n = Math.sin(xi*127.1 + yi*311.7) * 43758.5453;
+      return n - Math.floor(n);
+    };
+    const _vn = (x, y, sc) => {
+      const xi=Math.floor(x/sc), yi=Math.floor(y/sc);
+      const xf=x/sc-xi, yf=y/sc-yi;
+      const sx=xf*xf*(3-2*xf), sy=yf*yf*(3-2*yf);
+      const v00=_h(xi,yi), v10=_h(xi+1,yi), v01=_h(xi,yi+1), v11=_h(xi+1,yi+1);
+      return v00 + sx*(v10-v00) + sy*(v01-v00) + sx*sy*(v00-v10-v01+v11);
+    };
+    // マルチオクターブ (粗め×0.5 + 中×0.3 + 細×0.2)
+    const _noise = (x, y) =>
+      _vn(x,y,6)*0.5 + _vn(x,y,3)*0.3 + _vn(x,y,1.5)*0.2;
+
+    const imgData = ctx.getImageData(0, 0, TOTAL, TOTAL);
+    const d = imgData.data;
+    const lR=185, lG=148, lB=106; // 革の地色（明）
+    const dR=30,  dG=14,  dB=8;   // 焦げ色（暗）
+    const r2 = (C/2)*(C/2);
+    for (let y=0; y<TOTAL; y++) {
+      for (let x=0; x<TOTAL; x++) {
+        const inC = shape==='ci'
+          ? (x-cx)*(x-cx)+(y-cy)*(y-cy) <= r2
+          : x>=P && x<P+C && y>=P && y<P+C;
+        if (!inC) continue;
+        const i = (y*TOTAL+x)*4;
+        const gray = (d[i]*0.299 + d[i+1]*0.587 + d[i+2]*0.114) / 255;
+        // トーンマッピング
+        let r = dR + (lR-dR)*gray;
+        let g = dG + (lG-dG)*gray;
+        let b = dB + (lB-dB)*gray;
+        // テクスチャノイズ（±28）
+        const nv = (_noise(x, y) - 0.5) * 56;
+        d[i]   = Math.max(0, Math.min(255, Math.round(r + nv)));
+        d[i+1] = Math.max(0, Math.min(255, Math.round(g + nv*0.85)));
+        d[i+2] = Math.max(0, Math.min(255, Math.round(b + nv*0.65)));
+      }
     }
-    ctx.globalCompositeOperation = 'difference';
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(0, 0, TOTAL, TOTAL);
-    ctx.restore();
+    ctx.putImageData(imgData, 0, 0);
   }
 
   // 5. コースター外エリアを暗いオーバーレイで覆う
@@ -2445,7 +2476,7 @@ function autoSnapImage() {
 function resetControls(redraw=true){['ctrl-scale','ctrl-x','ctrl-y','ctrl-rot'].forEach(id=>{const el=document.getElementById(id);el.value=id==='ctrl-scale'?90:0;});flipHState=flipVState=false;if(redraw)updatePreview();}
 function flipH(){flipHState=!flipHState;updatePreview();}
 function flipV(){flipVState=!flipVState;updatePreview();}
-function toggleInvert(){invertState=!invertState;const t=document.getElementById('invertToggle');t.classList.toggle('on',invertState);document.getElementById('invertDesc').textContent=invertState?'ON（白→焦げ）':'OFF（黒→焦げ）';updatePreview();}
+function toggleInvert(){invertState=!invertState;const t=document.getElementById('invertToggle');t.classList.toggle('on',invertState);document.getElementById('invertDesc').textContent=invertState?'ON':'OFF';updatePreview();}
 
 function toggleCompletionNote() {
   const checked = document.getElementById('f-completion-img').checked;
