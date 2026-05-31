@@ -2330,14 +2330,18 @@ function updatePreview() {
       const v00=_h(xi,yi), v10=_h(xi+1,yi), v01=_h(xi,yi+1), v11=_h(xi+1,yi+1);
       return v00 + sx*(v10-v00) + sy*(v01-v00) + sx*sy*(v00-v10-v01+v11);
     };
-    // マルチオクターブ (粗め×0.5 + 中×0.3 + 細×0.2)
     const _noise = (x, y) =>
       _vn(x,y,6)*0.5 + _vn(x,y,3)*0.3 + _vn(x,y,1.5)*0.2;
 
+    // 画像の描画範囲（回転を考慮した逆変換で判定）
+    const imgCX = cx + dx, imgCY = cy + dy;
+    const cosR = Math.cos(-rot), sinR = Math.sin(-rot);
+    const halfW = dw / 2, halfH = dh / 2;
+
     const imgData = ctx.getImageData(0, 0, TOTAL, TOTAL);
     const d = imgData.data;
-    const lR=185, lG=148, lB=106; // 革の地色（明）
-    const dR=30,  dG=14,  dB=8;   // 焦げ色（暗）
+    const lR=185, lG=148, lB=106;
+    const dR=30,  dG=14,  dB=8;
     const r2 = (C/2)*(C/2);
     for (let y=0; y<TOTAL; y++) {
       for (let x=0; x<TOTAL; x++) {
@@ -2345,13 +2349,16 @@ function updatePreview() {
           ? (x-cx)*(x-cx)+(y-cy)*(y-cy) <= r2
           : x>=P && x<P+C && y>=P && y<P+C;
         if (!inC) continue;
+        // 画像の外側（余白）はスキップ
+        const rx = x - imgCX, ry = y - imgCY;
+        const lx = rx*cosR - ry*sinR;
+        const ly = rx*sinR + ry*cosR;
+        if (Math.abs(lx) > halfW || Math.abs(ly) > halfH) continue;
         const i = (y*TOTAL+x)*4;
         const gray = (d[i]*0.299 + d[i+1]*0.587 + d[i+2]*0.114) / 255;
-        // トーンマッピング
         let r = dR + (lR-dR)*gray;
         let g = dG + (lG-dG)*gray;
         let b = dB + (lB-dB)*gray;
-        // テクスチャノイズ（±28）
         const nv = (_noise(x, y) - 0.5) * 56;
         d[i]   = Math.max(0, Math.min(255, Math.round(r + nv)));
         d[i+1] = Math.max(0, Math.min(255, Math.round(g + nv*0.85)));
