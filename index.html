@@ -1481,12 +1481,14 @@ footer a{color:var(--potato-light);text-decoration:none;}
         <button class="code-action-btn" style="font-size:.8rem;padding:6px 14px;" onclick="retryCloudSave(this)">🔄 再送信する</button>
       </div>
     </div>
-    <div id="successQR" style="display:none;">
-      <div id="successQRCanvas"></div>
-    </div>
     <canvas id="codeCanvas" width="400" height="240" style="display:none"></canvas>
     <button class="modal-close" onclick="closeModal()">閉じる</button>
   </div>
+</div>
+
+<!-- QR生成用の非表示コンテナ（モーダル外に配置してエラー表示の影響を受けない） -->
+<div id="successQR" style="display:none;position:absolute;left:-9999px;top:-9999px;pointer-events:none;" aria-hidden="true">
+  <div id="successQRCanvas"></div>
 </div>
 
 <div class="zoom-backdrop" id="zoomBackdrop" onclick="closeZoom()"><img class="zoom-img" id="zoomImg" src="" alt=""></div>
