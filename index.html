@@ -1196,7 +1196,10 @@ footer a{color:var(--potato-light);text-decoration:none;}
         <div class="preview-wrapper" id="previewWrapper">
           <div class="preview-pane">
             <div class="preview-label"><span class="dot"></span>プレビュー（<span id="previewShapeLabel">スクエア</span>）</div>
-            <canvas id="previewCanvas" width="170" height="170" class="sq"></canvas>
+            <div style="position:relative;display:inline-block;line-height:0;">
+              <canvas id="previewCanvas" width="360" height="360" class="sq"></canvas>
+              <canvas id="magnifierCanvas" width="360" height="360" style="position:absolute;top:0;left:0;pointer-events:none;"></canvas>
+            </div>
             <div id="previewWarnBox" style="display:none;margin-top:6px;background:rgba(255,160,0,.15);border:1px solid rgba(255,160,0,.5);border-radius:6px;padding:7px 10px;font-size:.76rem;color:rgba(255,220,100,1);line-height:1.5;"></div>
             <button type="button" class="remove-btn" onclick="removeImage()">✕ 画像を削除</button>
           </div>
@@ -1205,9 +1208,12 @@ footer a{color:var(--potato-light);text-decoration:none;}
             <div class="ctrl-group"><div class="ctrl-label">X位置</div><div class="ctrl-row"><input type="range" class="ctrl-slider" id="ctrl-x" min="-80" max="80" value="0" oninput="updatePreview()"><span class="ctrl-val" id="val-x">0</span></div></div>
             <div class="ctrl-group"><div class="ctrl-label">Y位置</div><div class="ctrl-row"><input type="range" class="ctrl-slider" id="ctrl-y" min="-80" max="80" value="0" oninput="updatePreview()"><span class="ctrl-val" id="val-y">0</span></div></div>
             <div class="ctrl-group"><div class="ctrl-label">回転</div><div class="ctrl-row"><input type="range" class="ctrl-slider" id="ctrl-rot" min="-180" max="180" value="0" oninput="updatePreview()"><span class="ctrl-val" id="val-rot">0°</span></div></div>
+            <div class="ctrl-group" style="align-self:flex-end"><button type="button" class="ctrl-btn" onclick="resetControls()">リセット</button></div>
             <div class="ctrl-group"><div class="ctrl-label">反転</div><div class="ctrl-row" style="gap:7px"><button type="button" class="ctrl-btn" onclick="flipH()">左右</button><button type="button" class="ctrl-btn" onclick="flipV()">上下</button></div></div>
             <div class="ctrl-group"><div class="ctrl-label">革色プレビュー</div><div class="toggle-row"><div class="toggle-track" id="invertToggle" onclick="toggleInvert()"><div class="toggle-thumb"></div></div><span class="toggle-desc" id="invertDesc">OFF</span></div></div>
-            <div class="ctrl-group" style="margin-left:auto;align-self:flex-end"><button type="button" class="ctrl-btn" onclick="resetControls()">リセット</button></div>
+          </div>
+          <div style="font-size:.72rem;color:rgba(255,255,255,.5);margin-top:6px;line-height:1.6;">
+            💡 プレビュー上でドラッグして位置を調整できます。ホバーでルーペ表示 / クリックでルーペON・OFF切り替え
           </div>
         </div>
       </div>
@@ -1566,6 +1572,7 @@ async function sbInsert(order) {
     sample_sent: false,
     completion_image_sent: false,
     note: order.note||'', image_url: order.image_url||'', cutline_url: order.cutlineUrl||'',
+    free_override: order.freeOverride||false,
     status: order.status, code_used: order.codeUsed||false
   };
   const res = await fetch(`${SUPABASE_URL}/rest/v1/orders`, {
@@ -1594,7 +1601,7 @@ async function sbFetch() {
     adjustment: r.adjustment||0,
     sampleSent: r.sample_sent||false,
     completionImageSent: r.completion_image_sent||false,
-    image_url: r.image_url, cutlineUrl: r.cutline_url||'', status: r.status, codeUsed: r.code_used,
+    image_url: r.image_url, cutlineUrl: r.cutline_url||'', freeOverride: r.free_override||false, status: r.status, codeUsed: r.code_used,
     thumb: ''
   }));
 }
@@ -2128,7 +2135,7 @@ function onShapeChange() {
   else { c.classList.replace('sq','ci'); document.getElementById('previewShapeLabel').textContent='サークル'; }
   // 形状変更でスライダー範囲を再計算
   if (imgObj && !imgObj._isPsdAi) {
-    const _sf = getShapePx() / 170;
+    const _sf = getShapePx() / 244;
     const _hw = Math.round(imgObj.width  / _sf / 2);
     const _hh = Math.round(imgObj.height / _sf / 2);
     document.getElementById('ctrl-x').min = -_hw; document.getElementById('ctrl-x').max = _hw;
@@ -2208,7 +2215,7 @@ function loadImageFile(file) {
       cv.classList.add('draggable-img');
       cv.style.cursor = 'grab';
       // X/Yスライダーの範囲を画像サイズに合わせて動的調整
-      const _sf = getShapePx() / 170;
+      const _sf = getShapePx() / 244;
       const _hw = Math.round(img.width  / _sf / 2);
       const _hh = Math.round(img.height / _sf / 2);
       document.getElementById('ctrl-x').min = -_hw; document.getElementById('ctrl-x').max = _hw;
@@ -2225,7 +2232,7 @@ function loadImageFile(file) {
         bar = document.createElement('div');
         bar.id = 'imageFileInfo';
         bar.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:7px;padding:7px 12px;';
-        cv.parentNode.insertBefore(bar, cv);
+        cv.parentNode.parentNode.insertBefore(bar, cv.parentNode);
       }
       const ext = file.name.split('.').pop().toUpperCase();
       bar.innerHTML = `
@@ -2253,7 +2260,7 @@ function removeImage() {
   document.getElementById('f-image').value = '';
   document.getElementById('previewWrapper').classList.remove('visible');
   document.getElementById('previewCanvas').style.display = '';
-  document.getElementById('previewCanvas').getContext('2d').clearRect(0, 0, 250, 250);
+  document.getElementById('previewCanvas').getContext('2d').clearRect(0, 0, 360, 360);
   const bar = document.getElementById('imageFileInfo'); if (bar) bar.remove();
   const pCtrl = document.getElementById('previewControls'); if (pCtrl) pCtrl.style.display = '';
 }
@@ -2267,7 +2274,7 @@ function getShapePx() {
 function updatePreview() {
   if (!imgObj) return;
   const canvas = document.getElementById('previewCanvas'), ctx = canvas.getContext('2d');
-  const C = 170, P = 40, TOTAL = C + P * 2;
+  const C = 244, P = 58, TOTAL = C + P * 2;
   canvas.width = canvas.height = TOTAL;
 
   const dx    = parseInt(document.getElementById('ctrl-x').value);
@@ -2441,7 +2448,7 @@ function updatePreviewWarning(dw, dh, dx, dy, shape, cx, cy, C, P) {
 
 function autoSnapImage() {
   if (!imgObj) return;
-  const C = 170, P = 40, TOTAL = C + P * 2;
+  const C = 244, P = 58, TOTAL = C + P * 2;
   const shapePx = getShapePx();
   const sf = shapePx / C;
   const dw = imgObj.width / sf, dh = imgObj.height / sf;
@@ -2454,7 +2461,6 @@ function autoSnapImage() {
   const imgR = () => cx + dx + dw / 2;
   const imgT = () => cy + dy - dh / 2;
   const imgB = () => cy + dy + dh / 2;
-  const lim = shape === 'ci' ? cx - C/2 : P;
   const rimL = shape === 'ci' ? cx - C/2 : P;
   const rimR = shape === 'ci' ? cx + C/2 : P + C;
   const rimT = shape === 'ci' ? cy - C/2 : P;
@@ -2545,7 +2551,7 @@ function showError(id,msg){const e=document.getElementById('e-'+id);if(e&&msg)e.
 function clearError(id){document.getElementById('e-'+id)?.classList.remove('visible');document.getElementById('f-'+id)?.classList.remove('invalid');}
 async function generateCutlineCropBlob() {
   if (!imgObj || imgObj._isPsdAi) return null;
-  const C = 170;
+  const C = 244;
   const dx      = parseInt(document.getElementById('ctrl-x').value);
   const dy      = parseInt(document.getElementById('ctrl-y').value);
   const rot     = parseInt(document.getElementById('ctrl-rot').value) * Math.PI / 180;
@@ -3084,7 +3090,7 @@ async function toggleFreeOverride(ref) {
   o.total = adjTotal;
   saveOrders();
   if (sbReady()) {
-    try { await sbPatch(ref, { total: adjTotal }); }
+    try { await sbPatch(ref, { total: adjTotal, free_override: o.freeOverride }); }
     catch(e) { console.warn('保存失敗:', e); }
   }
   renderOrders();
@@ -3221,132 +3227,136 @@ async function saveCodeImage() {
   const note    = document.getElementById('exchangeCodeNote').textContent;
   const canvas  = document.getElementById('codeCanvas');
   const ctx     = canvas.getContext('2d');
-  const W = 360, H = 540;
+  const W = 360, H = 580;
   canvas.width = W; canvas.height = H;
 
-  // 注文データからサークル名・名前を取得
   const orderRef = ref.replace('ORDER ', '');
   const order = orders.find(o => o.ref === orderRef);
   const personName = order ? (order.name || '') : '';
   const circleName = order ? (order.circleName || '') : '';
+  const cutlineUrl = order ? (order.cutlineUrl || '') : '';
   const qrParts = [code];
   if (circleName) qrParts.push(circleName);
   if (personName) qrParts.push(personName);
   const qrSrc = await makeLabelQR(qrParts.join('\n'), 200);
 
-  const drawAll = (qrImg) => {
-    // 背景
-    ctx.fillStyle = '#e8dfc0';
-    ctx.beginPath();
-    ctx.roundRect(0, 0, W, H, 20);
-    ctx.fill();
+  // cutline画像を事前読み込み
+  const loadImg = src => new Promise(resolve => {
+    if (!src) { resolve(null); return; }
+    const i = new Image(); i.crossOrigin = 'anonymous';
+    i.onload = () => resolve(i); i.onerror = () => resolve(null);
+    i.src = src;
+  });
 
-    // タイトル帯
-    ctx.fillStyle = '#5c4a1e';
-    ctx.beginPath();
-    ctx.roundRect(0, 0, W, 56, [20, 20, 0, 0]);
-    ctx.fill();
-    ctx.fillStyle = '#f0e0a0';
-    ctx.font = 'bold 11px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('ふたば★学園祭２１', W / 2, 24);
-    ctx.fillStyle = '#fff';
-    ctx.font = 'bold 13px sans-serif';
-    ctx.fillText('イラスト入りレザーコースター', W / 2, 44);
+  const [qrImg, cutImg] = await Promise.all([
+    loadImg(qrSrc), loadImg(cutlineUrl)
+  ]);
 
-    // 注文番号
-    ctx.fillStyle = '#8a7a5a';
-    ctx.font = '11px sans-serif';
-    ctx.fillText(ref, W / 2, 80);
+  // 背景
+  ctx.fillStyle = '#e8dfc0';
+  ctx.beginPath(); ctx.roundRect(0, 0, W, H, 20); ctx.fill();
 
-    // 「引換コード」ラベル
-    ctx.fillStyle = '#5c4a1e';
-    ctx.font = 'bold 12px sans-serif';
-    ctx.fillText('引換コード', W / 2, 104);
+  // タイトル帯
+  ctx.fillStyle = '#5c4a1e';
+  ctx.beginPath(); ctx.roundRect(0, 0, W, 56, [20, 20, 0, 0]); ctx.fill();
+  ctx.fillStyle = '#f0e0a0'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText('ふたば★学園祭２１', W / 2, 24);
+  ctx.fillStyle = '#fff'; ctx.font = 'bold 13px sans-serif';
+  ctx.fillText('イラスト入りレザーコースター', W / 2, 44);
 
-    // コード枠
-    ctx.strokeStyle = '#c4a85a';
-    ctx.lineWidth = 2.5;
-    ctx.beginPath();
-    ctx.roundRect(30, 114, W - 60, 76, 12);
-    ctx.stroke();
+  // 注文番号
+  ctx.fillStyle = '#8a7a5a'; ctx.font = '11px sans-serif';
+  ctx.fillText(ref, W / 2, 80);
 
-    // コード値
-    ctx.fillStyle = '#3a2a00';
-    ctx.font = 'bold 56px monospace';
-    ctx.letterSpacing = '6px';
-    ctx.fillText(code, W / 2, 168);
-    ctx.letterSpacing = '0px';
+  // 「引換コード」ラベル
+  ctx.fillStyle = '#5c4a1e'; ctx.font = 'bold 12px sans-serif';
+  ctx.fillText('引換コード', W / 2, 104);
 
-    // お支払い金額
-    ctx.fillStyle = '#7a6e5a';
-    ctx.font = '12px sans-serif';
-    ctx.fillText(note, W / 2, 210);
+  // コード枠
+  ctx.strokeStyle = '#c4a85a'; ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.roundRect(30, 114, W - 60, 76, 12); ctx.stroke();
 
-    // サークル名・名前
-    if (circleName || personName) {
-      ctx.fillStyle = '#5c4a1e';
-      ctx.font = 'bold 12px sans-serif';
-      ctx.fillText([circleName, personName].filter(Boolean).join('　'), W / 2, 234);
-    }
+  // コード値
+  ctx.fillStyle = '#3a2a00'; ctx.font = 'bold 56px monospace';
+  ctx.letterSpacing = '6px'; ctx.fillText(code, W / 2, 168); ctx.letterSpacing = '0px';
 
-    // 区切り線
-    ctx.strokeStyle = '#c8b87a';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(40, 252); ctx.lineTo(W - 40, 252);
-    ctx.stroke();
+  // お支払い金額
+  ctx.fillStyle = '#7a6e5a'; ctx.font = '12px sans-serif';
+  ctx.fillText(note, W / 2, 210);
 
-    // QRコード
-    if (qrImg) {
-      const qSize = 160;
-      const qx = (W - qSize) / 2;
-      const qy = 268;
-      ctx.fillStyle = '#fff';
-      ctx.beginPath();
-      ctx.roundRect(qx - 8, qy - 8, qSize + 16, qSize + 16, 10);
-      ctx.fill();
-      ctx.drawImage(qrImg, qx, qy, qSize, qSize);
-    }
-
-    // 注意書き
-    ctx.fillStyle = '#8a7060';
-    ctx.font = '11px sans-serif';
-    ctx.fillText('当日ブースにてこのコードをご提示ください', W / 2, 460);
-
-    // フッター帯
-    ctx.fillStyle = '#5c4a1e';
-    ctx.beginPath();
-    ctx.roundRect(0, H - 46, W, 46, [0, 0, 20, 20]);
-    ctx.fill();
-    ctx.fillStyle = 'rgba(255,255,255,.7)';
-    ctx.font = '10px sans-serif';
-    ctx.fillText('🥔 大喜幸四郎 × ふたば★学園祭２１', W / 2, H - 20);
-
-    const a = document.createElement('a');
-    a.href = canvas.toDataURL('image/png');
-    a.download = `引換コード_${code}.png`;
-    a.click();
-  };
-
-  if (qrSrc) {
-    const img = new Image();
-    img.onload = () => drawAll(img);
-    img.onerror = () => drawAll(null);
-    img.src = qrSrc;
-  } else {
-    drawAll(null);
+  // サークル名・名前
+  if (circleName || personName) {
+    ctx.fillStyle = '#5c4a1e'; ctx.font = 'bold 12px sans-serif';
+    ctx.fillText([circleName, personName].filter(Boolean).join('　'), W / 2, 234);
   }
+
+  // 区切り線
+  ctx.strokeStyle = '#c8b87a'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(40, 250); ctx.lineTo(W - 40, 250); ctx.stroke();
+
+  // QRコード + cutline画像を横並びで表示
+  const thumbSize = 120;
+  const gap = 16;
+  const totalW = (cutImg ? thumbSize * 2 + gap : thumbSize);
+  const startX = (W - totalW) / 2;
+  const thumbY = 264;
+
+  // QRコード
+  if (qrImg) {
+    ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.roundRect(startX - 6, thumbY - 6, thumbSize + 12, thumbSize + 12, 8); ctx.fill();
+    ctx.drawImage(qrImg, startX, thumbY, thumbSize, thumbSize);
+    ctx.fillStyle = '#8a7a5a'; ctx.font = '10px sans-serif';
+    ctx.fillText('引換コード確認用', startX + thumbSize / 2, thumbY + thumbSize + 16);
+  }
+
+  // cutline画像
+  if (cutImg) {
+    const cx2 = startX + thumbSize + gap;
+    ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.roundRect(cx2 - 6, thumbY - 6, thumbSize + 12, thumbSize + 12, 8); ctx.fill();
+    ctx.drawImage(cutImg, cx2, thumbY, thumbSize, thumbSize);
+    ctx.fillStyle = '#8a7a5a'; ctx.font = '10px sans-serif';
+    ctx.fillText('ご依頼デザイン', cx2 + thumbSize / 2, thumbY + thumbSize + 16);
+  }
+
+  // 注意書き
+  ctx.fillStyle = '#8a7060'; ctx.font = '11px sans-serif';
+  ctx.fillText('当日ブースにてこのコードをご提示ください', W / 2, 500);
+
+  // フッター帯
+  ctx.fillStyle = '#5c4a1e';
+  ctx.beginPath(); ctx.roundRect(0, H - 46, W, 46, [0, 0, 20, 20]); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,.7)'; ctx.font = '10px sans-serif';
+  ctx.fillText('🥔 大喜幸四郎 × ふたば★学園祭２１', W / 2, H - 20);
+
+  const a = document.createElement('a');
+  a.href = canvas.toDataURL('image/png');
+  a.download = `引換コード_${code}.png`;
+  a.click();
 }
 
 function mailCode() {
   const code = document.getElementById('exchangeCodeDisplay').textContent;
   const ref  = document.getElementById('orderRef').textContent;
   const note = document.getElementById('exchangeCodeNote').textContent;
+  const orderRef = ref.replace('ORDER ', '');
+  const order = orders.find(o => o.ref === orderRef);
+  const cutlineUrl = order ? (order.cutlineUrl || '') : '';
   const subject = encodeURIComponent('【引換コード】ふたば★学園祭２１ レザーコースター');
-  const body = encodeURIComponent(
-    `引換コードをお知らせします。\n\n引換コード：${code}\n注文番号：${ref}\n${note}\n\n当日ブースにてこのコードをご提示ください。`
-  );
+  const bodyLines = [
+    '引換コードをお知らせします。',
+    '',
+    `引換コード：${code}`,
+    `注文番号：${ref}`,
+    note,
+    '',
+    '当日ブースにてこのコードをご提示ください。',
+  ];
+  if (cutlineUrl) {
+    bodyLines.push('', '【ご依頼デザイン確認用画像】', cutlineUrl);
+  }
+  const body = encodeURIComponent(bodyLines.join('\n'));
   window.location.href = `mailto:?subject=${subject}&body=${body}`;
 }
 
@@ -4834,6 +4844,65 @@ if (localStorage.getItem('bc_participant_circle'))  applyParticipantState('circl
 if (localStorage.getItem('bc_participant_general')) applyParticipantState('general', true);
 initCanvasDrag();
 initVisitorCount();
+
+(function() {
+  let _on = true, _downAt = null, _dragging = false;
+
+  function getPos(canvas, e) {
+    const r = canvas.getBoundingClientRect();
+    return {
+      x: (e.clientX - r.left) * (canvas.width  / r.width),
+      y: (e.clientY - r.top)  * (canvas.height / r.height)
+    };
+  }
+
+  function draw(p) {
+    const src = document.getElementById('previewCanvas');
+    const mag = document.getElementById('magnifierCanvas');
+    if (!src || !mag) return;
+    const r = src.getBoundingClientRect();
+    if (r.width > 0) { mag.style.width = r.width + 'px'; mag.style.height = r.height + 'px'; }
+    const ctx = mag.getContext('2d');
+    ctx.clearRect(0, 0, mag.width, mag.height);
+    if (!p || !_on) return;
+    const {x, y} = p, R = 70, Z = 2.5, hw = R / Z;
+    ctx.save();
+    ctx.beginPath(); ctx.arc(x, y, R, 0, Math.PI*2); ctx.clip();
+    ctx.drawImage(src, x-hw, y-hw, hw*2, hw*2, x-R, y-R, R*2, R*2);
+    ctx.restore();
+    ctx.beginPath(); ctx.arc(x, y, R, 0, Math.PI*2);
+    ctx.strokeStyle = 'rgba(255,255,255,.8)'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.strokeStyle = 'rgba(255,255,255,.6)'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(x-8,y); ctx.lineTo(x+8,y); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x,y-8); ctx.lineTo(x,y+8); ctx.stroke();
+  }
+
+  window.addEventListener('load', () => {
+    const src = document.getElementById('previewCanvas');
+    if (!src) return;
+    new ResizeObserver(() => {
+      const mag = document.getElementById('magnifierCanvas');
+      const r = src.getBoundingClientRect();
+      if (mag && r.width > 0) { mag.style.width = r.width + 'px'; mag.style.height = r.height + 'px'; }
+    }).observe(src);
+    src.style.cursor = 'none';
+    src.addEventListener('mousedown', e => { _downAt = {x:e.clientX, y:e.clientY}; _dragging = false; });
+    src.addEventListener('mousemove', e => {
+      if (_downAt) _dragging = true;
+      if (!_dragging) draw(getPos(src, e));
+    });
+    src.addEventListener('mouseup', e => {
+      if (_downAt && !_dragging) {
+        _on = !_on;
+        src.style.cursor = _on ? 'none' : 'default';
+        if (!_on) draw(null);
+      }
+      _downAt = null; _dragging = false;
+    });
+    src.addEventListener('mouseleave', () => draw(null));
+  });
+})();
+
 </script>
 <!-- INTEREST MODAL -->
 <div class="interest-modal-bg" id="interestModalBg" onclick="closeInterestModal(event)">
