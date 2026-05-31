@@ -2454,9 +2454,9 @@ function generateCutLineImage() {
   const halfSize = (C / 2) * sf;
   const lw = Math.max(2, sf * 1.5);
 
-  ctx.strokeStyle = '#ff0000';
-  ctx.lineWidth   = lw;
-  ctx.setLineDash([sf * 8, sf * 4]);
+  ctx.strokeStyle = '#000000';
+  ctx.lineWidth   = 1;
+  ctx.setLineDash([]);
 
   if (shape === 'ci') {
     ctx.beginPath();
