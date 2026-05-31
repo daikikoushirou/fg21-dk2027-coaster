@@ -290,6 +290,13 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:0;}
 .badge-mid1{background:#f8d47a;color:#6a3800;}
 .badge-mid2{background:#f4bc50;color:#5a2800;}
 .badge-upper{background:#eda830;color:#4a1800;}
+.badge-value{background:#4a9a60;color:#fff;}
+.badge-plus{background:#2e86c1;color:#fff;}
+.badge-pro{background:#6c3483;color:#fff;}
+.badge-max{background:#922b21;color:#fff;}
+.badge-plus{background:#5a7aaa;color:#fff;}
+.badge-pro{background:#7a5aaa;color:#fff;}
+.badge-max{background:#aa5a5a;color:#fff;}
 .badge-early{background:var(--gold-bg);color:var(--gold);border:1px solid var(--gold-border);}
 .shape-note{margin-top:14px;font-size:.84rem;color:var(--muted);background:var(--potato-bg);border-radius:8px;padding:10px 14px;}
 
@@ -1017,10 +1024,10 @@ footer a{color:var(--potato-light);text-decoration:none;}
       <thead><tr><th>点数</th><th>通常価格</th><th>早割価格（1か月前まで）</th><th>備考</th></tr></thead>
       <tbody>
         <tr class="free-row"><td>1〜3点目</td><td><span class="price-big">無料</span></td><td><span class="price-big">無料</span></td><td><span class="tier-badge badge-free">FREE</span></td></tr>
-        <tr class="extra-row"><td>4〜8点目</td><td><span class="price-big">¥220</span><span class="price-small">/点</span></td><td><span class="price-big">¥200</span><span class="price-small">/点</span></td><td><span class="tier-badge badge-extra">EXTRA</span></td></tr>
-        <tr class="mid1-row"><td>9〜12点目</td><td><span class="price-big">¥230</span><span class="price-small">/点</span></td><td><span class="price-big">¥210</span><span class="price-small">/点</span></td><td></td></tr>
-        <tr class="mid2-row"><td>13〜16点目</td><td><span class="price-big">¥240</span><span class="price-small">/点</span></td><td><span class="price-big">¥220</span><span class="price-small">/点</span></td><td></td></tr>
-        <tr class="upper-row"><td>17〜20点目</td><td><span class="price-big">¥250</span><span class="price-small">/点</span></td><td><span class="price-big">¥230</span><span class="price-small">/点</span></td><td><span class="tier-badge badge-upper">UPPER</span> 最大20点</td></tr>
+        <tr class="extra-row"><td>4〜8点目</td><td><span class="price-big">¥220</span><span class="price-small">/点</span></td><td><span class="price-big">¥200</span><span class="price-small">/点</span></td><td><span class="tier-badge badge-value">VALUE</span></td></tr>
+        <tr class="mid1-row"><td>9〜12点目</td><td><span class="price-big">¥230</span><span class="price-small">/点</span></td><td><span class="price-big">¥210</span><span class="price-small">/点</span></td><td><span class="tier-badge badge-plus">PLUS</span></td></tr>
+        <tr class="mid2-row"><td>13〜16点目</td><td><span class="price-big">¥240</span><span class="price-small">/点</span></td><td><span class="price-big">¥220</span><span class="price-small">/点</span></td><td><span class="tier-badge badge-pro">PRO</span></td></tr>
+        <tr class="upper-row"><td>17〜20点目</td><td><span class="price-big">¥250</span><span class="price-small">/点</span></td><td><span class="price-big">¥230</span><span class="price-small">/点</span></td><td><span class="tier-badge badge-max">MAX</span></td></tr>
       </tbody>
     </table>
     <div class="shape-note">形状はスクエア（85×85mm）・サークル（φ90mm）から選択できます。どちらも同じ料金です。</div>
@@ -1029,6 +1036,9 @@ footer a{color:var(--potato-light);text-decoration:none;}
     </div>
     <div class="shape-note" style="margin-top:8px;background:#f0f8ff;border-left:3px solid #7ab8e0;border-radius:0 8px 8px 0;">
       🔬 <strong>端材サンプル試し刷り</strong>：3週間前まで の申込者 または 11点以上 の申込者は初回無料。それ以外は¥300。端材を使用するため形状が不完全・非平坦な場合があります。
+    </div>
+    <div class="shape-note" style="margin-top:8px;background:#fff0f0;border-left:3px solid #e08080;border-radius:0 8px 8px 0;">
+      ⚠️ <strong>無料枠（1〜3点目）は、同一サークルの最初の注文にのみ適用されます。</strong>複数デザインを分けて申し込む場合や複数回注文する場合、2回目以降の注文は全点数有料となります。
     </div>
     <div class="shape-note" style="margin-top:8px;background:#fff8f0;border-left:3px solid #e8b060;border-radius:0 8px 8px 0;font-size:.82rem;line-height:1.75;color:var(--ink);">
       📝 <strong>価格変更の可能性について：</strong>1人で製作しているため、作業量が著しく増えた場合、各種オプションや単価が上がる可能性があります。前回の学園祭では開催10日前ごろに申し込みが集中し、現場がかなりバタバタしました。今回は早割も導入しましたので、<strong>早ければ早いほど安い</strong>と思っていただいて間違いありません。数を作ってみたいサークルの方も、まずは少部数で早めの申し込みをいただけると大変助かります。
@@ -1155,7 +1165,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
         <label>点数<span class="required-mark">*</span></label>
         <div style="display:flex;align-items:center;gap:8px;">
           <button type="button" onclick="adjustQty(-1)" style="width:36px;height:36px;border-radius:8px;border:1.5px solid var(--border);background:var(--card);color:var(--ink);font-size:1.2rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">−</button>
-          <input type="number" id="f-qty" min="1" value="1" oninput="updateTotal()" style="text-align:center;width:60px;flex-shrink:0;">
+          <input type="number" id="f-qty" min="1" step="1" value="1" oninput="this.value=Math.floor(Math.abs(this.value))||1;updateTotal()" style="text-align:center;width:60px;flex-shrink:0;">
           <button type="button" onclick="adjustQty(1)" style="width:36px;height:36px;border-radius:8px;border:1.5px solid var(--border);background:var(--card);color:var(--ink);font-size:1.2rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">＋</button>
         </div>
         <div class="qty-hint" id="qtyHint"></div>
@@ -1653,11 +1663,12 @@ function calcSampleCost(freeEligible, sampleCount) {
   return sampleCount * SAMPLE_PRICE;
 }
 
-function calcCost(mode, qty, sampleRequested, sampleFreeEligible, sampleCount, earlyBirdOverride) {
+function calcCost(mode, qty, sampleRequested, sampleFreeEligible, sampleCount, earlyBirdOverride, freeOverride) {
   const p = PRICING_BASE[mode];
   const earlyBird = (earlyBirdOverride !== undefined ? earlyBirdOverride : isEarlyBird()) && mode === 'circle';
+  const freeQty = freeOverride ? 0 : p.freeQty;
   let total = 0, breakdown = [];
-  const free = Math.min(qty, p.freeQty);
+  const free = Math.min(qty, freeQty);
   if (free > 0) breakdown.push({ label: `無料（${free}点）`, amount: 0, cls: 'free' });
   let alloc = free, rem = qty - free;
   for (const tier of p.tiers) {
@@ -2474,6 +2485,18 @@ document.getElementById('orderForm').addEventListener('submit', async e => {
   };
 
   // DBに保存（Supabase設定済みの場合）
+  // サークル名で重複チェック（オンライン時のみ）
+  if (sbReady() && order.type === 'circle' && order.circleName) {
+    try {
+      const existing = await sbFetchByCircleName(order.circleName);
+      if (existing.length > 0) {
+        order.freeOverride = true;
+        const { total } = calcCost(order.type, order.qty, order.sampleRequested, order.sampleFreeEligible, order.sampleCount, undefined, true);
+        order.total = total + (order.adjustment || 0);
+      }
+    } catch(e) { /* チェック失敗はスルー */ }
+  }
+
   let cloudSaveFailed = false;
   if (sbReady()) {
     try {
@@ -2534,6 +2557,16 @@ document.getElementById('orderForm').addEventListener('submit', async e => {
 
   btn.disabled = false; btn.textContent = '製作情報送信 🔨';
 });
+async function sbFetchByCircleName(circleName) {
+  if (!sbReady() || !circleName) return [];
+  const encoded = encodeURIComponent(circleName.trim());
+  const res = await fetch(
+    `${SUPABASE_URL}/rest/v1/orders?circle_name=eq.${encoded}&select=ref,circle_name&limit=10`,
+    { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } }
+  );
+  return res.ok ? await res.json() : [];
+}
+
 async function retryCloudSave(btn) {
   const retryDiv = document.getElementById('successCloudRetry');
   const ref = retryDiv?.dataset.ref;
@@ -2541,15 +2574,29 @@ async function retryCloudSave(btn) {
   const order = orders.find(o => o.ref === ref);
   if (!order) { showToast('注文データが見つかりません'); return; }
   btn.disabled = true;
-  btn.textContent = '送信中…';
+  btn.textContent = '確認中…';
   try {
+    // サークル名で重複チェック
+    if (order.type === 'circle' && order.circleName) {
+      const existing = await sbFetchByCircleName(order.circleName);
+      // 自分以外の注文があればfreeOverride=true
+      const others = existing.filter(r => r.ref !== order.ref);
+      if (others.length > 0 && !order.freeOverride) {
+        order.freeOverride = true;
+        const { total } = calcCost(order.type, order.qty, order.sampleRequested, order.sampleFreeEligible, order.sampleCount, undefined, true);
+        order.total = total + (order.adjustment || 0);
+        saveOrders();
+        showToast('⚠ 同サークルの先行注文があるため無料枠を無効にしました');
+      }
+    }
+    btn.textContent = '送信中…';
     await sbInsert(order);
     retryDiv.style.display = 'none';
     showToast('✅ クラウド保存に成功しました！');
   } catch (err) {
     btn.disabled = false;
     btn.textContent = '🔄 再送信する';
-    showToast('⚠ 再送信に失敗しました。しばらく後に再試行してください。');
+    showToast('⚠ 再送信に失敗しました。オンラインか確認して再試行してください。');
   }
 }
 
@@ -2607,7 +2654,7 @@ async function loadAndRenderOrders() {
 }
 
 function calcOrderTotal(o) {
-  const { total } = calcCost(o.type, o.qty, o.sampleRequested, o.sampleFreeEligible, o.sampleCount);
+  const { total } = calcCost(o.type, o.qty, o.sampleRequested, o.sampleFreeEligible, o.sampleCount, undefined, o.freeOverride);
   return total + (o.adjustment || 0);
 }
 
@@ -2672,6 +2719,7 @@ function renderOrders() {
         <div class="oc-group" style="flex:1;min-width:0;">
           <div class="oc-label">合計金額</div>
           <div class="oc-val" style="font-size:1rem;font-weight:700;color:var(--potato-dark)">${tot===0?'<span style="color:var(--green)">無料</span>':'¥'+tot.toLocaleString()}</div>
+          ${o.type==='circle' ? `<button onclick="toggleFreeOverride('${o.ref}')" style="margin-top:4px;font-size:.68rem;padding:3px 8px;border-radius:6px;border:1px solid ${o.freeOverride?'var(--accent)':'var(--border)'};background:${o.freeOverride?'rgba(224,80,64,.1)':'transparent'};color:${o.freeOverride?'var(--accent)':'var(--muted)'};cursor:pointer;white-space:nowrap;">${o.freeOverride?'🚫 無料なし':'🎁 無料あり'}</button>` : ''}
         </div>
         <div class="oc-group" style="flex:1;min-width:0;">
           <div class="oc-label">形状・点数</div>
@@ -2786,6 +2834,22 @@ async function updateOrderQtyEarlyBird(ref, delta) {
   }
   renderOrders();
   showToast(`⭐ 早割価格で${newQty}点に変更 / 合計¥${adjTotal.toLocaleString()}`);
+}
+
+async function toggleFreeOverride(ref) {
+  const o = orders.find(o => o.ref === ref);
+  if (!o) return;
+  o.freeOverride = !o.freeOverride;
+  const { total } = calcCost(o.type, o.qty, o.sampleRequested, o.sampleFreeEligible, o.sampleCount, undefined, o.freeOverride);
+  const adjTotal = total + (o.adjustment || 0);
+  o.total = adjTotal;
+  saveOrders();
+  if (sbReady()) {
+    try { await sbPatch(ref, { total: adjTotal }); }
+    catch(e) { console.warn('保存失敗:', e); }
+  }
+  renderOrders();
+  showToast(o.freeOverride ? '🚫 無料枠を無効にしました' : '🎁 無料枠を有効に戻しました');
 }
 
 async function updateOrderQty(ref, delta) {
