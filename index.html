@@ -1564,7 +1564,7 @@ async function sbInsert(order) {
     adjustment: order.adjustment||0,
     sample_sent: false,
     completion_image_sent: false,
-    note: order.note||'', image_url: order.image_url||'', cutline_url: order.cutline_url||'',
+    note: order.note||'', image_url: order.image_url||'', cutline_url: order.cutlineUrl||'',
     status: order.status, code_used: order.codeUsed||false
   };
   const res = await fetch(`${SUPABASE_URL}/rest/v1/orders`, {
@@ -2125,6 +2125,14 @@ function onShapeChange() {
   const c = document.getElementById('previewCanvas');
   if (s==='sq') { c.classList.replace('ci','sq'); document.getElementById('previewShapeLabel').textContent='スクエア'; }
   else { c.classList.replace('sq','ci'); document.getElementById('previewShapeLabel').textContent='サークル'; }
+  // 形状変更でスライダー範囲を再計算
+  if (imgObj && !imgObj._isPsdAi) {
+    const _sf = getShapePx() / 170;
+    const _hw = Math.round(imgObj.width  / _sf / 2);
+    const _hh = Math.round(imgObj.height / _sf / 2);
+    document.getElementById('ctrl-x').min = -_hw; document.getElementById('ctrl-x').max = _hw;
+    document.getElementById('ctrl-y').min = -_hh; document.getElementById('ctrl-y').max = _hh;
+  }
   updatePreview();
 }
 
@@ -2198,7 +2206,12 @@ function loadImageFile(file) {
       const cv = document.getElementById('previewCanvas');
       cv.classList.add('draggable-img');
       cv.style.cursor = 'grab';
-      document.getElementById('ctrl-scale').value = calcCoverScale(img.width, img.height);
+      // X/Yスライダーの範囲を画像サイズに合わせて動的調整
+      const _sf = getShapePx() / 170;
+      const _hw = Math.round(img.width  / _sf / 2);
+      const _hh = Math.round(img.height / _sf / 2);
+      document.getElementById('ctrl-x').min = -_hw; document.getElementById('ctrl-x').max = _hw;
+      document.getElementById('ctrl-y').min = -_hh; document.getElementById('ctrl-y').max = _hh;
       document.getElementById('ctrl-x').value = 0;
       document.getElementById('ctrl-y').value = 0;
       document.getElementById('ctrl-rot').value = 0;
@@ -2239,20 +2252,29 @@ function removeImage() {
 }
 
 // ══ PREVIEW ══
+function getShapePx() {
+  // 形状ごとの物理サイズ（350dpi換算px）: 正方形85mm=1171px、丸90mm=1240px
+  return document.getElementById('f-shape').value === 'ci' ? 1240 : 1171;
+}
+
 function updatePreview() {
   if (!imgObj) return;
   const canvas = document.getElementById('previewCanvas'), ctx = canvas.getContext('2d');
-  const C = 170, P = 40, TOTAL = C + P * 2; // コースター170px、余白40px、計250px
+  const C = 170, P = 40, TOTAL = C + P * 2;
   canvas.width = canvas.height = TOTAL;
 
-  const scale = parseInt(document.getElementById('ctrl-scale').value) / 100;
   const dx    = parseInt(document.getElementById('ctrl-x').value);
   const dy    = parseInt(document.getElementById('ctrl-y').value);
   const rot   = parseInt(document.getElementById('ctrl-rot').value) * Math.PI / 180;
-  document.getElementById('val-scale').textContent = document.getElementById('ctrl-scale').value + '%';
   document.getElementById('val-x').textContent  = document.getElementById('ctrl-x').value;
   document.getElementById('val-y').textContent  = document.getElementById('ctrl-y').value;
   document.getElementById('val-rot').textContent = document.getElementById('ctrl-rot').value + '°';
+
+  // 物理サイズ固定: 1プレビューpx = shapePx/C 元画像px
+  const shapePx = getShapePx();
+  const sf = shapePx / C; // 元画像px → プレビューpxの逆数
+  const dw = imgObj.width / sf;
+  const dh = imgObj.height / sf;
 
   const shape = document.getElementById('f-shape').value;
   const cx = TOTAL / 2, cy = TOTAL / 2;
@@ -2269,9 +2291,7 @@ function updatePreview() {
     ctx.fillRect(P, P, C, C);
   }
 
-  // 3. 画像描画（クリップなし：余白エリアにはみ出して見える）
-  let dw = C * scale, dh = dw / (imgObj.width / imgObj.height);
-  if (dh > C * scale) { dh = C * scale; dw = dh * (imgObj.width / imgObj.height); }
+  // 3. 画像描画（物理サイズ固定、位置のみ変更可）
   ctx.save();
   ctx.translate(cx + dx, cy + dy);
   ctx.rotate(rot);
@@ -2411,51 +2431,52 @@ function toggleXDmTip() {
 // ══ VALIDATION ══
 function showError(id,msg){const e=document.getElementById('e-'+id);if(e&&msg)e.textContent=msg;e?.classList.add('visible');document.getElementById('f-'+id)?.classList.add('invalid');}
 function clearError(id){document.getElementById('e-'+id)?.classList.remove('visible');document.getElementById('f-'+id)?.classList.remove('invalid');}
-async function generateCutLineBlob() {
-  if (!imgObj || imgObj._isPsdAi) return null; // PSD/AIは非対応
-  const C = 170, P = 40, TOTAL = C + P * 2;
-  const scale  = parseInt(document.getElementById('ctrl-scale').value) / 100;
-  const dx     = parseInt(document.getElementById('ctrl-x').value);
-  const dy     = parseInt(document.getElementById('ctrl-y').value);
-  const rot    = parseInt(document.getElementById('ctrl-rot').value) * Math.PI / 180;
-  const shape  = document.getElementById('f-shape').value;
-  let dw = C * scale, dh = dw / (imgObj.width / imgObj.height);
-  if (dh > C * scale) { dh = C * scale; dw = dh * (imgObj.width / imgObj.height); }
-  const sf = imgObj.width / dw;
-  const canvas = document.createElement('canvas');
-  canvas.width = imgObj.width; canvas.height = imgObj.height;
-  const ctx = canvas.getContext('2d');
-  ctx.save();
-  ctx.translate(imgObj.width / 2, imgObj.height / 2);
-  ctx.scale(flipHState ? -1 : 1, flipVState ? -1 : 1);
-  ctx.drawImage(imgObj, -imgObj.width / 2, -imgObj.height / 2, imgObj.width, imgObj.height);
-  ctx.restore();
-  const cosR = Math.cos(-rot), sinR = Math.sin(-rot);
-  const rotOffX = (-dx) * cosR - (-dy) * sinR;
-  const rotOffY = (-dx) * sinR + (-dy) * cosR;
-  const cutCX = imgObj.width / 2 + rotOffX * sf;
-  const cutCY = imgObj.height / 2 + rotOffY * sf;
-  const halfSize = (C / 2) * sf;
-  ctx.strokeStyle = '#000000'; ctx.lineWidth = 1; ctx.setLineDash([]);
-  if (shape === 'ci') {
-    ctx.beginPath(); ctx.arc(cutCX, cutCY, halfSize, 0, Math.PI * 2); ctx.stroke();
-  } else {
-    ctx.save(); ctx.translate(cutCX, cutCY); ctx.rotate(rot);
-    ctx.strokeRect(-halfSize, -halfSize, halfSize * 2, halfSize * 2);
-    ctx.restore();
-  }
-  return new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-}
+async function generateCutlineCropBlob() {
+  if (!imgObj || imgObj._isPsdAi) return null;
+  const C = 170;
+  const dx      = parseInt(document.getElementById('ctrl-x').value);
+  const dy      = parseInt(document.getElementById('ctrl-y').value);
+  const rot     = parseInt(document.getElementById('ctrl-rot').value) * Math.PI / 180;
+  const shape   = document.getElementById('f-shape').value;
+  const shapePx = getShapePx(); // 1171 or 1240
+  const sf      = shapePx / C; // 元画像px / プレビューpx
 
-// 旧インターフェース互換（ユーザー向けダウンロード）
-async function generateCutLineImage() {
-  const blob = await generateCutLineBlob();
-  if (!blob) { showToast('カットライン画像の生成に対応していないファイル形式です'); return; }
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'cutline_check.png';
-  a.click();
-  showToast('📐 カットライン画像を保存しました');
+  const canvas = document.createElement('canvas');
+  canvas.width = canvas.height = shapePx;
+  const ctx = canvas.getContext('2d');
+
+  // 元画像の中心からdx/dyオフセットした位置でshapePx×shapePxを切り抜く
+  // プレビュー上でのカットライン中心: (cx, cy)
+  // 画像中心はプレビュー上で (cx+dx, cy+dy)
+  // → カットライン中心の画像座標: (imgW/2 - dx*sf, imgH/2 - dy*sf)
+  const imgCX = imgObj.width  / 2 - dx * sf;
+  const imgCY = imgObj.height / 2 - dy * sf;
+
+  // 出力キャンバスの中心を画像の imgCX,imgCY に合わせて描画
+  ctx.save();
+  ctx.translate(shapePx / 2, shapePx / 2);
+  ctx.rotate(-rot);
+  ctx.scale(flipHState ? -1 : 1, flipVState ? -1 : 1);
+  ctx.drawImage(
+    imgObj,
+    -imgCX, -imgCY,
+    imgObj.width, imgObj.height
+  );
+  ctx.restore();
+
+  // サークル形状は円形クリップ
+  if (shape === 'ci') {
+    const tmp = document.createElement('canvas');
+    tmp.width = tmp.height = shapePx;
+    const tctx = tmp.getContext('2d');
+    tctx.beginPath();
+    tctx.arc(shapePx/2, shapePx/2, shapePx/2, 0, Math.PI*2);
+    tctx.clip();
+    tctx.drawImage(canvas, 0, 0);
+    return new Promise(resolve => tmp.toBlob(resolve, 'image/png'));
+  }
+
+  return new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
 }
 
 function adjustQty(delta) {
@@ -2551,16 +2572,17 @@ document.getElementById('orderForm').addEventListener('submit', async e => {
     }
   }
 
-  // カットライン画像を自動生成・アップロード
+
+  // カットライン切り抜き画像を自動生成・アップロード
   let cutlineUrl = '';
   if (sbReady() && imgObj && !imgObj._isPsdAi) {
     try {
-      const cutBlob = await generateCutLineBlob();
-      if (cutBlob) {
-        const cutFile = new File([cutBlob], `${ref}_cutline.png`, { type: 'image/png' });
-        cutlineUrl = await sbUploadImage(cutFile, `${ref}_cutline.png`);
+      const cropBlob = await generateCutlineCropBlob();
+      if (cropBlob) {
+        const cropFile = new File([cropBlob], `${ref}_cutline.png`, { type: 'image/png' });
+        cutlineUrl = await sbUploadImage(cropFile, `${ref}_cutline.png`);
       }
-    } catch(e) { console.warn('カットライン画像アップロード失敗:', e); }
+    } catch(e) { console.warn('カットライン切り抜き失敗:', e); }
   }
 
   const order = {
@@ -2583,7 +2605,7 @@ document.getElementById('orderForm').addEventListener('submit', async e => {
     completionImageSent: false,
     note: document.getElementById('f-note').value.trim(),
     image_url: imageUrl,
-    cutline_url: cutlineUrl,
+    cutlineUrl,
     thumb: document.getElementById('previewCanvas').toDataURL('image/jpeg', .5),
     status: 'new', codeUsed: false
   };
@@ -2839,7 +2861,7 @@ function renderOrders() {
           <div class="oc-label">元画像</div>
           ${(o.thumb || o.image_url) ? `<img class="thumb-mini ${o.shape==='サークル'?'ci':'sq'}" src="${o.thumb || o.image_url}" alt="" onclick="zoomImg('${o.thumb || o.image_url}')">` : '<span style="font-size:.78rem;color:#bbb">なし</span>'}
           ${o.image_url ? `<a href="${o.image_url}" target="_blank" rel="noopener" style="font-size:.78rem;color:var(--circle-color);font-weight:700;margin-top:2px;">元画像↗</a>` : ''}
-          ${o.cutlineUrl ? `<a href="${o.cutlineUrl}" download style="font-size:.72rem;color:var(--muted);margin-top:2px;">📐 カットライン↓</a>` : ''}
+          ${o.cutlineUrl ? `<a href="${o.cutlineUrl}" target="_blank" rel="noopener" style="font-size:.72rem;color:var(--muted);font-weight:700;margin-top:2px;">切抜↗</a>` : ''}
         </div>
       </div>
 
