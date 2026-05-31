@@ -782,6 +782,16 @@ footer a{color:var(--potato-light);text-decoration:none;}
 <!-- ══ MAIN ══ -->
 <div id="mainContent" style="display:none">
 
+  <!-- 受付終了メッセージ -->
+  <div id="orderClosedMsg" style="display:none;max-width:520px;margin:60px auto;padding:36px 28px;text-align:center;background:var(--card);border-radius:14px;border:1.5px solid var(--border);">
+    <div style="font-size:2rem;margin-bottom:12px;">🙏</div>
+    <h2 style="font-size:1.2rem;font-weight:700;color:var(--potato-dark);margin-bottom:10px;"><span id="orderClosedMode"></span>の一次募集を締め切りました</h2>
+    <p style="font-size:.88rem;color:var(--muted);line-height:1.8;margin-bottom:20px;">
+      二次募集は <a href="https://x.com/daikikoushirou" target="_blank" rel="noopener" style="color:var(--circle-color);font-weight:700;">X（@daikikoushirou）</a>、またはこちらのサイト上で告知します。
+    </p>
+    <button class="code-action-btn" onclick="backToGate()" style="margin:0 auto;">← ゲートページへ戻る</button>
+  </div>
+
 <!-- DEADLINE BANNER -->
 <div class="deadline-banner" id="deadlineBanner">
   🚫 申し込みは締め切りました（開催2日前 朝4時に締め切り）
@@ -1190,13 +1200,14 @@ footer a{color:var(--potato-light);text-decoration:none;}
             <button type="button" class="remove-btn" onclick="removeImage()">✕ 画像を削除</button>
           </div>
           <div class="preview-controls" id="previewControls">
-            <div class="ctrl-group"><div class="ctrl-label">サイズ</div><div class="ctrl-row"><input type="range" class="ctrl-slider" id="ctrl-scale" min="10" max="150" value="90" oninput="updatePreview()"><span class="ctrl-val" id="val-scale">90%</span></div></div>
+            <div class="ctrl-group" id="ctrl-group-scale" style="display:none;"><div class="ctrl-label">サイズ</div><div class="ctrl-row"><input type="range" class="ctrl-slider" id="ctrl-scale" min="10" max="150" value="90" oninput="updatePreview()"><span class="ctrl-val" id="val-scale">90%</span></div></div>
             <div class="ctrl-group"><div class="ctrl-label">X位置</div><div class="ctrl-row"><input type="range" class="ctrl-slider" id="ctrl-x" min="-80" max="80" value="0" oninput="updatePreview()"><span class="ctrl-val" id="val-x">0</span></div></div>
             <div class="ctrl-group"><div class="ctrl-label">Y位置</div><div class="ctrl-row"><input type="range" class="ctrl-slider" id="ctrl-y" min="-80" max="80" value="0" oninput="updatePreview()"><span class="ctrl-val" id="val-y">0</span></div></div>
             <div class="ctrl-group"><div class="ctrl-label">回転</div><div class="ctrl-row"><input type="range" class="ctrl-slider" id="ctrl-rot" min="-180" max="180" value="0" oninput="updatePreview()"><span class="ctrl-val" id="val-rot">0°</span></div></div>
             <div class="ctrl-group"><div class="ctrl-label">反転</div><div class="ctrl-row" style="gap:7px"><button type="button" class="ctrl-btn" onclick="flipH()">左右</button><button type="button" class="ctrl-btn" onclick="flipV()">上下</button></div></div>
             <div class="ctrl-group"><div class="ctrl-label">白黒反転</div><div class="toggle-row"><div class="toggle-track" id="invertToggle" onclick="toggleInvert()"><div class="toggle-thumb"></div></div><span class="toggle-desc" id="invertDesc">OFF</span></div></div>
             <div class="ctrl-group" style="margin-left:auto;align-self:flex-end"><button type="button" class="ctrl-btn" onclick="resetControls()">リセット</button></div>
+            <div class="ctrl-group" style="align-self:flex-end"><button type="button" class="ctrl-btn" onclick="generateCutLineImage()" title="カットラインを元画像に重ねた確認用画像を保存">📐 カットライン画像</button></div>
           </div>
         </div>
       </div>
@@ -1808,17 +1819,51 @@ function updateSampleUI() {
 }
 
 // ══ GATE ══
-function enterAs(mode) {
+// ══ 注文上限 ══
+const ORDER_LIMIT = { general: 30, circle: 30 };
+
+async function checkOrderLimit(mode) {
+  if (!sbReady()) return false;
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/orders?type=eq.${mode}&select=ref`,
+      { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } }
+    );
+    const rows = res.ok ? await res.json() : [];
+    return rows.length >= ORDER_LIMIT[mode];
+  } catch { return false; }
+}
+
+function showOrderClosed(mode) {
+  const label = mode === 'circle' ? 'サークル参加者' : '一般参加者';
+  const g = document.getElementById('gate');
+  g.classList.add('hidden');
+  setTimeout(() => g.style.display = 'none', 350);
+  const mc = document.getElementById('mainContent');
+  mc.style.display = 'block';
+  document.getElementById('orderClosedMode').textContent = label;
+  document.getElementById('orderClosedMsg').style.display = 'block';
+  document.getElementById('orderForm').style.display = 'none';
+}
+
+async function enterAs(mode) {
   if (isPastDeadline()) { showToast('申し込みは締め切りました'); return; }
+  // 上限チェック
+  const isFull = await checkOrderLimit(mode);
+  if (isFull) { showOrderClosed(mode); return; }
   currentMode = mode;
   const g = document.getElementById('gate');
   g.classList.add('hidden');
   setTimeout(() => g.style.display = 'none', 350);
   document.getElementById('mainContent').style.display = 'block';
+  document.getElementById('orderClosedMsg').style.display = 'none';
+  document.getElementById('orderForm').style.display = 'block';
   applyModeUI();
 }
 function backToGate() {
   document.getElementById('mainContent').style.display = 'none';
+  document.getElementById('orderClosedMsg').style.display = 'none';
+  document.getElementById('orderForm').style.display = 'block';
   const g = document.getElementById('gate');
   g.style.display = 'flex'; g.classList.remove('hidden');
   currentMode = null;
@@ -2367,6 +2412,71 @@ function toggleXDmTip() {
 // ══ VALIDATION ══
 function showError(id,msg){const e=document.getElementById('e-'+id);if(e&&msg)e.textContent=msg;e?.classList.add('visible');document.getElementById('f-'+id)?.classList.add('invalid');}
 function clearError(id){document.getElementById('e-'+id)?.classList.remove('visible');document.getElementById('f-'+id)?.classList.remove('invalid');}
+function generateCutLineImage() {
+  if (!imgObj) { showToast('画像をアップロードしてください'); return; }
+
+  const C = 170, P = 40, TOTAL = C + P * 2;
+  const scale  = parseInt(document.getElementById('ctrl-scale').value) / 100;
+  const dx     = parseInt(document.getElementById('ctrl-x').value);
+  const dy     = parseInt(document.getElementById('ctrl-y').value);
+  const rot    = parseInt(document.getElementById('ctrl-rot').value) * Math.PI / 180;
+  const shape  = document.getElementById('f-shape').value;
+
+  // プレビュー上での画像描画サイズを再現
+  let dw = C * scale, dh = dw / (imgObj.width / imgObj.height);
+  if (dh > C * scale) { dh = C * scale; dw = dh * (imgObj.width / imgObj.height); }
+  const sf = imgObj.width / dw; // キャンバス1px → 元画像何px
+
+  // 元画像サイズのキャンバスを生成
+  const canvas = document.createElement('canvas');
+  canvas.width  = imgObj.width;
+  canvas.height = imgObj.height;
+  const ctx = canvas.getContext('2d');
+
+  // 元画像を描画（flip対応）
+  ctx.save();
+  ctx.translate(imgObj.width / 2, imgObj.height / 2);
+  ctx.scale(flipHState ? -1 : 1, flipVState ? -1 : 1);
+  ctx.drawImage(imgObj, -imgObj.width / 2, -imgObj.height / 2, imgObj.width, imgObj.height);
+  ctx.restore();
+
+  // カットラインの中心を元画像座標で計算
+  // プレビュー上でカットライン中心は (TOTAL/2, TOTAL/2) = (125, 125)
+  // 画像中心はプレビュー上で (TOTAL/2 + dx, TOTAL/2 + dy)
+  // → カットライン中心の画像からのオフセット（プレビューpx）: (-dx, -dy)
+  // → 回転の逆変換を適用
+  const cosR = Math.cos(-rot), sinR = Math.sin(-rot);
+  const rotOffX =  (-dx) * cosR - (-dy) * sinR;
+  const rotOffY =  (-dx) * sinR + (-dy) * cosR;
+
+  const cutCX = imgObj.width  / 2 + rotOffX * sf;
+  const cutCY = imgObj.height / 2 + rotOffY * sf;
+  const halfSize = (C / 2) * sf;
+  const lw = Math.max(2, sf * 1.5);
+
+  ctx.strokeStyle = '#ff0000';
+  ctx.lineWidth   = lw;
+  ctx.setLineDash([sf * 8, sf * 4]);
+
+  if (shape === 'ci') {
+    ctx.beginPath();
+    ctx.arc(cutCX, cutCY, halfSize, 0, Math.PI * 2);
+    ctx.stroke();
+  } else {
+    ctx.save();
+    ctx.translate(cutCX, cutCY);
+    ctx.rotate(rot);
+    ctx.strokeRect(-halfSize, -halfSize, halfSize * 2, halfSize * 2);
+    ctx.restore();
+  }
+
+  const a = document.createElement('a');
+  a.href     = canvas.toDataURL('image/png');
+  a.download = 'cutline_check.png';
+  a.click();
+  showToast('📐 カットライン画像を保存しました');
+}
+
 function adjustQty(delta) {
   const input = document.getElementById('f-qty');
   const max = parseInt(input.max) || getMaxQty(currentMode);
