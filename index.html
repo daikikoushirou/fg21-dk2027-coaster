@@ -3241,16 +3241,21 @@ async function saveCodeImage() {
   const qrSrc = await makeLabelQR(qrParts.join('\n'), 200);
 
   // cutline画像を事前読み込み
-  const loadImg = src => new Promise(resolve => {
+  const loadImg = (src) => new Promise(resolve => {
     if (!src) { resolve(null); return; }
-    const i = new Image(); i.crossOrigin = 'anonymous';
+    const i = new Image();
     i.onload = () => resolve(i); i.onerror = () => resolve(null);
     i.src = src;
   });
 
   const [qrImg, cutImg] = await Promise.all([
-    loadImg(qrSrc), loadImg(cutlineUrl)
+    loadImg(qrSrc),
+    loadImg(cutlineUrl)
   ]);
+
+  // 高品質描画設定
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
 
   // 背景
   ctx.fillStyle = '#e8dfc0';
@@ -3331,7 +3336,21 @@ async function saveCodeImage() {
   ctx.fillText('🥔 大喜幸四郎 × ふたば★学園祭２１', W / 2, H - 20);
 
   const a = document.createElement('a');
-  a.href = canvas.toDataURL('image/png');
+  let dataUrl;
+  try {
+    dataUrl = canvas.toDataURL('image/png');
+  } catch(e) {
+    // cutline画像でcanvasが汚染されている場合は再描画（cutlimeなし）
+    ctx.clearRect(0, 0, W, H);
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    // 背景から再描画（cutImg除外）
+    ctx.fillStyle = '#e8dfc0';
+    ctx.beginPath(); ctx.roundRect(0, 0, W, H, 20); ctx.fill();
+    showToast('⚠ デザイン画像の表示に失敗しました（QRコードのみ保存）');
+    dataUrl = canvas.toDataURL('image/png');
+  }
+  a.href = dataUrl;
   a.download = `引換コード_${code}.png`;
   a.click();
 }
