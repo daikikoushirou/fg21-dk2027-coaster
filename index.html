@@ -3241,16 +3241,33 @@ async function saveCodeImage() {
   const qrSrc = await makeLabelQR(qrParts.join('\n'), 200);
 
   // cutline画像を事前読み込み
+  // cutline: fetchでblob取得→blobURL経由でcanvas汚染を回避
   const loadImg = (src) => new Promise(resolve => {
     if (!src) { resolve(null); return; }
     const i = new Image();
-    i.onload = () => resolve(i); i.onerror = () => resolve(null);
+    i.onload = () => resolve(i);
+    i.onerror = () => resolve(null);
     i.src = src;
   });
+  const loadImgViafetch = async (url) => {
+    if (!url) return null;
+    try {
+      const resp = await fetch(url);
+      if (!resp.ok) return null;
+      const blob = await resp.blob();
+      return await new Promise(resolve => {
+        const i = new Image();
+        const burl = URL.createObjectURL(blob);
+        i.onload = () => { URL.revokeObjectURL(burl); resolve(i); };
+        i.onerror = () => { URL.revokeObjectURL(burl); resolve(null); };
+        i.src = burl;
+      });
+    } catch { return null; }
+  };
 
   const [qrImg, cutImg] = await Promise.all([
     loadImg(qrSrc),
-    loadImg(cutlineUrl)
+    loadImgViafetch(cutlineUrl)
   ]);
 
   // 高品質描画設定
@@ -3340,14 +3357,43 @@ async function saveCodeImage() {
   try {
     dataUrl = canvas.toDataURL('image/png');
   } catch(e) {
-    // cutline画像でcanvasが汚染されている場合は再描画（cutlimeなし）
+    // canvas汚染（SecurityError）→ cutline画像なしで再描画
     ctx.clearRect(0, 0, W, H);
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
-    // 背景から再描画（cutImg除外）
     ctx.fillStyle = '#e8dfc0';
     ctx.beginPath(); ctx.roundRect(0, 0, W, H, 20); ctx.fill();
-    showToast('⚠ デザイン画像の表示に失敗しました（QRコードのみ保存）');
+    ctx.fillStyle = '#5c4a1e';
+    ctx.beginPath(); ctx.roundRect(0, 0, W, 56, [20, 20, 0, 0]); ctx.fill();
+    ctx.fillStyle = '#f0e0a0'; ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('ふたば★学園祭２１', W / 2, 24);
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 13px sans-serif';
+    ctx.fillText('イラスト入りレザーコースター', W / 2, 44);
+    ctx.fillStyle = '#8a7a5a'; ctx.font = '11px sans-serif'; ctx.fillText(ref, W/2, 80);
+    ctx.fillStyle = '#5c4a1e'; ctx.font = 'bold 12px sans-serif'; ctx.fillText('引換コード', W/2, 104);
+    ctx.strokeStyle = '#c4a85a'; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.roundRect(30, 114, W-60, 76, 12); ctx.stroke();
+    ctx.fillStyle = '#3a2a00'; ctx.font = 'bold 56px monospace'; ctx.letterSpacing = '6px';
+    ctx.fillText(code, W/2, 168); ctx.letterSpacing = '0px';
+    ctx.fillStyle = '#7a6e5a'; ctx.font = '12px sans-serif'; ctx.fillText(note, W/2, 210);
+    if (circleName || personName) {
+      ctx.fillStyle = '#5c4a1e'; ctx.font = 'bold 12px sans-serif';
+      ctx.fillText([circleName, personName].filter(Boolean).join('　'), W/2, 234);
+    }
+    ctx.strokeStyle = '#c8b87a'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(40,250); ctx.lineTo(W-40,250); ctx.stroke();
+    if (qrImg) {
+      const qx = (W-120)/2;
+      ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.roundRect(qx-6,264-6,132,132,8); ctx.fill();
+      ctx.drawImage(qrImg, qx, 264, 120, 120);
+      ctx.fillStyle = '#8a7a5a'; ctx.font = '10px sans-serif';
+      ctx.fillText('引換コード確認用', W/2, 400);
+    }
+    ctx.fillStyle = '#8a7060'; ctx.font = '11px sans-serif';
+    ctx.fillText('当日ブースにてこのコードをご提示ください', W/2, 500);
+    ctx.fillStyle = '#5c4a1e'; ctx.beginPath(); ctx.roundRect(0,H-46,W,46,[0,0,20,20]); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,.7)'; ctx.font = '10px sans-serif';
+    ctx.fillText('🥔 大喜幸四郎 × ふたば★学園祭２１', W/2, H-20);
     dataUrl = canvas.toDataURL('image/png');
   }
   a.href = dataUrl;
