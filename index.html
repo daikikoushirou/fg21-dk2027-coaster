@@ -4009,16 +4009,14 @@ function showCodeQR(code) {
   const container = document.getElementById('successQRCanvas');
   if (!wrap || !container) return;
   container.innerHTML = '';
-  wrap.style.display = 'block';
+  // wrap は display:none のまま（画像保存用にのみ使用）
   try {
     new QRCode(container, {
       text: code,
       width: 140, height: 140,
       correctLevel: QRCode.CorrectLevel.M
     });
-  } catch(e) {
-    wrap.style.display = 'none';
-  }
+  } catch(e) {}
 }
 
 // 管理パネル 簡易グラフ
