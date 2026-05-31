@@ -1857,13 +1857,13 @@ async function enterAs(mode) {
   setTimeout(() => g.style.display = 'none', 350);
   document.getElementById('mainContent').style.display = 'block';
   document.getElementById('orderClosedMsg').style.display = 'none';
-  document.getElementById('orderForm').style.display = 'block';
+  document.getElementById('orderForm').style.display = '';
   applyModeUI();
 }
 function backToGate() {
   document.getElementById('mainContent').style.display = 'none';
   document.getElementById('orderClosedMsg').style.display = 'none';
-  document.getElementById('orderForm').style.display = 'block';
+  document.getElementById('orderForm').style.display = '';
   const g = document.getElementById('gate');
   g.style.display = 'flex'; g.classList.remove('hidden');
   currentMode = null;
