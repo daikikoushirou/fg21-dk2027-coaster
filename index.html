@@ -1571,6 +1571,7 @@ async function sbInsert(order) {
     sample_sent: false,
     completion_image_sent: false,
     note: order.note||'', image_url: order.image_url||'', cutline_url: order.cutlineUrl||'',
+    leather_preview: order.leatherPreview||false,
     free_override: order.freeOverride||false,
     status: order.status, code_used: order.codeUsed||false
   };
@@ -1600,7 +1601,7 @@ async function sbFetch() {
     adjustment: r.adjustment||0,
     sampleSent: r.sample_sent||false,
     completionImageSent: r.completion_image_sent||false,
-    image_url: r.image_url, cutlineUrl: r.cutline_url||'', freeOverride: r.free_override||false, status: r.status, codeUsed: r.code_used,
+    image_url: r.image_url, cutlineUrl: r.cutline_url||'', freeOverride: r.free_override||false, leatherPreview: r.leather_preview||false, status: r.status, codeUsed: r.code_used,
     thumb: ''
   }));
 }
@@ -1624,7 +1625,7 @@ async function sbPatch(ref, patch) {
 
 // ══ STATE ══
 let currentMode = null;
-let imgObj = null, _droppedFile = null, flipHState = false, flipVState = false, invertState = false;
+let imgObj = null, _droppedFile = null, flipHState = false, flipVState = false, invertState = false, leatherPreviewUsed = false;
 let orders = JSON.parse(localStorage.getItem('bc_orders') || '[]');
 
 // ══ MAKE.COM 通知 ══
@@ -2255,6 +2256,7 @@ function loadImageFile(file) {
   r.readAsDataURL(file);
 }
 function removeImage() {
+  leatherPreviewUsed = false;
   imgObj = null;
   document.getElementById('f-image').value = '';
   document.getElementById('previewWrapper').classList.remove('visible');
@@ -2481,7 +2483,7 @@ function autoSnapImage() {
 function resetControls(redraw=true){['ctrl-scale','ctrl-x','ctrl-y','ctrl-rot'].forEach(id=>{const el=document.getElementById(id);el.value=id==='ctrl-scale'?90:0;});flipHState=flipVState=false;if(redraw)updatePreview();}
 function flipH(){flipHState=!flipHState;updatePreview();}
 function flipV(){flipVState=!flipVState;updatePreview();}
-function toggleInvert(){invertState=!invertState;const t=document.getElementById('invertToggle');t.classList.toggle('on',invertState);document.getElementById('invertDesc').textContent=invertState?'ON':'OFF';updatePreview();}
+function toggleInvert(){invertState=!invertState;if(invertState)leatherPreviewUsed=true;const t=document.getElementById('invertToggle');t.classList.toggle('on',invertState);document.getElementById('invertDesc').textContent=invertState?'ON':'OFF';updatePreview();}
 
 function toggleCompletionNote() {
   const checked = document.getElementById('f-completion-img').checked;
@@ -2722,6 +2724,7 @@ document.getElementById('orderForm').addEventListener('submit', async e => {
     completionImageSent: false,
     note: document.getElementById('f-note').value.trim(),
     image_url: imageUrl,
+    leatherPreview: leatherPreviewUsed,
     cutlineUrl,
     thumb: document.getElementById('previewCanvas').toDataURL('image/jpeg', .5),
     status: 'new', codeUsed: false
@@ -2978,6 +2981,7 @@ function renderOrders() {
           <div class="oc-label">元画像</div>
           ${(o.thumb || o.image_url) ? `<img class="thumb-mini ${o.shape==='サークル'?'ci':'sq'}" src="${o.thumb || o.image_url}" alt="" onclick="zoomImg('${o.thumb || o.image_url}')">` : '<span style="font-size:.78rem;color:#bbb">なし</span>'}
           ${o.image_url ? `<a href="${o.image_url}" target="_blank" rel="noopener" style="font-size:.78rem;color:var(--circle-color);font-weight:700;margin-top:2px;">元画像↗</a>` : ''}
+          ${o.leatherPreview ? `<span style="font-size:.68rem;color:#a0784a;background:rgba(160,120,74,.15);border:1px solid rgba(160,120,74,.3);border-radius:4px;padding:1px 6px;margin-top:2px;display:inline-block;">🪵 革色確認済</span>` : ''}
           ${o.cutlineUrl ? `<a href="${o.cutlineUrl}" target="_blank" rel="noopener" style="font-size:.72rem;color:var(--muted);font-weight:700;margin-top:2px;">切抜↗</a>` : ''}
         </div>
       </div>
