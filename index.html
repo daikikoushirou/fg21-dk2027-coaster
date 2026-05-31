@@ -3374,11 +3374,11 @@ function renderInterestsAdmin() {
       const date = i.created_at ? new Date(i.created_at).toLocaleString('ja-JP') : '—';
       const ip = i.ip_address || '—';
       return `<tr>
-        <td style="font-size:.76rem;color:rgba(255,255,255,.78);white-space:nowrap">${date}</td>
+        <td style="font-size:.76rem;color:var(--muted);white-space:nowrap">${date}</td>
         <td><span class="type-badge ${typeBadgeClass(i.type)}">${typeLabel[i.type || 'general'] || i.type}</span></td>
         <td style="font-size:.85rem">${i.x_account ? `@${i.x_account}` : '—'}</td>
         <td style="font-size:.85rem">${i.display_name || '—'}</td>
-        <td style="font-size:.72rem;color:#fff;font-family:monospace;white-space:nowrap">${ip}</td>
+        <td style="font-size:.72rem;color:var(--muted);font-family:monospace;white-space:nowrap">${ip}</td>
         <td><img class="thumb-mini" src="${src}" alt="" onerror="this.src='${FALLBACK_AVATAR}'" style="border-radius:50%"></td>
         <td>${i.id ? `<button class="admin-btn danger" style="padding:4px 10px;font-size:.72rem" onclick="deleteInterest(${i.id})">削除</button>` : '—'}</td>
       </tr>`;
