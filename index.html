@@ -1197,6 +1197,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
           <div class="preview-pane">
             <div class="preview-label"><span class="dot"></span>プレビュー（<span id="previewShapeLabel">スクエア</span>）</div>
             <canvas id="previewCanvas" width="170" height="170" class="sq"></canvas>
+            <div id="previewWarnBox" style="display:none;margin-top:6px;background:rgba(255,160,0,.15);border:1px solid rgba(255,160,0,.5);border-radius:6px;padding:7px 10px;font-size:.76rem;color:rgba(255,220,100,1);line-height:1.5;"></div>
             <button type="button" class="remove-btn" onclick="removeImage()">✕ 画像を削除</button>
           </div>
           <div class="preview-controls" id="previewControls">
@@ -2236,6 +2237,12 @@ function loadImageFile(file) {
 
       updatePreview();
       clearError('image');
+      // アップロード時のサイズ警告チェック（_sfは上で定義済み）
+      const _dw = img.width / _sf, _dh = img.height / _sf;
+      if (_dw < 169 || _dh < 169) {
+        const wb = document.getElementById('previewWarnBox');
+        if (wb) { wb.textContent = '⚠️ 画像の解像度がカットラインより小さいです。仕上がりが荒くなる可能性があります。'; wb.style.display = 'block'; }
+      }
     };
     img.src = ev.target.result;
   };
@@ -2360,6 +2367,80 @@ function updatePreview() {
     ctx.fillText('─── カットライン ───', cx, P - 6);
     ctx.restore();
   }
+
+  // 9. 警告チェック・オートスナップ
+  updatePreviewWarning(dw, dh, dx, dy, shape, cx, cy, C, P);
+}
+
+function updatePreviewWarning(dw, dh, dx, dy, shape, cx, cy, C, P) {
+  const warn = document.getElementById('previewWarnBox');
+  if (!warn) return;
+  const msgs = [];
+
+  // ① サイズ警告：画像がカットラインより小さい
+  if (dw < C - 1 || dh < C - 1) {
+    msgs.push('⚠️ 画像の解像度がカットラインより小さいです。仕上がりが荒くなる可能性があります。');
+  }
+
+  // ② 余白チェック：カットライン内に空白が生じる位置かどうか
+  const imgL = cx + dx - dw / 2;
+  const imgR = cx + dx + dw / 2;
+  const imgT = cy + dy - dh / 2;
+  const imgB = cy + dy + dh / 2;
+  let hasBlank = false;
+  if (shape === 'ci') {
+    // 円の4端点が画像内に入っているかで近似チェック
+    hasBlank = imgL > cx - C/2 || imgR < cx + C/2 || imgT > cy - C/2 || imgB < cy + C/2;
+  } else {
+    hasBlank = imgL > P + 1 || imgR < P + C - 1 || imgT > P + 1 || imgB < P + C - 1;
+  }
+  if (hasBlank) {
+    msgs.push('⚠️ カットライン内に余白が生じています。画像をスナップしますか？');
+  }
+
+  if (msgs.length) {
+    warn.innerHTML = msgs.join('<br>') + (hasBlank
+      ? ` <button type="button" onclick="autoSnapImage()" style="margin-left:8px;padding:2px 10px;border-radius:5px;border:1px solid rgba(255,200,80,.6);background:rgba(255,200,80,.15);color:rgba(255,235,150,1);font-size:.74rem;cursor:pointer;">スナップ</button>`
+      : '');
+    warn.style.display = 'block';
+  } else {
+    warn.style.display = 'none';
+  }
+}
+
+function autoSnapImage() {
+  if (!imgObj) return;
+  const C = 170, P = 40, TOTAL = C + P * 2;
+  const shapePx = getShapePx();
+  const sf = shapePx / C;
+  const dw = imgObj.width / sf, dh = imgObj.height / sf;
+  const cx = TOTAL / 2, cy = TOTAL / 2;
+  const shape = document.getElementById('f-shape').value;
+  let dx = parseInt(document.getElementById('ctrl-x').value) || 0;
+  let dy = parseInt(document.getElementById('ctrl-y').value) || 0;
+
+  const imgL = () => cx + dx - dw / 2;
+  const imgR = () => cx + dx + dw / 2;
+  const imgT = () => cy + dy - dh / 2;
+  const imgB = () => cy + dy + dh / 2;
+  const lim = shape === 'ci' ? cx - C/2 : P;
+  const rimL = shape === 'ci' ? cx - C/2 : P;
+  const rimR = shape === 'ci' ? cx + C/2 : P + C;
+  const rimT = shape === 'ci' ? cy - C/2 : P;
+  const rimB = shape === 'ci' ? cy + C/2 : P + C;
+
+  if (imgL() > rimL) dx -= (imgL() - rimL);
+  if (imgR() < rimR) dx += (rimR - imgR());
+  if (imgT() > rimT) dy -= (imgT() - rimT);
+  if (imgB() < rimB) dy += (rimB - imgB());
+
+  dx = Math.round(dx); dy = Math.round(dy);
+  const xEl = document.getElementById('ctrl-x'), yEl = document.getElementById('ctrl-y');
+  xEl.value = Math.max(parseInt(xEl.min)||dx, Math.min(parseInt(xEl.max)||dx, dx));
+  yEl.value = Math.max(parseInt(yEl.min)||dy, Math.min(parseInt(yEl.max)||dy, dy));
+  document.getElementById('val-x').textContent = xEl.value;
+  document.getElementById('val-y').textContent = yEl.value;
+  updatePreview();
 }
 function resetControls(redraw=true){['ctrl-scale','ctrl-x','ctrl-y','ctrl-rot'].forEach(id=>{const el=document.getElementById(id);el.value=id==='ctrl-scale'?90:0;});flipHState=flipVState=false;if(redraw)updatePreview();}
 function flipH(){flipHState=!flipHState;updatePreview();}
