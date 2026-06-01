@@ -1273,6 +1273,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
         </div>
       </div>
       <div class="submit-row">
+        <div id="submitErrorSummary" style="display:none;width:100%;margin-bottom:10px;background:rgba(224,80,64,.15);border:1.5px solid rgba(224,80,64,.5);border-radius:8px;padding:10px 14px;font-size:.82rem;color:rgba(255,180,160,1);line-height:1.7;"></div>
         <div class="submit-note">送信後に引換コードが発行されます。当日ご持参ください。</div>
         <button type="submit" class="btn-submit" id="submitBtn">製作情報送信 🔨</button>
       </div>
@@ -2649,23 +2650,34 @@ function adjustQty(delta) {
 
 function validateForm(){
   let ok=true;
+  const errs=[];
   ['name','circle-name','email','qty','image','xaccount'].forEach(id=>clearError(id));
-  if (imageTooSmall) { showError('image', '画像の解像度がカットラインより小さいです。大きい画像をご用意ください。（プレビューの警告を確認してください）'); ok=false; }
-  if(!document.getElementById('f-name').value.trim()){showError('name','おなまえを入力してください');ok=false;}
-  if(currentMode === 'circle' && !document.getElementById('f-circle-name').value.trim()){showError('circle-name','サークル名を入力してください');ok=false;}
+  if (imageTooSmall) { showError('image', '画像の解像度がカットラインより小さいです。大きい画像をご用意ください。（プレビューの警告を確認してください）'); errs.push('📐 画像サイズが小さすぎます'); ok=false; }
+  if(!document.getElementById('f-name').value.trim()){showError('name','おなまえを入力してください');errs.push('👤 おなまえが未入力');ok=false;}
+  if(currentMode === 'circle' && !document.getElementById('f-circle-name').value.trim()){showError('circle-name','サークル名を入力してください');errs.push('🏷 サークル名が未入力');ok=false;}
   const contactPref = document.querySelector('input[name="contact-pref"]:checked')?.value || 'email';
   const em = document.getElementById('f-email').value.trim();
   const xa = document.getElementById('f-xaccount').value.trim();
   if (contactPref === 'email') {
-    if(!em||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){showError('email','正しいメールアドレスを入力してください');ok=false;}
+    if(!em||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){showError('email','正しいメールアドレスを入力してください');errs.push('✉️ メールアドレスを確認してください');ok=false;}
   } else {
-    // X優先：メールは任意だが入力があれば形式チェック
-    if(em && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){showError('email','正しいメールアドレスを入力してください');ok=false;}
-    if(!xa){showError('xaccount','Xアカウントを入力してください');ok=false;}
+    if(em && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){showError('email','正しいメールアドレスを入力してください');errs.push('✉️ メールアドレスを確認してください');ok=false;}
+    if(!xa){showError('xaccount','Xアカウントを入力してください');errs.push('𝕏 Xアカウントが未入力');ok=false;}
   }
   const qty=parseInt(document.getElementById('f-qty').value), maxQ=getMaxQty(currentMode);
-  if(!qty||qty<1||qty>maxQ){showError('qty',`1〜${maxQ}点で入力してください`);ok=false;}
-  if(!imgObj){showError('image','画像をアップロードしてください');ok=false;}
+  if(!qty||qty<1||qty>maxQ){showError('qty',`1〜${maxQ}点で入力してください`);errs.push(`🔢 点数を確認してください（1〜${maxQ}点）`);ok=false;}
+  if(!imgObj){showError('image','画像をアップロードしてください');errs.push('🖼️ 画像がアップロードされていません');ok=false;}
+  // サマリー表示
+  const summary = document.getElementById('submitErrorSummary');
+  if (summary) {
+    if (errs.length) {
+      summary.innerHTML = '⚠️ 以下を確認してください：<br>' + errs.map(e=>`・${e}`).join('<br>');
+      summary.style.display = 'block';
+      summary.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } else {
+      summary.style.display = 'none';
+    }
+  }
   return ok;
 }
 
@@ -2819,6 +2831,7 @@ document.getElementById('orderForm').addEventListener('submit', async e => {
   ).join('');
 
   document.getElementById('successModal').classList.add('show');
+  const s = document.getElementById('submitErrorSummary'); if(s) s.style.display='none';
 
   // QRコードにコード・スペース・サークル名を含める
   const qrParts = [code];
