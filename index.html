@@ -1098,7 +1098,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
       </div>
       <div class="form-group" id="circleNameGroup" style="display:none;">
         <label>サークル名<span class="required-mark">*</span></label>
-        <input type="text" id="f-circle-name" placeholder="例：いもけんぴ工房">
+        <input type="text" id="f-circle-name" onblur="onCircleNameBlur()" placeholder="例：いもけんぴ工房">
         <span class="field-error" id="e-circle-name">サークル名を入力してください</span>
       </div>
 
@@ -1629,7 +1629,7 @@ async function sbPatch(ref, patch) {
 
 // ══ STATE ══
 let currentMode = null;
-let imgObj = null, _droppedFile = null, flipHState = false, flipVState = false, invertState = false, leatherPreviewUsed = false, imageTooSmall = false;
+let imgObj = null, _droppedFile = null, flipHState = false, flipVState = false, invertState = false, leatherPreviewUsed = false, imageTooSmall = false, pendingFreeOverride = false;
 let orders = JSON.parse(localStorage.getItem('bc_orders') || '[]');
 
 // ══ MAKE.COM 通知 ══
@@ -1730,7 +1730,12 @@ function renderCostBreakdown() {
   const qty = parseInt(document.getElementById('f-qty').value) || 0;
   const sampleChecked = document.getElementById('f-sample')?.checked || false;
   const sampleFree = isSampleFreeEligible(currentMode, qty);
-  const { total, breakdown } = calcCost(currentMode, qty, sampleChecked, sampleFree, null);
+  const { total, breakdown } = calcCost(currentMode, qty, sampleChecked, sampleFree, null, undefined, pendingFreeOverride);
+
+  // 2回目以降の注意書き
+  const notice = document.getElementById('freeOverrideNotice');
+  if (notice) notice.style.display = (pendingFreeOverride && currentMode === 'circle') ? 'block' : 'none';
+
   document.getElementById('costBreakdown').innerHTML =
     breakdown.map(b => `<div class="cost-row ${b.cls}"><span>${b.label}</span><span>${b.amount===0?'¥0':'¥'+b.amount.toLocaleString()}</span></div>`).join('') +
     `<div class="cost-row total-row"><span>当日お支払い金額（合計）</span><span>¥${total.toLocaleString()}</span></div>`;
@@ -1872,6 +1877,7 @@ async function enterAs(mode) {
   applyModeUI();
 }
 function backToGate() {
+  pendingFreeOverride = false;
   document.getElementById('mainContent').style.display = 'none';
   document.getElementById('orderClosedMsg').style.display = 'none';
   document.getElementById('orderForm').style.display = '';
@@ -2529,6 +2535,34 @@ function toggleCompletionNote() {
 }
 let _drag = { active: false, startX: 0, startY: 0, startDX: 0, startDY: 0 };
 
+
+// サークル名blur: 重複チェックしてfreeOverrideを事前設定
+async function onCircleNameBlur() {
+  const circleName = document.getElementById('f-circle-name')?.value.trim();
+  if (!circleName || currentMode !== 'circle') {
+    pendingFreeOverride = false;
+    renderCostBreakdown();
+    return;
+  }
+  // ローカルのordersで先にチェック
+  const localDup = orders.some(o => o.type === 'circle' && (o.circleName||'').trim() === circleName);
+  if (localDup) {
+    pendingFreeOverride = true;
+    renderCostBreakdown();
+    return;
+  }
+  // Supabaseでチェック（オンライン時）
+  if (sbReady()) {
+    try {
+      const existing = await sbFetchByCircleName(circleName);
+      pendingFreeOverride = existing.length > 0;
+    } catch(e) { pendingFreeOverride = false; }
+  } else {
+    pendingFreeOverride = false;
+  }
+  renderCostBreakdown();
+}
+
 function initCanvasDrag() {
   const cv = document.getElementById('previewCanvas');
   const getPos = e => {
@@ -2784,16 +2818,23 @@ document.getElementById('orderForm').addEventListener('submit', async e => {
   };
 
   // DBに保存（Supabase設定済みの場合）
-  // サークル名で重複チェック（オンライン時のみ）
-  if (sbReady() && order.type === 'circle' && order.circleName) {
-    try {
-      const existing = await sbFetchByCircleName(order.circleName);
-      if (existing.length > 0) {
-        order.freeOverride = true;
-        const { total } = calcCost(order.type, order.qty, order.sampleRequested, order.sampleFreeEligible, order.sampleCount, undefined, true);
-        order.total = total + (order.adjustment || 0);
-      }
-    } catch(e) { /* チェック失敗はスルー */ }
+  // サークル名で重複チェック（blurで事前確認済み + 送信時に再確認）
+  if (order.type === 'circle' && order.circleName) {
+    // blurで確認済みのフラグ優先、未確認ならSupabaseで確認
+    let dup = pendingFreeOverride;
+    if (!dup && sbReady()) {
+      try {
+        const existing = await sbFetchByCircleName(order.circleName);
+        dup = existing.length > 0;
+      } catch(e) {}
+    }
+    if (dup) {
+      order.freeOverride = true;
+      const { total } = calcCost(order.type, order.qty, order.sampleRequested, order.sampleFreeEligible, order.sampleCount, undefined, true);
+      order.total = total + (order.adjustment || 0);
+      saveOrders();
+      showToast('⚠ 同サークルの先行注文があるため無料枠は適用されません。');
+    }
   }
 
   let cloudSaveFailed = false;
