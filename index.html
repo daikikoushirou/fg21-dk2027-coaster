@@ -1243,7 +1243,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
         <!-- 仕上がり確認画像 -->
         <div class="completion-img-area" id="completionImgArea">
           <label class="completion-img-head" for="f-completion-img">
-            <input type="checkbox" id="f-completion-img" onchange="toggleCompletionNote()">
+            <input type="checkbox" id="f-completion-img" onchange="toggleCompletionNote();renderCostBreakdown();">
             <div>
               <div class="completion-img-title">1点目が完成した時点で仕上がり確認画像を受け取る <span class="sample-price-badge sample-price-free">無料</span></div>
               <div style="font-size:.75rem;color:rgba(255,235,160,1);margin-top:3px;">開催10日前までの無料オプション。</div>
@@ -1736,8 +1736,14 @@ function renderCostBreakdown() {
   const notice = document.getElementById('freeOverrideNotice');
   if (notice) notice.style.display = (pendingFreeOverride && currentMode === 'circle') ? 'block' : 'none';
 
+  // 仕上がり確認画像（常に無料・チェック時のみ表示）
+  const completionChecked = document.getElementById('f-completion-img')?.checked || false;
+  if (completionChecked) {
+    breakdown.push({ label: '仕上がり確認画像', amount: 0, cls: 'free' });
+  }
+
   document.getElementById('costBreakdown').innerHTML =
-    breakdown.map(b => `<div class="cost-row ${b.cls}"><span>${b.label}</span><span>${b.amount===0?'¥0':'¥'+b.amount.toLocaleString()}</span></div>`).join('') +
+    breakdown.map(b => `<div class="cost-row ${b.cls}"><span>${b.label}</span><span>${b.amount===0?'無料':'¥'+b.amount.toLocaleString()}</span></div>`).join('') +
     `<div class="cost-row total-row"><span>当日お支払い金額（合計）</span><span>¥${total.toLocaleString()}</span></div>`;
 }
 function updateTotal() { updateSampleUI(); renderCostBreakdown(); }
