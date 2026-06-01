@@ -1510,6 +1510,17 @@ const SAMPLE_FREE_END = (() => { const d = new Date(EVENT_DATE); d.setDate(d.get
 const BULK_ORDER_END = (() => { const d = new Date(EVENT_DATE); d.setDate(d.getDate() - 14); return d; })();
 const COMPLETION_IMG_END = (() => { const d = new Date(EVENT_DATE); d.setDate(d.getDate() - 10); return d; })();
 
+
+// XSS対策: HTMLエスケープ関数
+function escapeHTML(s) {
+  if (s == null) return '';
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
 // 現在時刻判定
 function now() { return new Date(); }
 function isPastDeadline()     { return now() >= DEADLINE; }
@@ -3026,9 +3037,9 @@ function renderOrders() {
     const adj = o.adjustment || 0;
     const contactInfo = o.contactPref === 'x'
       ? `<span style="color:#1d9bf0;font-weight:700">𝕏 @${o.xAccount||'?'}</span>`
-      : `<span style="color:var(--muted)">✉ ${o.email}</span>`;
+      : `<span style="color:var(--muted)">✉ ${escapeHTML(o.email)}</span>`;
     const xExtra = o.xAccount && o.contactPref !== 'x'
-      ? `<span style="color:var(--muted);font-size:.76rem">𝕏 @${o.xAccount}</span>` : '';
+      ? `<span style="color:var(--muted);font-size:.76rem">𝕏 @${escapeHTML(o.xAccount)}</span>` : '';
 
     return `<div class="order-card">
       <!-- 行1: ヘッダー -->
@@ -3059,7 +3070,7 @@ function renderOrders() {
       <div class="order-card-row" style="align-items:flex-start;">
         <div class="oc-group" style="flex:0 0 45%;min-width:0;">
           <div class="oc-label">氏名・連絡先</div>
-          <div class="oc-val" style="font-weight:700">${o.name}${o.circleName ? ` <span style="font-size:.78rem;color:var(--circle-color);font-weight:400;">（${o.circleSpace ? o.circleSpace+'・' : ''}${o.circleName}）</span>` : ''}</div>
+          <div class="oc-val" style="font-weight:700">${escapeHTML(o.name)}${o.circleName ? ` <span style="font-size:.78rem;color:var(--circle-color);font-weight:400;">（${o.circleSpace ? o.circleSpace+'・' : ''}${escapeHTML(o.circleName)}）</span>` : ''}</div>
           <div style="font-size:.8rem">${contactInfo}</div>
           ${xExtra ? `<div style="font-size:.76rem">${xExtra}</div>` : ''}
         </div>
@@ -3139,7 +3150,7 @@ function renderOrders() {
       <!-- メモ -->
       ${o.note && String(o.note).trim() ? `
       <div class="order-card-row">
-        <span style="font-size:.8rem;color:var(--muted)">💬 ${String(o.note).trim()}</span>
+        <span style="font-size:.8rem;color:var(--muted)">💬 ${escapeHTML(String(o.note).trim())}</span>
       </div>` : ''}
     </div>`;
   }).join('')}</div>`;
@@ -3273,11 +3284,11 @@ function verifyCode() {
   res.className = 'verify-result show';
   res.innerHTML = `<div class="verify-card ok">
     <div><div class="vf-label">コード</div><div class="vf-value">${o.code}${used}</div></div>
-    <div><div class="vf-label">お名前</div><div class="vf-value">${o.name}${o.circleName ? `<span style="font-size:.8rem;color:var(--circle-color);margin-left:6px;">${o.circleSpace ? o.circleSpace+'・' : ''}${o.circleName}</span>` : ''}</div></div>
+    <div><div class="vf-label">お名前</div><div class="vf-value">${escapeHTML(o.name)}${o.circleName ? `<span style="font-size:.8rem;color:var(--circle-color);margin-left:6px;">${o.circleSpace ? o.circleSpace+'・' : ''}${escapeHTML(o.circleName)}</span>` : ''}</div></div>
     <div><div class="vf-label">請求金額</div><div class="vf-value">${amtHtml}</div></div>
     <div><div class="vf-label">内容</div><div class="vf-value">${o.shape} × ${o.qty}点${o.earlyBird ? ' ⭐早割' : ''}</div></div>
     <div><div class="vf-label">注文番号</div><div class="vf-value" style="font-size:.8rem">${o.ref}</div></div>
-    <div><div class="vf-label">連絡方法</div><div class="vf-value">${o.contactPref==='x' ? `𝕏 @${o.xAccount||'?'}` : `✉ ${o.email}`}</div></div>
+    <div><div class="vf-label">連絡方法</div><div class="vf-value">${o.contactPref==='x' ? `𝕏 @${o.xAccount||'?'}` : `✉ ${escapeHTML(o.email)}`}</div></div>
     <div><div class="vf-label">区分</div><div class="vf-value">${tl[o.type] || o.type}</div></div>
     ${o.sampleRequested ? `<div><div class="vf-label">端材サンプル</div><div class="vf-value">${sampleInfo}</div></div>` : ''}
     ${o.wantsCompletionImage ? `<div><div class="vf-label">仕上がり確認画像</div><div class="vf-value">${completionInfo}</div></div>` : ''}
@@ -3675,7 +3686,7 @@ function renderInterestsAdmin() {
       return `<tr>
         <td style="font-size:.76rem;color:var(--muted);white-space:nowrap">${date}</td>
         <td><span class="type-badge ${typeBadgeClass(i.type)}">${typeLabel[i.type || 'general'] || i.type}</span></td>
-        <td style="font-size:.85rem">${i.x_account ? `@${i.x_account}` : '—'}</td>
+        <td style="font-size:.85rem">${i.x_account ? `@${escapeHTML(i.x_account)}` : '—'}</td>
         <td style="font-size:.85rem">${i.display_name || '—'}</td>
         <td style="font-size:.72rem;color:var(--muted);font-family:monospace;white-space:nowrap">${ip}</td>
         <td><img class="thumb-mini" src="${src}" alt="" onerror="this.src='${FALLBACK_AVATAR}'" style="border-radius:50%"></td>
@@ -3738,10 +3749,10 @@ function renderLabelEntries() {
         style="flex:1;background:var(--bg);border:1.5px solid var(--border);border-radius:6px;padding:5px 9px;font-size:.85rem;font-family:var(--sans);color:var(--ink);outline:none;min-width:0;"
         placeholder="表示名"
         title="印刷に使う名前を編集できます">
-      ${c.circleSpace ? `<span style="font-size:.72rem;color:var(--muted);flex-shrink:0;">${c.circleSpace}</span>` : ''}
-      ${c.circleName ? `<span style="font-size:.75rem;color:var(--circle-color);flex-shrink:0;">${c.circleName}</span>` : ''}
+      ${c.circleSpace ? `<span style="font-size:.72rem;color:var(--muted);flex-shrink:0;">${escapeHTML(c.circleSpace)}</span>` : ''}
+      ${c.circleName ? `<span style="font-size:.75rem;color:var(--circle-color);flex-shrink:0;">${escapeHTML(c.circleName)}</span>` : ''}
       ${c.xAccount
-        ? `<span class="label-entry-x">𝕏 @${c.xAccount}</span>`
+        ? `<span class="label-entry-x">𝕏 @${escapeHTML(c.xAccount)}</span>`
         : `<span style="font-size:.76rem;color:rgba(255,255,255,.78)">Xなし</span>`}
     </div>
   `).join('');
@@ -3836,9 +3847,9 @@ async function openLabelPreview() {
     item.className = 'label-print-item';
     item.innerHTML = qrSrc ? `
       <div class="lp-text">
-        <div class="lp-name">${c.name || ''}</div>
+        <div class="lp-name">${escapeHTML(c.name)}</div>
         ${(c.circleSpace || c.circleName) ? `<div class="lp-circle">${[c.circleSpace, c.circleName].filter(Boolean).join(' ')}</div>` : ''}
-        ${c.xAccount ? `<div class="lp-handle">𝕏 @${c.xAccount}</div>` : ''}
+        ${c.xAccount ? `<div class="lp-handle">𝕏 @${escapeHTML(c.xAccount)}</div>` : ''}
       </div>
       <div class="lp-divider"></div>
       <div class="lp-qr">
@@ -3847,9 +3858,9 @@ async function openLabelPreview() {
       </div>
     ` : `
       <div class="lp-text" style="flex:1;">
-        <div class="lp-name" style="font-size:14pt;">${c.name || ''}</div>
+        <div class="lp-name" style="font-size:14pt;">${escapeHTML(c.name)}</div>
         ${(c.circleSpace || c.circleName) ? `<div class="lp-circle" style="font-size:8pt;">${[c.circleSpace, c.circleName].filter(Boolean).join(' ')}</div>` : ''}
-        ${c.xAccount ? `<div class="lp-handle" style="font-size:7pt;">𝕏 @${c.xAccount}</div>` : ''}
+        ${c.xAccount ? `<div class="lp-handle" style="font-size:7pt;">𝕏 @${escapeHTML(c.xAccount)}</div>` : ''}
       </div>
     `;
     grid.appendChild(item);
