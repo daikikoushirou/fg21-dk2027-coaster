@@ -350,6 +350,9 @@ input.invalid,select.invalid{border-color:#e05040 !important;}
 .upload-area{border:2px dashed rgba(255,255,255,.25);border-radius:8px;padding:28px 18px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s;position:relative;overflow:hidden;}
 .upload-area:hover,.upload-area.dragover{border-color:var(--potato-light);background:rgba(255,255,255,.06);}
 .upload-area input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;border:none;background:none;padding:0;}
+.upload-area.has-image{padding:7px 12px;}
+.upload-area.has-image .upload-icon,.upload-area.has-image .upload-text-main{display:none;}
+.upload-area.has-image .upload-text-sub{font-size:.68rem;color:var(--muted);line-height:1.4;}
 .upload-icon{width:36px;height:36px;margin:0 auto 8px;color:var(--potato-light);}
 .upload-text-main{color:var(--potato-light);font-size:.9rem;font-weight:700;}
 .upload-text-sub{font-size:.75rem;color:rgba(255,255,255,.65);margin-top:4px;}
@@ -2293,6 +2296,7 @@ function loadImageFile(file) {
       document.getElementById('ctrl-rot').value = 0;
       flipHState = flipVState = false;
       document.getElementById('previewWrapper').classList.add('visible');
+      document.getElementById('uploadArea')?.classList.add('has-image');
 
       // ファイル情報バー
       let bar = document.getElementById('imageFileInfo');
@@ -2339,6 +2343,7 @@ function removeImage() {
   imageTooSmall = false;
   document.getElementById('f-image').value = '';
   document.getElementById('previewWrapper').classList.remove('visible');
+  document.getElementById('uploadArea')?.classList.remove('has-image');
   document.getElementById('previewCanvas').getContext('2d').clearRect(0, 0, 360, 360);
   document.getElementById('previewWarnBox').style.display = 'none';
   const bar = document.getElementById('imageFileInfo'); if (bar) bar.remove();
@@ -3953,7 +3958,7 @@ ${closing}`;
 大喜幸四郎と申します。
 ふたば★学園祭２１ レザーコースター企画へのご注文ありがとうございます。
 
-コースターの仕上がり確認画像をお送りします。ご確認をお願いいたします。
+コースターの仕上がり画像をお送りします。ご確認をお願いいたします。
 このまま進行して良い場合も、修正のご希望がある場合もお知らせください。
 修正ご希望の場合は、修正原稿をご送付願います。
 出力数の1点増加と、作業量の増加の費用として追加料金¥300が発生します。
