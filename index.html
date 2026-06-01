@@ -1512,6 +1512,21 @@ const COMPLETION_IMG_END = (() => { const d = new Date(EVENT_DATE); d.setDate(d.
 
 
 // XSS対策: HTMLエスケープ関数
+
+// サークル名の正規化（表記ゆれ対応）
+// ※記号差異（★/☆等）は対応外
+function normalizeCircleName(s) {
+  return String(s || '')
+    .trim()
+    // 全角英数字・記号→半角
+    .replace(/[Ａ-Ｚａ-ｚ０-９]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0))
+    // 全角スペース→半角、連続スペース→1つ
+    .replace(/　/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    // 大文字→小文字
+    .toLowerCase();
+}
 function escapeHTML(s) {
   if (s == null) return '';
   return String(s)
@@ -1640,7 +1655,7 @@ async function sbPatch(ref, patch) {
 
 // ══ STATE ══
 let currentMode = null;
-let imgObj = null, _droppedFile = null, flipHState = false, flipVState = false, invertState = false, leatherPreviewUsed = false, imageTooSmall = false, pendingFreeOverride = false;
+let imgObj = null, _droppedFile = null, flipHState = false, flipVState = false, invertState = false, leatherPreviewUsed = false, imageTooSmall = false, pendingFreeOverride = false, pendingSampleFreeOverride = false;
 let orders = JSON.parse(localStorage.getItem('bc_orders') || '[]');
 
 // ══ MAKE.COM 通知 ══
@@ -1740,12 +1755,14 @@ function renderCostBreakdown() {
   if (!currentMode) return;
   const qty = parseInt(document.getElementById('f-qty').value) || 0;
   const sampleChecked = document.getElementById('f-sample')?.checked || false;
-  const sampleFree = isSampleFreeEligible(currentMode, qty);
+  const sampleFreeBase = isSampleFreeEligible(currentMode, qty);
+  // 同サークルの先行注文でサンプル使用済みの場合は有料
+  const sampleFree = sampleFreeBase && !pendingSampleFreeOverride;
   const { total, breakdown } = calcCost(currentMode, qty, sampleChecked, sampleFree, null, undefined, pendingFreeOverride);
 
-  // 2回目以降の注意書き
+  // 2回目以降の注意書き（別divは非表示に統一、breakdown内で表示）
   const notice = document.getElementById('freeOverrideNotice');
-  if (notice) notice.style.display = (pendingFreeOverride && currentMode === 'circle') ? 'block' : 'none';
+  if (notice) notice.style.display = 'none';
 
   // 仕上がり確認画像（常に無料・チェック時のみ表示）
   const completionChecked = document.getElementById('f-completion-img')?.checked || false;
@@ -1753,8 +1770,21 @@ function renderCostBreakdown() {
     breakdown.push({ label: '仕上がり確認画像', amount: 0, cls: 'free' });
   }
 
+  const freeOverrideRow = (pendingFreeOverride && currentMode === 'circle')
+    ? `<div class="cost-row" style="opacity:.7;font-size:.8em;">
+        <span>※ 同サークルの先行注文があるため無料枠は適用されません</span><span></span>
+       </div>`
+    : '';
+  const sampleOverrideRow = (pendingSampleFreeOverride && currentMode === 'circle' && sampleChecked)
+    ? `<div class="cost-row" style="opacity:.7;font-size:.8em;">
+        <span>※ 同サークルの先行注文でサンプル試し刷りが使用済みのため有料です</span><span></span>
+       </div>`
+    : '';
+
   document.getElementById('costBreakdown').innerHTML =
     breakdown.map(b => `<div class="cost-row ${b.cls}"><span>${b.label}</span><span>${b.amount===0?'無料':'¥'+b.amount.toLocaleString()}</span></div>`).join('') +
+    freeOverrideRow +
+    sampleOverrideRow +
     `<div class="cost-row total-row"><span>当日お支払い金額（合計）</span><span>¥${total.toLocaleString()}</span></div>`;
 }
 function updateTotal() { updateSampleUI(); renderCostBreakdown(); }
@@ -1895,6 +1925,7 @@ async function enterAs(mode) {
 }
 function backToGate() {
   pendingFreeOverride = false;
+  pendingSampleFreeOverride = false;
   document.getElementById('mainContent').style.display = 'none';
   document.getElementById('orderClosedMsg').style.display = 'none';
   document.getElementById('orderForm').style.display = '';
@@ -2562,20 +2593,26 @@ async function onCircleNameBlur() {
     return;
   }
   // ローカルのordersで先にチェック
-  const localDup = orders.some(o => o.type === 'circle' && (o.circleName||'').trim() === circleName);
-  if (localDup) {
+  const normInput = normalizeCircleName(circleName);
+  const localOrders = orders.filter(o => o.type === 'circle' && normalizeCircleName(o.circleName) === normInput);
+  if (localOrders.length > 0) {
     pendingFreeOverride = true;
+    pendingSampleFreeOverride = localOrders.some(o => o.sampleRequested);
     renderCostBreakdown();
     return;
   }
   // Supabaseでチェック（オンライン時）
   if (sbReady()) {
     try {
-      const existing = await sbFetchByCircleName(circleName);
+      const fetched = await sbFetchByCircleName(circleName);
+      // クライアント側で正規化比較（全角半角対応）
+      const existing = fetched.filter(r => normalizeCircleName(r.circle_name) === normInput);
       pendingFreeOverride = existing.length > 0;
-    } catch(e) { pendingFreeOverride = false; }
+      pendingSampleFreeOverride = existing.some(r => r.sample_requested);
+    } catch(e) { pendingFreeOverride = false; pendingSampleFreeOverride = false; }
   } else {
     pendingFreeOverride = false;
+    pendingSampleFreeOverride = false;
   }
   renderCostBreakdown();
 }
@@ -2766,7 +2803,7 @@ document.getElementById('orderForm').addEventListener('submit', async e => {
 
   const qty = parseInt(document.getElementById('f-qty').value);
   const sampleRequested = document.getElementById('f-sample').checked;
-  const sampleFreeEligible = isSampleFreeEligible(currentMode, qty);
+  const sampleFreeEligible = isSampleFreeEligible(currentMode, qty) && !pendingSampleFreeOverride;
   const { total } = calcCost(currentMode, qty, sampleRequested, sampleFreeEligible, null);
   const ref = 'BC-' + Date.now().toString(36).toUpperCase();
   const code = genCode();
@@ -2838,11 +2875,13 @@ document.getElementById('orderForm').addEventListener('submit', async e => {
   // サークル名で重複チェック（blurで事前確認済み + 送信時に再確認）
   if (order.type === 'circle' && order.circleName) {
     // blurで確認済みのフラグ優先、未確認ならSupabaseで確認
+    const normOrderCircle = normalizeCircleName(order.circleName);
     let dup = pendingFreeOverride;
     if (!dup && sbReady()) {
       try {
-        const existing = await sbFetchByCircleName(order.circleName);
-        dup = existing.length > 0;
+        const fetched2 = await sbFetchByCircleName(order.circleName);
+        const existing2 = fetched2.filter(r => normalizeCircleName(r.circle_name) === normOrderCircle);
+        dup = existing2.length > 0;
       } catch(e) {}
     }
     if (dup) {
@@ -2919,7 +2958,7 @@ async function sbFetchByCircleName(circleName) {
   if (!sbReady() || !circleName) return [];
   const encoded = encodeURIComponent(circleName.trim());
   const res = await fetch(
-    `${SUPABASE_URL}/rest/v1/orders?circle_name=eq.${encoded}&select=ref,circle_name&limit=10`,
+    `${SUPABASE_URL}/rest/v1/orders?circle_name=ilike.${encoded}&select=ref,circle_name,sample_requested&limit=20`,
     { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } }
   );
   return res.ok ? await res.json() : [];
@@ -2936,7 +2975,9 @@ async function retryCloudSave(btn) {
   try {
     // サークル名で重複チェック
     if (order.type === 'circle' && order.circleName) {
-      const existing = await sbFetchByCircleName(order.circleName);
+      const fetchedR = await sbFetchByCircleName(order.circleName);
+      const normRetry = normalizeCircleName(order.circleName);
+      const existing = fetchedR.filter(r => normalizeCircleName(r.circle_name) === normRetry);
       // 自分以外の注文があればfreeOverride=true
       const others = existing.filter(r => r.ref !== order.ref);
       if (others.length > 0 && !order.freeOverride) {
