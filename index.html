@@ -2152,7 +2152,17 @@ const uploadArea = document.getElementById('uploadArea');
 uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.classList.add('dragover'); });
 uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
 uploadArea.addEventListener('drop', e => { e.preventDefault(); uploadArea.classList.remove('dragover'); const f=e.dataTransfer.files[0]; if(f) { _droppedFile = f; loadImageFile(f); } });
-function onImageSelect(e) { _droppedFile = null; const f=e.target.files[0]; if(f) loadImageFile(f); }
+function onImageSelect(e) {
+  _droppedFile = null;
+  const f = e.target.files && e.target.files[0];
+  if (f) {
+    loadImageFile(f);
+  } else {
+    // ファイル取得失敗時はf-imageをリセットして再トライ可能に
+    const fi = document.getElementById('f-image');
+    fi.value = '';
+  }
+}
 function isPsdAi(file) {
   return /\.(psd|ai)$/i.test(file.name);
 }
@@ -2266,15 +2276,18 @@ function loadImageFile(file) {
   r.readAsDataURL(file);
 }
 function removeImage() {
+  imgObj = null;
+  _droppedFile = null;
+  flipHState = flipVState = false;
+  invertState = false;
   leatherPreviewUsed = false;
   imageTooSmall = false;
-  imgObj = null;
   document.getElementById('f-image').value = '';
   document.getElementById('previewWrapper').classList.remove('visible');
-  document.getElementById('previewCanvas').style.display = '';
   document.getElementById('previewCanvas').getContext('2d').clearRect(0, 0, 360, 360);
+  document.getElementById('previewWarnBox').style.display = 'none';
   const bar = document.getElementById('imageFileInfo'); if (bar) bar.remove();
-  const pCtrl = document.getElementById('previewControls'); if (pCtrl) pCtrl.style.display = '';
+  resetControls(false);
 }
 
 // ══ PREVIEW ══
@@ -2536,8 +2549,11 @@ function initCanvasDrag() {
     if (!_drag.active || !imgObj) return;
     e.preventDefault();
     const p = getPos(e.touches ? e.touches[0] : e);
-    const newX = Math.round(Math.max(-80, Math.min(80, _drag.startDX + (p.x - _drag.startX))));
-    const newY = Math.round(Math.max(-80, Math.min(80, _drag.startDY + (p.y - _drag.startY))));
+    const xEl = document.getElementById('ctrl-x'), yEl = document.getElementById('ctrl-y');
+    const xMin = parseInt(xEl.min)||-80, xMax = parseInt(xEl.max)||80;
+    const yMin = parseInt(yEl.min)||-80, yMax = parseInt(yEl.max)||80;
+    const newX = Math.round(Math.max(xMin, Math.min(xMax, _drag.startDX + (p.x - _drag.startX))));
+    const newY = Math.round(Math.max(yMin, Math.min(yMax, _drag.startDY + (p.y - _drag.startY))));
     document.getElementById('ctrl-x').value = newX;
     document.getElementById('ctrl-y').value = newY;
     updatePreview();
