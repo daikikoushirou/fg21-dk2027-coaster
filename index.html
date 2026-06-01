@@ -2912,7 +2912,7 @@ document.getElementById('orderForm').addEventListener('submit', async e => {
   document.getElementById('orderRef').textContent = 'ORDER ' + ref;
   document.getElementById('exchangeCodeDisplay').textContent = code;
   document.getElementById('exchangeCodeNote').textContent =
-    total === 0 ? 'このご注文は無料です！' : '当日お支払い金額：¥' + total.toLocaleString();
+    order.total === 0 ? 'このご注文は無料です！' : '当日お支払い金額：¥' + order.total.toLocaleString();
 
   // オプション一覧を構築
   const optionLines = [];
