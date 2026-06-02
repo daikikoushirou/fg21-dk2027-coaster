@@ -895,9 +895,10 @@ footer a{color:var(--potato-light);text-decoration:none;}
               <ul style="font-size:.85rem;line-height:1.75;padding-left:18px;">
                 <li>Photoshop・CLIP STUDIO等では「新規作成」時にカラーモードを <strong>グレースケール</strong> に指定してください。</li>
                 <li>白と黒ベースのデータがきれいに仕上がります。中間色がどうしても必要な箇所のみグレーを置く感覚で描くのがおすすめです。</li>
+                <li>白い紙にインクで出力するプリントと違い、細かい凹凸のある茶色い革に、レーザーで彫り込んで絵柄を表現する手法となるため、思っている以上に濃く、暗く出力されます。彩色・着色などに40%以上のグレーを使うと、ほぼ黒ベタになってしまいますので注意が必要です。</li>
                 <li>グラデーションは白寄りを多くすると良好な結果になります。白側の比重を90%ぐらいの感覚です。</li>
                 <li>彩色は3%、7%、14%あたりのグレー使用を推奨します。25%以上は黒ベタとあまり見分けがつきません。</li>
-                <li>線の太さは1mm以上を推奨。細すぎる線は飛んでしまいます。</li>
+                <li>0.2mmなど小数点以下の極端に細いラインはきれいに出力されないことがあります。</li>
                 <li>目の中のハイライトなど細かい部分の小さい白が出力されないことがあります。意識して大きくしたり周辺の黒線を細くするときれいになります。</li>
                 <li>ディザリングにはStuckiを使用しています。</li>
               </ul>
@@ -940,7 +941,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
             </div>
           </div>
 
-          <div class="warn-box">⚠️ <strong>デザインの修正・色調整はこちらではお受けできません。</strong>送られた画像をそのまま刻印します。位置・回転・反転はプレビューで調整してから送信してください。</div>
+          <div class="warn-box">⚠️ <strong>デザインの修正・色調整はこちらではお受けできません。</strong>当企画では受領した画像をそのまま出力するのが基本となりますが、一部形式の画像については位置・回転・反転・フィット縮小調節がプレビューにて可能となっています。誤ってイラストがカットされてしまうことのないよう、よくご確認の上送信してください。<br>プレビューの各機能は、あくまで補助的なものとなります。ご自身の環境で調整・縮小を行ったデータをご送信いただき、当方はそれを出力するだけという状態になるのがもっとも齟齬のないやり取りになりますことをご理解いただけますと幸いです。</div>
         </div></div>
       </div>
       <div class="flow-item" id="flow-1">
@@ -959,8 +960,16 @@ footer a{color:var(--potato-light);text-decoration:none;}
             <li><strong>サークル（φ90mm）</strong>：円形に収まるイラストやシンボルマーク系に向いています。</li>
           </ul>
           <h4>🖼️ プレビュー機能について</h4>
-          <p>画像をアップロードするとリアルタイムでプレビューが表示されます。位置・サイズ・回転などを調整できます。</p>
-          <div class="tip-box">💡 「白黒反転」トグルをONにすると、実際のレーザー焼き仕上がりに近いイメージを確認できます。</div>
+          <p>対応形式の画像をアップロードすると、リアルタイムでプレビューが表示され、以下の調整ができます。</p>
+          <ul>
+            <li><strong>位置</strong>：画像をドラッグ、または X／Y スライダーで移動できます。</li>
+            <li><strong>回転</strong>：回転スライダーで角度を調整できます。</li>
+            <li><strong>反転</strong>：左右・上下に反転できます。</li>
+            <li><strong>収める（フィット縮小）</strong>：画像全体がカットライン内に収まるよう、中央に配置して縮小します。</li>
+            <li><strong>スナップ</strong>：画像の端をカットラインにぴったり揃えます。</li>
+            <li><strong>革色プレビュー</strong>：トグルをONにすると、実際のレーザー刻印で革に焼き付いた仕上がりに近い色味で確認できます。</li>
+          </ul>
+          <div class="tip-box">💡 カットラインの外側（点線の外）はカットされて刻印されません。イラストが切れていないか、送信前に必ずご確認ください。</div>
         </div></div>
       </div>
       <div class="flow-item" id="flow-2">
@@ -3328,6 +3337,7 @@ function renderOrders() {
           <span class="type-badge ${tc[o.type]||''}">${tl[o.type]||o.type}</span>
           ${o.earlyBird ? '<span style="color:var(--gold);font-size:.8rem;font-weight:700">⭐早割</span>' : ''}
           ${o.codeUsed ? '<span class="used-badge">使用済</span>' : ''}
+          ${o.leatherPreview ? '<span style="color:#a0784a;background:rgba(160,120,74,.15);border:1px solid rgba(160,120,74,.3);border-radius:4px;padding:2px 7px;font-size:.72rem;font-weight:700;">🪵 革色確認済</span>' : ''}
         </div>
         <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:.76rem;color:var(--muted);white-space:nowrap">${o.date}</span><button onclick="deleteOrder('${o.ref}')" style="padding:3px 10px;border-radius:6px;border:1.5px solid #e05040;background:transparent;color:#e05040;font-size:.72rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:background .15s;" onmouseover="this.style.background='rgba(224,80,64,.1)'" onmouseout="this.style.background='transparent'">🗑 削除</button></div>
       </div>
@@ -3345,13 +3355,24 @@ function renderOrders() {
         </select>
       </div>
 
-      <!-- 行3: 氏名・合計金額・形状点数・元画像 -->
+      <!-- 行3: サムネイル・氏名・合計金額・形状点数・リンク -->
       <div class="order-card-row" style="align-items:flex-start;">
-        <div class="oc-group" style="flex:0 0 45%;min-width:0;">
-          <div class="oc-label">氏名・連絡先</div>
-          <div class="oc-val" style="font-weight:700">${escapeHTML(o.name)}${o.circleName ? ` <span style="font-size:.78rem;color:var(--circle-color);font-weight:400;">（${o.circleSpace ? o.circleSpace+'・' : ''}${escapeHTML(o.circleName)}）</span>` : ''}</div>
-          <div style="font-size:.8rem">${contactInfo}</div>
-          ${xExtra ? `<div style="font-size:.76rem">${xExtra}</div>` : ''}
+        <!-- サムネイル＋氏名（左50%） -->
+        <div style="flex:0 0 50%;min-width:0;display:flex;gap:10px;align-items:flex-start;">
+          <div style="flex:0 0 auto;">
+            ${(o.thumb || o.image_url)
+              ? `<img class="thumb-mini ${o.shape==='サークル'?'ci':'sq'}" src="${o.thumb || o.image_url}" alt=""
+                  style="width:72px;height:72px;object-fit:cover;cursor:pointer;border-radius:${o.shape==='サークル'?'50%':'6px'};border:2px solid var(--border);"
+                  onclick="zoomImg('${o.thumb || o.image_url}')">`
+              : `<div style="width:72px;height:72px;border-radius:6px;border:2px dashed var(--border);display:flex;align-items:center;justify-content:center;color:#bbb;font-size:.72rem;">なし</div>`
+            }
+          </div>
+          <div class="oc-group" style="flex:1;min-width:0;">
+            <div class="oc-label">氏名・連絡先</div>
+            <div class="oc-val" style="font-weight:700">${escapeHTML(o.name)}${o.circleName ? ` <span style="font-size:.78rem;color:var(--circle-color);font-weight:400;">（${o.circleSpace ? o.circleSpace+'・' : ''}${escapeHTML(o.circleName)}）</span>` : ''}</div>
+            <div style="font-size:.8rem">${contactInfo}</div>
+            ${xExtra ? `<div style="font-size:.76rem">${xExtra}</div>` : ''}
+          </div>
         </div>
         <div class="oc-group" style="flex:1;min-width:0;">
           <div class="oc-label">合計金額</div>
@@ -3368,12 +3389,10 @@ function renderOrders() {
             ${o.earlyBird ? `<span style="font-size:.65rem;color:var(--gold);margin-left:4px;">⭐早割</span>` : ''}
           </div>
         </div>
-        <div class="oc-group" style="flex:1;min-width:0;align-items:center;">
-          <div class="oc-label">元画像</div>
-          ${(o.thumb || o.image_url) ? `<img class="thumb-mini ${o.shape==='サークル'?'ci':'sq'}" src="${o.thumb || o.image_url}" alt="" onclick="zoomImg('${o.thumb || o.image_url}')">` : '<span style="font-size:.78rem;color:#bbb">なし</span>'}
-          ${o.image_url ? `<a href="${o.image_url}" target="_blank" rel="noopener" style="font-size:.78rem;color:var(--circle-color);font-weight:700;margin-top:2px;">元画像↗</a>` : ''}
-          ${o.leatherPreview ? `<span style="font-size:.68rem;color:#a0784a;background:rgba(160,120,74,.15);border:1px solid rgba(160,120,74,.3);border-radius:4px;padding:1px 6px;margin-top:2px;display:inline-block;">🪵 革色確認済</span>` : ''}
-          ${o.cutlineUrl ? `<a href="${o.cutlineUrl}" target="_blank" rel="noopener" style="font-size:.72rem;color:var(--muted);font-weight:700;margin-top:2px;">切抜↗</a>` : ''}
+        <!-- 元画像↗・切抜↗ リンク（元の位置） -->
+        <div class="oc-group" style="flex:0 0 auto;align-items:center;min-width:60px;">
+          ${o.image_url ? `<a href="${o.image_url}" target="_blank" rel="noopener" style="font-size:.78rem;color:var(--circle-color);font-weight:700;">元画像↗</a>` : ''}
+          ${o.cutlineUrl ? `<a href="${o.cutlineUrl}" target="_blank" rel="noopener" style="font-size:.72rem;color:var(--muted);font-weight:700;">切抜↗</a>` : ''}
         </div>
       </div>
 
