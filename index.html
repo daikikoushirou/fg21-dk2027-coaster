@@ -4486,28 +4486,32 @@ async function removeCompletionPhoto(ref, index) {
   renderOrders();
   showToast('完成写真を削除しました');
 }
-function deleteOrder(ref) {
+async function deleteOrder(ref) {
   if (!confirm(`注文 ${ref} を削除しますか？\nこの操作は取り消せません。`)) return;
 
   // ローカルから削除
   orders = orders.filter(o => o.ref !== ref);
   saveOrders();
 
-  // Supabase からも削除
+  // Supabase からも削除（完了を待つ）
   if (sbReady()) {
-    fetch(`${SUPABASE_URL}/rest/v1/orders?ref=eq.${encodeURIComponent(ref)}`, {
-      method: 'DELETE',
-      headers: {
-        'apikey': SUPABASE_ANON_KEY,
-        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-        'Prefer': 'return=minimal'
-      }
-    }).then(r => {
+    try {
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/orders?ref=eq.${encodeURIComponent(ref)}`, {
+        method: 'DELETE',
+        headers: {
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+          'Prefer': 'return=minimal'
+        }
+      });
       if (!r.ok) console.warn('Supabase削除失敗:', r.status);
-    });
+    } catch (e) { console.warn('Supabase削除失敗:', e); }
   }
 
   renderOrders();
+  // ゲートページの参加者アバター・興味あり表示も即時更新（削除した人が残らないように）
+  renderGateParticipants(orders);
+  if (typeof _interestsList !== 'undefined' && _interestsList.length > 0) renderInterests(_interestsList);
   showToast(`注文 ${ref} を削除しました`);
 }
 function clearAllOrders() { if (!confirm('全件削除しますか？')) return; orders = []; saveOrders(); renderOrders(); }
