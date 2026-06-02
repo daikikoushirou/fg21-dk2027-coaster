@@ -5429,6 +5429,42 @@ initRequiredMarkListeners();
   });
 })();
 
+// ══ 起動自己診断（必ずスクリプト末尾に置くこと） ══
+// 途中でエラーが起きるとここまで到達できず、コンソールに何も出ない＝異常の判定になる
+(function selfCheck() {
+  const checks = {
+    'datesGrid populated': document.getElementById('datesGrid')?.children.length > 0,
+    'TRANSLATIONS ok':     typeof TRANSLATIONS !== 'undefined',
+    'adminVisible ok':     typeof adminVisible !== 'undefined',
+    'currentLang ok':      typeof _currentLang !== 'undefined',
+    'enterAs ok':          typeof enterAs === 'function',
+    'validateForm ok':     typeof validateForm === 'function',
+    'toggleAdmin ok':      typeof toggleAdmin === 'function',
+    'gate cards ok':       !!document.getElementById('gateCircleCard') && !!document.getElementById('gateGeneralCard'),
+    'closed cards ok':     !!document.getElementById('gateCircleClosedCard') && !!document.getElementById('gateGeneralClosedCard'),
+    'pricing panels ok':   !!document.getElementById('pricePanel-circle') && !!document.getElementById('pricePanel-general'),
+  };
+  const failed = Object.entries(checks).filter(([, v]) => !v).map(([k]) => k);
+  if (failed.length) {
+    console.error('⚠️ 起動チェック失敗:', failed);
+    if (location.search.includes('debug')) {
+      const bar = document.createElement('div');
+      bar.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#e05040;color:#fff;padding:10px;z-index:99999;font-size:13px;text-align:center;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,.3);';
+      bar.textContent = '⚠️ 起動チェック失敗: ' + failed.join(' / ');
+      document.body.appendChild(bar);
+    }
+  } else {
+    console.log('✅ 起動チェック OK（全' + Object.keys(checks).length + '項目）');
+    if (location.search.includes('debug')) {
+      const bar = document.createElement('div');
+      bar.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#4a7c40;color:#fff;padding:10px;z-index:99999;font-size:13px;text-align:center;font-weight:700;';
+      bar.textContent = '✅ 起動チェック OK（全' + Object.keys(checks).length + '項目）';
+      document.body.appendChild(bar);
+      setTimeout(() => bar.remove(), 3000);
+    }
+  }
+})();
+
 </script>
 <!-- INTEREST MODAL -->
 <div class="interest-modal-bg" id="interestModalBg" onclick="closeInterestModal(event)">
