@@ -1999,6 +1999,25 @@ async function checkOrderLimit(mode) {
   } catch { return false; }
 }
 
+// Supabaseから受付上限を読み込む（全ユーザー共通の値）
+async function loadOrderLimits() {
+  if (!sbReady()) return;
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/settings?key=in.(order_limit_circle,order_limit_general)&select=key,value`,
+      { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } }
+    );
+    if (!res.ok) return;
+    const rows = await res.json();
+    rows.forEach(r => {
+      const n = parseInt(r.value);
+      if (isNaN(n)) return;
+      if (r.key === 'order_limit_circle')  ORDER_LIMIT.circle  = n;
+      if (r.key === 'order_limit_general') ORDER_LIMIT.general = n;
+    });
+  } catch (e) { console.warn('上限読込失敗:', e); }
+}
+
 function showOrderClosed(mode) {
   const g = document.getElementById('gate');
   g.classList.add('hidden');
@@ -3293,14 +3312,31 @@ function saveOrders() { localStorage.setItem('bc_orders', JSON.stringify(orders)
 // ══ ADMIN ══
 let adminVisible = false;
 
-function applyOrderLimits() {
-  const c = parseInt(document.getElementById('adminLimitCircle').value) || 0;
-  const g = parseInt(document.getElementById('adminLimitGeneral').value) || 0;
-  ORDER_LIMIT.circle  = c;
-  ORDER_LIMIT.general = g;
+async function applyOrderLimits() {
+  const cVal = parseInt(document.getElementById('adminLimitCircle').value) || 0;
+  const gVal = parseInt(document.getElementById('adminLimitGeneral').value) || 0;
+  ORDER_LIMIT.circle  = cVal;
+  ORDER_LIMIT.general = gVal;
   const msg = document.getElementById('adminLimitMsg');
-  msg.textContent = `✓ 適用しました（サークル:${c}件 / 一般:${g}件）`;
-  setTimeout(() => msg.textContent = '', 3000);
+
+  // Supabaseに保存（全ユーザー共通の値として永続化）
+  if (sbReady()) {
+    msg.textContent = '保存中…';
+    try {
+      const save = (key, value) => fetch(`${SUPABASE_URL}/rest/v1/settings?key=eq.${key}`, {
+        method: 'PATCH', headers: SB_H(), body: JSON.stringify({ value: String(value) })
+      });
+      const [r1, r2] = await Promise.all([save('order_limit_circle', cVal), save('order_limit_general', gVal)]);
+      if (!r1.ok || !r2.ok) throw new Error('保存失敗');
+      msg.textContent = `✓ 保存しました（サークル:${cVal}件 / 一般:${gVal}件）全ユーザーに反映されます`;
+    } catch (e) {
+      console.error(e);
+      msg.textContent = '⚠️ 保存に失敗しました（この端末のみ反映）';
+    }
+  } else {
+    msg.textContent = `✓ 適用しました（サークル:${cVal}件 / 一般:${gVal}件）※Supabase未接続のため一時的`;
+  }
+  setTimeout(() => msg.textContent = '', 5000);
 }
 function toggleAdmin(e) {
   e.preventDefault();
@@ -5532,6 +5568,7 @@ function renderGroupAvatars(countId, avatarsId, participants) {
 initDatesUI();
 switchPricingTab('general');
 (async () => {
+  await loadOrderLimits();   // 受付上限を先に読み込む（ゲートカードの締切判定に反映）
   await loadGateParticipants();
   loadGallery();
   await loadInterests();
@@ -5545,6 +5582,7 @@ initVisitorCount();
 initRequiredMarkListeners();
 // ゲートページのサークルカード上限確認
 (async () => {
+  await loadOrderLimits();
   if (await checkOrderLimit('circle'))  showGateCircleClosed();
   if (await checkOrderLimit('general')) showGateGeneralClosed();
 })();
