@@ -5090,8 +5090,9 @@ function getDiceBearStyle(seed) {
 
 function avatarUrl(xAccount, name) {
   if (xAccount) return `https://unavatar.io/x/${encodeURIComponent(xAccount)}`;
-  const seed = encodeURIComponent(name || 'anonymous');
-  const { style, bg } = getDiceBearStyle(name || 'anonymous');
+  // 名前なしの匿名ユーザーはページ表示ごとにランダムなアイコンにする
+  const seed = name ? encodeURIComponent(name) : `anon_${Math.random().toString(36).slice(2)}`;
+  const { style, bg } = getDiceBearStyle(name || seed);
   return `https://api.dicebear.com/9.x/${style}/svg?seed=${seed}&backgroundColor=${bg}&radius=50`;
 }
 
