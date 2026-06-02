@@ -1431,6 +1431,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
     </div>
     <div class="admin-controls">
       <button class="admin-btn" onclick="exportCSV()">CSVエクスポート</button>
+      <button class="admin-btn" onclick="printDayList()">🖨 当日用リスト印刷</button>
       <select class="filter-select" id="statusFilter" onchange="renderOrders()">
         <option value="all">すべて</option>
         <option value="new">新規</option>
@@ -3798,6 +3799,78 @@ async function markCodeUsed(ref) {
   }
 }
 function clearVerify() { document.getElementById('verifyInput').value = ''; document.getElementById('verifyResult').className = 'verify-result'; document.getElementById('verifyResult').innerHTML = ''; }
+
+
+function printDayList() {
+  // 現在のフィルタを反映した一覧を対象にする
+  const sf = document.getElementById('statusFilter').value;
+  const tf = document.getElementById('typeFilter').value;
+  let list = orders;
+  if (sf !== 'all') list = list.filter(o => o.status === sf);
+  if (tf !== 'all') list = list.filter(o => o.type === tf);
+  // 引換コード順（無ければ注文番号順）でソート
+  list = [...list].sort((a, b) => String(a.code||a.ref).localeCompare(String(b.code||b.ref)));
+
+  const esc = s => String(s == null ? '' : s).replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));
+  const typeLabel = { circle: 'サークル', general: '一般' };
+
+  const rows = list.map(o => {
+    const tot = calcOrderTotal(o);
+    const money = tot === 0 ? '無料' : '¥' + tot.toLocaleString();
+    const early = o.earlyBird ? ' <span class="eb">⭐早</span>' : '';
+    return `<tr>
+      <td class="chk"></td>
+      <td class="code">${esc(o.code || o.ref)}</td>
+      <td class="name">${esc(o.name)}</td>
+      <td class="circle">${esc(o.circleName || '')}</td>
+      <td class="shape">${esc(o.shape)}×${esc(o.qty)}点${early}</td>
+      <td class="money">${money}</td>
+    </tr>`;
+  }).join('');
+
+  const filterNote = [
+    sf !== 'all' ? ({new:'新規',working:'製作中',made:'製作済',done:'受け渡し済'}[sf] || sf) : null,
+    tf !== 'all' ? (typeLabel[tf] || tf) : null
+  ].filter(Boolean).join(' / ');
+
+  const html = `<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">
+  <title>当日用リスト</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: 'Noto Sans JP', sans-serif; margin: 14mm 10mm; color: #000; font-size: 11pt; }
+    h1 { font-size: 14pt; margin: 0 0 2mm; }
+    .meta { font-size: 9pt; color: #444; margin-bottom: 4mm; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid #333; padding: 4px 6px; text-align: left; vertical-align: middle; }
+    th { background: #eee; font-size: 9.5pt; }
+    .chk { width: 10mm; text-align: center; }
+    .code { font-weight: 700; font-family: monospace; font-size: 11pt; white-space: nowrap; }
+    .name { width: 28%; }
+    .circle { width: 24%; font-size: 9.5pt; color: #333; }
+    .shape { white-space: nowrap; }
+    .money { text-align: right; font-weight: 700; white-space: nowrap; }
+    .eb { color: #b8860b; font-size: 8pt; }
+    tr { page-break-inside: avoid; }
+    thead { display: table-header-group; }
+    @media print { body { margin: 10mm 8mm; } }
+  </style></head><body>
+    <h1>ふたば★学園祭２１ レザーコースター 当日用リスト</h1>
+    <div class="meta">出力: ${new Date().toLocaleString('ja-JP')}${filterNote ? ' ／ 絞り込み: ' + esc(filterNote) : ''} ／ 全${list.length}件</div>
+    <table>
+      <thead><tr>
+        <th class="chk">済</th><th>引換コード</th><th>氏名</th><th>サークル名</th><th>内容</th><th class="money">金額</th>
+      </tr></thead>
+      <tbody>${rows || '<tr><td colspan="6" style="text-align:center;padding:10mm;">該当する注文がありません</td></tr>'}</tbody>
+    </table>
+  </body></html>`;
+
+  const w = window.open('', '_blank');
+  if (!w) { showToast('ポップアップがブロックされました。許可してください'); return; }
+  w.document.write(html);
+  w.document.close();
+  w.focus();
+  setTimeout(() => { w.print(); }, 400);
+}
 
 function exportCSV() {
   const h = ['日時','注文番号','引換コード','使用済','区分','氏名','メール','Xアカウント','優先連絡方法','形状','点数','早割','サンプル申込','サンプル回数','サンプル料金','仕上がり確認画像','増減額','合計金額','ステータス','元画像URL','備考'];
