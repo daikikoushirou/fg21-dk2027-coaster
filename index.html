@@ -794,6 +794,13 @@ footer a{color:var(--potato-light);text-decoration:none;}
       </div>
     </div>
 
+    <!-- 完成品ギャラリー -->
+    <div id="gallerySection" style="display:none;margin-top:8px;padding-top:24px;border-top:1px solid var(--border);">
+      <div style="text-align:center;font-size:1.1rem;font-weight:700;color:var(--potato-dark);margin-bottom:4px;">🖼️ これまでの制作例</div>
+      <div style="text-align:center;font-size:.8rem;color:var(--muted);margin-bottom:18px;">参加者の許可をいただいた作品を紹介しています</div>
+      <div id="galleryGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;"></div>
+    </div>
+
     <div class="gate-visitor-count" id="gateVisitorCount"></div>
   </div>
 </div>
@@ -1297,6 +1304,33 @@ footer a{color:var(--potato-light);text-decoration:none;}
         <label>備考・ご要望</label>
         <textarea id="f-note" placeholder="特記事項があればお知らせください"></textarea>
       </div>
+      <!-- ギャラリー掲載許可 -->
+      <div class="form-group full">
+        <div style="background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.18);border-radius:10px;padding:16px;">
+          <label for="f-gallery-ok" style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;margin:0;">
+            <input type="checkbox" id="f-gallery-ok" onchange="toggleGalleryOptions()" style="margin-top:3px;flex:0 0 auto;width:18px;height:18px;cursor:pointer;">
+            <div>
+              <div style="font-weight:700;color:#fff;font-size:.92rem;">🖼️ オンラインギャラリーでの紹介OK</div>
+              <div style="font-size:.78rem;color:rgba(255,255,255,.7);line-height:1.6;margin-top:3px;">完成したコースターの実物は、ふたば★学園祭の会場にて展示いたします（一部除く）。あわせて、当サイトのオンラインギャラリーでも写真で紹介してよい方はチェックしてください。</div>
+            </div>
+          </label>
+          <div id="galleryOptions" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.15);">
+            <div style="font-size:.82rem;color:rgba(255,255,255,.85);font-weight:700;margin-bottom:8px;">あわせて公開してよい情報を選んでください（任意・標準は非公開）</div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <label for="f-gallery-name" style="display:flex;align-items:center;gap:8px;cursor:pointer;margin:0;font-size:.85rem;color:rgba(255,255,255,.9);">
+                <input type="checkbox" id="f-gallery-name" style="width:16px;height:16px;cursor:pointer;"> 執筆者（氏名）
+              </label>
+              <label for="f-gallery-circle" style="display:flex;align-items:center;gap:8px;cursor:pointer;margin:0;font-size:.85rem;color:rgba(255,255,255,.9);">
+                <input type="checkbox" id="f-gallery-circle" style="width:16px;height:16px;cursor:pointer;"> サークル名（入力がある場合）
+              </label>
+              <label for="f-gallery-x" style="display:flex;align-items:center;gap:8px;cursor:pointer;margin:0;font-size:.85rem;color:rgba(255,255,255,.9);">
+                <input type="checkbox" id="f-gallery-x" style="width:16px;height:16px;cursor:pointer;"> X（旧Twitter）のURL
+              </label>
+              <div style="font-size:.74rem;color:rgba(255,255,255,.6);line-height:1.6;margin-top:2px;">選択された情報は、ギャラリー上でQRコードとしても表示されます（読み取るとXのプロフィール等にアクセスできます）。</div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="form-group full" id="generalImageNotice" style="display:none">
         <div style="background:rgba(240,120,64,.15);border:1.5px solid rgba(240,120,64,.4);border-radius:8px;padding:12px 16px;font-size:.85rem;color:rgba(255,255,255,.85);line-height:1.7;">
           ℹ️ <strong>2種類以上のイラストを製作できるのはサークル参加者に限られます。</strong><br>
@@ -1396,6 +1430,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
         <option value="all">すべて</option>
         <option value="new">新規</option>
         <option value="working">製作中</option>
+        <option value="made">製作済</option>
         <option value="done">受け渡し済</option>
       </select>
       <select class="filter-select" id="typeFilter" onchange="renderOrders()">
@@ -1655,6 +1690,11 @@ async function sbInsert(order) {
     note: order.note||'', image_url: order.image_url||'', cutline_url: order.cutlineUrl||'',
     leather_preview: order.leatherPreview||false,
     free_override: order.freeOverride||false,
+    gallery_ok: order.galleryOk||false,
+    gallery_show_name: order.galleryShowName||false,
+    gallery_show_circle: order.galleryShowCircle||false,
+    gallery_show_x: order.galleryShowX||false,
+    completion_photo: order.completionPhoto||'',
     status: order.status, code_used: order.codeUsed||false
   };
   const res = await fetch(`${SUPABASE_URL}/rest/v1/orders`, {
@@ -1683,6 +1723,11 @@ async function sbFetch() {
     adjustment: r.adjustment||0,
     sampleSent: r.sample_sent||false,
     completionImageSent: r.completion_image_sent||false,
+    galleryOk: r.gallery_ok||false,
+    galleryShowName: r.gallery_show_name||false,
+    galleryShowCircle: r.gallery_show_circle||false,
+    galleryShowX: r.gallery_show_x||false,
+    completionPhoto: r.completion_photo||'',
     image_url: r.image_url, cutlineUrl: r.cutline_url||'', freeOverride: r.free_override||false, leatherPreview: r.leather_preview||false, status: r.status, codeUsed: r.code_used,
     thumb: ''
   }));
@@ -1699,6 +1744,11 @@ async function sbPatch(ref, patch) {
   if (patch.total               !== undefined) dbPatch.total                 = patch.total;
   if (patch.sampleSent          !== undefined) dbPatch.sample_sent           = patch.sampleSent;
   if (patch.completionImageSent !== undefined) dbPatch.completion_image_sent = patch.completionImageSent;
+  if (patch.completionPhoto     !== undefined) dbPatch.completion_photo      = patch.completionPhoto;
+  if (patch.galleryOk           !== undefined) dbPatch.gallery_ok            = patch.galleryOk;
+  if (patch.galleryShowName     !== undefined) dbPatch.gallery_show_name     = patch.galleryShowName;
+  if (patch.galleryShowCircle   !== undefined) dbPatch.gallery_show_circle   = patch.galleryShowCircle;
+  if (patch.galleryShowX        !== undefined) dbPatch.gallery_show_x        = patch.galleryShowX;
   const res = await fetch(`${SUPABASE_URL}/rest/v1/orders?ref=eq.${encodeURIComponent(ref)}`, {
     method: 'PATCH', headers: SB_H(), body: JSON.stringify(dbPatch)
   });
@@ -2701,6 +2751,16 @@ function flipH(){flipHState=!flipHState;updatePreview();}
 function flipV(){flipVState=!flipVState;updatePreview();}
 function toggleInvert(){invertState=!invertState;if(invertState)leatherPreviewUsed=true;const t=document.getElementById('invertToggle');t.classList.toggle('on',invertState);document.getElementById('invertDesc').textContent=invertState?'ON':'OFF';updatePreview();}
 
+
+function toggleGalleryOptions() {
+  const on = document.getElementById('f-gallery-ok').checked;
+  document.getElementById('galleryOptions').style.display = on ? 'block' : 'none';
+  if (!on) {
+    document.getElementById('f-gallery-name').checked = false;
+    document.getElementById('f-gallery-circle').checked = false;
+    document.getElementById('f-gallery-x').checked = false;
+  }
+}
 function toggleCompletionNote() {
   const checked = document.getElementById('f-completion-img').checked;
   document.getElementById('completionImgNote').style.display = checked ? 'block' : 'none';
@@ -3080,6 +3140,11 @@ document.getElementById('orderForm').addEventListener('submit', async e => {
     leatherPreview: leatherPreviewUsed,
     cutlineUrl,
     thumb: document.getElementById('previewCanvas').toDataURL('image/jpeg', .5),
+    galleryOk: document.getElementById('f-gallery-ok').checked,
+    galleryShowName: document.getElementById('f-gallery-name').checked,
+    galleryShowCircle: document.getElementById('f-gallery-circle').checked,
+    galleryShowX: document.getElementById('f-gallery-x').checked,
+    completionPhoto: '',
     status: 'new', codeUsed: false
   };
 
@@ -3351,6 +3416,7 @@ function renderOrders() {
         <select class="status-select" onchange="updateStatus('${o.ref}',this.value)">
           <option value="new" ${o.status==='new'?'selected':''}>新規</option>
           <option value="working" ${o.status==='working'?'selected':''}>製作中</option>
+          <option value="made" ${o.status==='made'?'selected':''}>製作済</option>
           <option value="done" ${o.status==='done'?'selected':''}>受け渡し済</option>
         </select>
       </div>
@@ -3444,6 +3510,36 @@ function renderOrders() {
           <div class="sample-cost-note" style="color:var(--gold);">早割価格で再計算</div>
         </div>` : ''}
       </div>` : ''}
+
+      <!-- 完成写真アップロード（ギャラリー用） -->
+      <div class="order-card-row" style="background:rgba(160,120,74,.08);border-radius:8px;padding:10px 12px;margin-top:4px;align-items:center;gap:12px;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:200px;">
+          ${o.completionPhoto
+            ? `<img src="${o.completionPhoto}" alt="完成写真" style="width:56px;height:56px;object-fit:cover;border-radius:6px;border:2px solid var(--border);cursor:pointer;" onclick="zoomImg('${o.completionPhoto}')">`
+            : `<div style="width:56px;height:56px;border-radius:6px;border:2px dashed var(--border);display:flex;align-items:center;justify-content:center;color:#bbb;font-size:1.3rem;">📷</div>`
+          }
+          <div>
+            <div style="font-size:.78rem;font-weight:700;color:var(--ink);">完成写真${o.completionPhoto ? '<span style="color:var(--green);font-weight:400;">（登録済）</span>' : '<span style="color:var(--muted);font-weight:400;">（未登録）</span>'}</div>
+            ${o.galleryOk
+              ? `<div style="font-size:.7rem;color:var(--muted);">掲載許可: ✅ ${[o.galleryShowName&&'氏名',o.galleryShowCircle&&'サークル',o.galleryShowX&&'X'].filter(Boolean).join('・')||'画像のみ'}</div>`
+              : `<div style="font-size:.7rem;color:var(--muted);">掲載許可: なし</div>`
+            }
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <label class="sample-ctrl-btn" style="cursor:pointer;padding:5px 12px;white-space:nowrap;font-size:.76rem;width:auto;height:auto;border-radius:6px;">
+            ${o.completionPhoto ? '差し替え' : '📷 写真を登録'}
+            <input type="file" accept="image/*" style="display:none;" onchange="uploadCompletionPhoto('${o.ref}', this.files[0])">
+          </label>
+          ${o.completionPhoto ? `<button onclick="removeCompletionPhoto('${o.ref}')" style="padding:5px 10px;border-radius:6px;border:1.5px solid var(--border);background:transparent;color:var(--muted);font-size:.74rem;cursor:pointer;white-space:nowrap;">削除</button>` : ''}
+        </div>
+        ${(o.galleryOk && o.completionPhoto && o.status === 'made')
+          ? `<div style="width:100%;font-size:.74rem;color:var(--green);font-weight:700;">🖼️ ギャラリー掲載中（許可・写真・製作済の3条件を満たしています）</div>`
+          : (o.galleryOk
+            ? `<div style="width:100%;font-size:.72rem;color:var(--muted);">ギャラリー掲載まで: ${[!o.completionPhoto&&'写真登録', o.status!=='made'&&'ステータスを製作済に'].filter(Boolean).join(' / ')}</div>`
+            : '')
+        }
+      </div>
 
       <!-- メモ -->
       ${o.note && String(o.note).trim() ? `
@@ -4170,6 +4266,34 @@ function closeLabelPreview() {
 }
 
 
+
+async function uploadCompletionPhoto(ref, file) {
+  if (!file) return;
+  if (!sbReady()) { showToast('Supabase未接続のため写真を保存できません'); return; }
+  showToast('写真をアップロード中…');
+  try {
+    const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+    const filename = `completion_${ref}_${Date.now()}.${ext}`;
+    const url = await sbUploadImage(file, filename);
+    const o = orders.find(x => x.ref === ref);
+    if (o) { o.completionPhoto = url; saveOrders(); }
+    await sbPatch(ref, { completionPhoto: url });
+    renderOrders();
+    showToast('完成写真を登録しました');
+  } catch (err) {
+    console.error(err);
+    showToast('アップロードに失敗しました');
+  }
+}
+
+async function removeCompletionPhoto(ref) {
+  if (!confirm('完成写真を削除しますか？')) return;
+  const o = orders.find(x => x.ref === ref);
+  if (o) { o.completionPhoto = ''; saveOrders(); }
+  if (sbReady()) { try { await sbPatch(ref, { completionPhoto: '' }); } catch (err) { console.warn('削除失敗:', err); } }
+  renderOrders();
+  showToast('完成写真を削除しました');
+}
 function deleteOrder(ref) {
   if (!confirm(`注文 ${ref} を削除しますか？\nこの操作は取り消せません。`)) return;
 
@@ -5303,6 +5427,59 @@ function maskName(name) {
   return name;
 }
 
+
+// ══ 完成品ギャラリー ══
+async function loadGallery() {
+  if (!sbReady()) return;
+  let rows = [];
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/orders?select=*&gallery_ok=eq.true&status=eq.made&order=date.desc`, { headers: SB_H() });
+    if (!res.ok) return;
+    rows = await res.json();
+  } catch (e) { return; }
+
+  // 3条件: 掲載許可 + 完成写真あり + 製作済（クエリで許可と製作済は絞込済、写真をここで確認）
+  const items = rows.filter(r => r.completion_photo && r.completion_photo.trim());
+  const sec = document.getElementById('gallerySection');
+  const grid = document.getElementById('galleryGrid');
+  if (!items.length) { sec.style.display = 'none'; return; }
+
+  // 各カードを生成（QRは非同期）
+  const cards = await Promise.all(items.map(async r => {
+    const showName   = r.gallery_show_name && r.name;
+    const showCircle = r.gallery_show_circle && r.circle_name;
+    const showX      = r.gallery_show_x && r.x_account;
+
+    // 公開情報のテキスト
+    let infoLines = '';
+    if (showName)   infoLines += `<div style="font-size:.82rem;font-weight:700;color:var(--ink);">${escapeHTML(r.name)}</div>`;
+    if (showCircle) infoLines += `<div style="font-size:.74rem;color:var(--circle-color);">${escapeHTML(r.circle_name)}</div>`;
+    if (showX)      infoLines += `<div style="font-size:.72rem;"><a href="https://x.com/${encodeURIComponent(r.x_account)}" target="_blank" rel="noopener" style="color:var(--circle-color);font-weight:700;">@${escapeHTML(r.x_account)}</a></div>`;
+
+    // QRコード（公開選択された項目のみ動的に埋め込む）
+    let qrImg = '';
+    const qrParts = [];
+    if (showName)   qrParts.push(`氏名: ${r.name}`);
+    if (showCircle) qrParts.push(`サークル: ${r.circle_name}`);
+    if (showX)      qrParts.push(`https://x.com/${r.x_account}`);
+    if (qrParts.length) {
+      // Xがある場合はURL単体を優先（読み取って飛べるように）、それ以外はテキスト連結
+      const qrText = showX ? `https://x.com/${r.x_account}` : qrParts.join(' / ');
+      const src = await makeLabelQR(qrText, 80);
+      if (src) qrImg = `<img src="${src}" alt="QR" style="width:56px;height:56px;margin-top:6px;border-radius:4px;background:#fff;padding:3px;">`;
+    }
+
+    return `<div style="background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:10px;text-align:center;">
+      <img src="${escapeHTML(r.completion_photo)}" alt="完成品" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:7px;cursor:pointer;" onclick="zoomImg('${escapeHTML(r.completion_photo)}')">
+      ${infoLines ? `<div style="margin-top:8px;line-height:1.5;">${infoLines}</div>` : ''}
+      ${qrImg}
+    </div>`;
+  }));
+
+  grid.innerHTML = cards.join('');
+  sec.style.display = 'block';
+}
+
 async function loadGateParticipants() {
   let pool = JSON.parse(localStorage.getItem('bc_orders') || '[]');
   renderGateParticipants(pool);
@@ -5356,6 +5533,7 @@ initDatesUI();
 switchPricingTab('general');
 (async () => {
   await loadGateParticipants();
+  loadGallery();
   await loadInterests();
 })();
 if (localStorage.getItem('bc_interest_liked_circle'))  applyHeartState('circle',  true);
