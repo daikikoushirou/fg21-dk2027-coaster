@@ -1699,7 +1699,7 @@ async function sbInsert(order) {
     gallery_show_name: order.galleryShowName||false,
     gallery_show_circle: order.galleryShowCircle||false,
     gallery_show_x: order.galleryShowX||false,
-    completion_photo: order.completionPhoto||'',
+    completion_photo: serializePhotos(order.completionPhotos),
     gallery_publish_at: order.galleryPublishAt||null,
     made_at: order.madeAt||null,
     status: order.status, code_used: order.codeUsed||false
@@ -1734,7 +1734,7 @@ async function sbFetch() {
     galleryShowName: r.gallery_show_name||false,
     galleryShowCircle: r.gallery_show_circle||false,
     galleryShowX: r.gallery_show_x||false,
-    completionPhoto: r.completion_photo||'',
+    completionPhotos: parsePhotos(r.completion_photo),
     galleryPublishAt: r.gallery_publish_at||'',
     madeAt: r.made_at||'',
     image_url: r.image_url, cutlineUrl: r.cutline_url||'', freeOverride: r.free_override||false, leatherPreview: r.leather_preview||false, status: r.status, codeUsed: r.code_used,
@@ -1753,7 +1753,7 @@ async function sbPatch(ref, patch) {
   if (patch.total               !== undefined) dbPatch.total                 = patch.total;
   if (patch.sampleSent          !== undefined) dbPatch.sample_sent           = patch.sampleSent;
   if (patch.completionImageSent !== undefined) dbPatch.completion_image_sent = patch.completionImageSent;
-  if (patch.completionPhoto     !== undefined) dbPatch.completion_photo      = patch.completionPhoto;
+  if (patch.completionPhotos    !== undefined) dbPatch.completion_photo      = serializePhotos(patch.completionPhotos);
   if (patch.galleryOk           !== undefined) dbPatch.gallery_ok            = patch.galleryOk;
   if (patch.galleryShowName     !== undefined) dbPatch.gallery_show_name     = patch.galleryShowName;
   if (patch.galleryShowCircle   !== undefined) dbPatch.gallery_show_circle   = patch.galleryShowCircle;
@@ -1997,6 +1997,19 @@ function updateSampleUI() {
 // ══ GATE ══
 // ══ 注文上限 ══
 let ORDER_LIMIT = { general: 30, circle: 30 };
+
+
+// 完成写真：複数URLをJSON配列文字列で保存・読込（旧単一URLデータとの後方互換あり）
+function parsePhotos(raw) {
+  if (!raw || !String(raw).trim()) return [];
+  const s = String(raw).trim();
+  if (s[0] === '[') { try { const a = JSON.parse(s); return Array.isArray(a) ? a.filter(Boolean) : []; } catch { return []; } }
+  return [s];  // 旧データ：単一URL文字列
+}
+function serializePhotos(arr) {
+  const clean = (arr || []).filter(Boolean);
+  return clean.length ? JSON.stringify(clean) : '';
+}
 
 async function checkOrderLimit(mode) {
   if (!sbReady()) return false;
@@ -3176,7 +3189,7 @@ document.getElementById('orderForm').addEventListener('submit', async e => {
     galleryShowCircle: document.getElementById('f-gallery-circle').checked,
     galleryShowX: document.getElementById('f-gallery-x').checked,
     galleryPublishAt: document.getElementById('f-gallery-publish-at').value || '',
-    completionPhoto: '',
+    completionPhotos: [],
     madeAt: '',
     status: 'new', codeUsed: false
   };
@@ -3564,13 +3577,16 @@ function renderOrders() {
 
       <!-- 完成写真アップロード(ギャラリー用) -->
       <div class="order-card-row" style="background:rgba(160,120,74,.08);border-radius:8px;padding:10px 12px;margin-top:4px;align-items:center;gap:12px;flex-wrap:wrap;">
-        <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:200px;">
-          ${o.completionPhoto
-            ? `<img src="${o.completionPhoto}" alt="完成写真" style="width:56px;height:56px;object-fit:cover;border-radius:6px;border:2px solid var(--border);cursor:pointer;" onclick="zoomImg('${o.completionPhoto}')">`
+        <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:200px;flex-wrap:wrap;">
+          ${(o.completionPhotos && o.completionPhotos.length)
+            ? o.completionPhotos.map((url, i) => `<div style="position:relative;">
+                <img src="${url}" alt="完成写真${i+1}" style="width:56px;height:56px;object-fit:cover;border-radius:6px;border:2px solid var(--border);cursor:pointer;" onclick="zoomImg('${url}')">
+                <button onclick="removeCompletionPhoto('${o.ref}', ${i})" title="この写真を削除" style="position:absolute;top:-6px;right:-6px;width:18px;height:18px;border-radius:50%;border:none;background:#e05040;color:#fff;font-size:.7rem;line-height:1;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;">×</button>
+              </div>`).join('')
             : `<div style="width:56px;height:56px;border-radius:6px;border:2px dashed var(--border);display:flex;align-items:center;justify-content:center;color:#bbb;font-size:1.3rem;">📷</div>`
           }
           <div>
-            <div style="font-size:.78rem;font-weight:700;color:var(--ink);">完成写真${o.completionPhoto ? '<span style="color:var(--green);font-weight:400;">(登録済)</span>' : '<span style="color:var(--muted);font-weight:400;">(未登録)</span>'}</div>
+            <div style="font-size:.78rem;font-weight:700;color:var(--ink);">完成写真${(o.completionPhotos && o.completionPhotos.length) ? `<span style="color:var(--green);font-weight:400;">(${o.completionPhotos.length}枚)</span>` : '<span style="color:var(--muted);font-weight:400;">(未登録)</span>'}</div>
             ${o.galleryOk
               ? `<div style="font-size:.7rem;color:var(--muted);">掲載許可: ✅ ${[o.galleryShowName&&'氏名',o.galleryShowCircle&&'サークル',o.galleryShowX&&'X'].filter(Boolean).join('・')||'画像のみ'}</div>`
               : `<div style="font-size:.7rem;color:var(--muted);">掲載許可: なし</div>`
@@ -3578,15 +3594,15 @@ function renderOrders() {
           </div>
         </div>
         <div style="display:flex;gap:6px;align-items:center;">
-          <label class="sample-ctrl-btn" style="cursor:pointer;padding:5px 12px;white-space:nowrap;font-size:.76rem;width:auto;height:auto;border-radius:6px;">
-            ${o.completionPhoto ? '差し替え' : '📷 写真を登録'}
+          ${(!o.completionPhotos || o.completionPhotos.length < 3) ? `<label class="sample-ctrl-btn" style="cursor:pointer;padding:5px 12px;white-space:nowrap;font-size:.76rem;width:auto;height:auto;border-radius:6px;">
+            📷 写真を追加
             <input type="file" accept="image/*" style="display:none;" onchange="uploadCompletionPhoto('${o.ref}', this.files[0])">
-          </label>
-          ${o.completionPhoto ? `<button onclick="removeCompletionPhoto('${o.ref}')" style="padding:5px 10px;border-radius:6px;border:1.5px solid var(--border);background:transparent;color:var(--muted);font-size:.74rem;cursor:pointer;white-space:nowrap;">削除</button>` : ''}
+          </label>` : ''}
+          <button class="sent-btn" style="background:rgba(255,200,80,.15);border-color:var(--gold-border);font-size:.75rem;padding:5px 10px;white-space:nowrap;" onclick="showMsgModal('ready','${o.ref}')">📝 文面</button>
         </div>
         ${(() => {
           if (!o.galleryOk) return '';
-          const ready = o.completionPhoto && o.status === 'made';
+          const ready = (o.completionPhotos && o.completionPhotos.length > 0) && o.status === 'made';
           // 公開予定時刻を算出
           let publishMs = null;
           if (o.galleryPublishAt) publishMs = new Date(o.galleryPublishAt).getTime();
@@ -3605,7 +3621,7 @@ function renderOrders() {
           } else if (ready) {
             line = `<div style="font-size:.74rem;color:var(--potato-dark);font-weight:700;">⏳ ${fmtPub} に公開予定${o.galleryPublishAt?'（指定）':'（製作済+24h）'}</div>`;
           } else {
-            line = `<div style="font-size:.72rem;color:var(--muted);">公開まで: ${[!o.completionPhoto&&'写真登録', o.status!=='made'&&'ステータスを製作済に'].filter(Boolean).join(' / ')}</div>`;
+            line = `<div style="font-size:.72rem;color:var(--muted);">公開まで: ${[(!o.completionPhotos||!o.completionPhotos.length)&&'写真登録', o.status!=='made'&&'ステータスを製作済に'].filter(Boolean).join(' / ')}</div>`;
           }
           // 管理者用：公開日時の手動指定
           const editor = `<div style="display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap;">
@@ -4367,27 +4383,33 @@ async function updateGalleryPublishAt(ref, value) {
 async function uploadCompletionPhoto(ref, file) {
   if (!file) return;
   if (!sbReady()) { showToast('Supabase未接続のため写真を保存できません'); return; }
+  const o = orders.find(x => x.ref === ref);
+  if (!o) return;
+  if (!Array.isArray(o.completionPhotos)) o.completionPhotos = [];
+  if (o.completionPhotos.length >= 3) { showToast('完成写真は最大3枚までです'); return; }
   showToast('写真をアップロード中…');
   try {
     const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
     const filename = `completion_${ref}_${Date.now()}.${ext}`;
     const url = await sbUploadImage(file, filename);
-    const o = orders.find(x => x.ref === ref);
-    if (o) { o.completionPhoto = url; saveOrders(); }
-    await sbPatch(ref, { completionPhoto: url });
+    o.completionPhotos = [...o.completionPhotos, url];
+    saveOrders();
+    await sbPatch(ref, { completionPhotos: o.completionPhotos });
     renderOrders();
-    showToast('完成写真を登録しました');
+    showToast(`完成写真を追加しました（${o.completionPhotos.length}枚）`);
   } catch (err) {
     console.error(err);
     showToast('アップロードに失敗しました');
   }
 }
 
-async function removeCompletionPhoto(ref) {
-  if (!confirm('完成写真を削除しますか？')) return;
+async function removeCompletionPhoto(ref, index) {
+  if (!confirm('この完成写真を削除しますか？')) return;
   const o = orders.find(x => x.ref === ref);
-  if (o) { o.completionPhoto = ''; saveOrders(); }
-  if (sbReady()) { try { await sbPatch(ref, { completionPhoto: '' }); } catch (err) { console.warn('削除失敗:', err); } }
+  if (!o || !Array.isArray(o.completionPhotos)) return;
+  o.completionPhotos = o.completionPhotos.filter((_, i) => i !== index);
+  saveOrders();
+  if (sbReady()) { try { await sbPatch(ref, { completionPhotos: o.completionPhotos }); } catch (err) { console.warn('削除失敗:', err); } }
   renderOrders();
   showToast('完成写真を削除しました');
 }
@@ -4438,7 +4460,7 @@ function showMsgModal(type, ref) {
     hint  = isX ? 'X(DM)用' : 'メール用';
     body  = `${header}${header ? '\n\n' : ''}${greeting}
 
-大喜幸四郎と申します。
+サークル大喜幸四郎のルーニーと申します。
 ふたば★学園祭２１ レザーコースター企画へのご注文ありがとうございます。
 
 端材サンプルをお送りしましたので、ご確認をお願いいたします。
@@ -4448,12 +4470,32 @@ function showMsgModal(type, ref) {
 注文番号：${ref}
 引換コード：${code}
 ${closing}`;
+  } else if (type === 'ready') {
+    title = '完成・宣材写真送付の文面';
+    hint  = isX ? 'X(DM)用' : 'メール用';
+    const photos = Array.isArray(o.completionPhotos) ? o.completionPhotos : [];
+    const photoLine = photos.length
+      ? `\n完成品の宣材写真はこちらからご確認いただけます：\n${photos.map((u, i) => `${photos.length > 1 ? (i+1)+'枚目：' : ''}${u}`).join('\n')}\n`
+      : '\n完成品の宣材写真を添付（別途送付）いたします。\n';
+    body  = `${header}${header ? '\n\n' : ''}${greeting}
+
+サークル大喜幸四郎のルーニーと申します。
+ふたば★学園祭２１ レザーコースター企画へのご注文ありがとうございます。
+
+ご注文の品物がすべて準備できました。
+あわせて、完成品の宣材写真をお送りいたします。
+${photoLine}
+注文番号：${ref}
+引換コード：${code}
+
+当日はこちらのコードをブースにてご提示ください。
+${closing}`;
   } else {
     title = '仕上がり確認画像の文面';
     hint  = isX ? 'X(DM)用' : 'メール用';
     body  = `${header}${header ? '\n\n' : ''}${greeting}
 
-大喜幸四郎と申します。
+サークル大喜幸四郎のルーニーと申します。
 ふたば★学園祭２１ レザーコースター企画へのご注文ありがとうございます。
 
 コースターの仕上がり画像をお送りします。ご確認をお願いいたします。
@@ -5538,7 +5580,8 @@ async function loadGallery() {
   // 4条件: 掲載許可 + 完成写真あり + 製作済(クエリ済) + 公開予定時刻を過ぎている
   const now = Date.now();
   const items = rows.filter(r => {
-    if (!r.completion_photo || !r.completion_photo.trim()) return false;
+    const photos = parsePhotos(r.completion_photo);
+    if (!photos.length) return false;
     // 公開予定時刻の決定
     let publishTime;
     if (r.gallery_publish_at) {
@@ -5582,8 +5625,14 @@ async function loadGallery() {
       if (src) qrImg = `<img src="${src}" alt="QR" style="width:56px;height:56px;margin-top:6px;border-radius:4px;background:#fff;padding:3px;">`;
     }
 
+    const photos = parsePhotos(r.completion_photo);
+    const mainPhoto = photos[0] || '';
+    const subThumbs = photos.length > 1
+      ? `<div style="display:flex;gap:4px;margin-top:4px;justify-content:center;flex-wrap:wrap;">${photos.slice(1).map(u => `<img src="${escapeHTML(u)}" alt="" style="width:38px;height:38px;object-fit:cover;border-radius:4px;border:1px solid var(--border);cursor:pointer;" onclick="zoomImg('${escapeHTML(u)}')">`).join('')}</div>`
+      : '';
     return `<div style="background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:10px;text-align:center;">
-      <img src="${escapeHTML(r.completion_photo)}" alt="完成品" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:7px;cursor:pointer;" onclick="zoomImg('${escapeHTML(r.completion_photo)}')">
+      <img src="${escapeHTML(mainPhoto)}" alt="完成品" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:7px;cursor:pointer;" onclick="zoomImg('${escapeHTML(mainPhoto)}')">
+      ${subThumbs}
       ${infoLines ? `<div style="margin-top:8px;line-height:1.5;">${infoLines}</div>` : ''}
       ${qrImg}
     </div>`;
