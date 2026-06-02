@@ -3353,7 +3353,7 @@ function toggleAdmin(e) {
   document.getElementById('adminPwError').style.display = 'none';
   setTimeout(() => document.getElementById('adminPwInput').focus(), 50);
 }
-function submitAdminPw() {
+async function submitAdminPw() {
   const pw = document.getElementById('adminPwInput').value;
   if (pw !== 'Xt4p8VrC2K9') {
     document.getElementById('adminPwError').style.display = 'block';
@@ -3362,6 +3362,7 @@ function submitAdminPw() {
   closeAdminPwModal();
   adminVisible = true;
   document.getElementById('adminPanel').style.display = 'block';
+  await loadOrderLimits();  // DBから最新の上限値を取得してから入力欄に反映
   document.getElementById('adminLimitCircle').value  = ORDER_LIMIT.circle;
   document.getElementById('adminLimitGeneral').value = ORDER_LIMIT.general;
   loadAndRenderOrders(); reloadInterestsAdmin(); renderAdminChart();
