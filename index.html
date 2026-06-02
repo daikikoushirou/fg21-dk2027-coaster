@@ -317,12 +317,14 @@ label{font-size:.8rem;font-weight:700;color:rgba(255,255,255,.8);}
 .required-mark{color:#f0a060;margin-left:3px;font-style:normal;transition:color .2s;}
 .required-mark.valid{color:#6dbf7e;}
 .upload-area.img-valid{background:#e8f0fd;border-color:rgba(100,140,220,.5);}
-input[type="text"],input[type="email"],input[type="number"],select,textarea{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);border-radius:7px;padding:10px 12px;color:#fff;font-family:var(--sans);font-size:.93rem;transition:border-color .15s,background .15s;outline:none;-webkit-appearance:none;}
-input.field-valid,select.field-valid{background:#e8f0fd;color:#1a1a2e;}
+input[type="text"],input[type="email"],input[type="number"],select,textarea{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);border-radius:7px;padding:10px 12px;color:#fff;font-family:var(--sans);font-size:.93rem;transition:border-color .15s,background-color .15s;outline:none;-webkit-appearance:none;}
+input.field-valid{background:#e8f0fd;color:#1a1a2e;}
+select.field-valid,select.field-valid:focus{background-color:#e8f0fd;color:#1a1a2e;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%231a1a2e' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");}
 input::placeholder,textarea::placeholder{color:rgba(255,255,255,.35);}
-input:focus,select:focus,textarea:focus{border-color:var(--potato-light);background:rgba(255,255,255,.15);}
+input:focus,select:focus,textarea:focus{border-color:var(--potato-light);background-color:rgba(255,255,255,.15);}
 select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23c4a85a' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;}
 select option{background:var(--potato-dark);color:#fff;}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23ffffff' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;}
 textarea{resize:vertical;min-height:86px;}
 .qty-hint{font-size:.78rem;color:rgba(255,255,255,.7);}
 .field-error{font-size:.76rem;color:#f09080;display:none;}
@@ -1173,9 +1175,11 @@ footer a{color:var(--potato-light);text-decoration:none;}
       <div class="form-group">
         <label>形状<span class="required-mark" id="req-shape">*</span></label>
         <select id="f-shape" onchange="onShapeChange()" required>
+          <option value="" selected>-- 選択してください --</option>
           <option value="sq">スクエア（85×85 mm）</option>
           <option value="ci">サークル（φ90 mm）</option>
         </select>
+        <span class="field-error" id="e-shape"></span>
       </div>
       <div class="form-group">
         <label>点数<span class="required-mark" id="req-qty">*</span></label>
@@ -1216,6 +1220,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
             <div class="ctrl-group"><div class="ctrl-label">回転</div><div class="ctrl-row"><input type="range" class="ctrl-slider" id="ctrl-rot" min="-180" max="180" value="0" oninput="updatePreview()"><span class="ctrl-val" id="val-rot">0°</span></div></div>
             <div class="ctrl-group" style="align-self:flex-end"><button type="button" class="ctrl-btn" onclick="resetControls()">リセット</button></div>
             <div class="ctrl-group" style="align-self:flex-end;" id="ctrl-snap-btn"><button type="button" class="ctrl-btn" onclick="autoSnapImage()" title="カットラインに揃える">スナップ</button></div>
+            <div class="ctrl-group" style="align-self:flex-end;"><button type="button" class="ctrl-btn" onclick="fitImageToPane()" title="画像全体をカットラインに収める">収める</button></div>
             <div class="ctrl-group"><div class="ctrl-label">反転</div><div class="ctrl-row" style="gap:7px"><button type="button" class="ctrl-btn" onclick="flipH()">左右</button><button type="button" class="ctrl-btn" onclick="flipV()">上下</button></div></div>
             <div class="ctrl-group"><div class="ctrl-label">革色プレビュー</div><div class="toggle-row"><div class="toggle-track" id="invertToggle" onclick="toggleInvert()"><div class="toggle-thumb"></div></div><span class="toggle-desc" id="invertDesc">OFF</span></div></div>
           </div>
@@ -1661,7 +1666,7 @@ async function sbPatch(ref, patch) {
 
 // ══ STATE ══
 let currentMode = null;
-let imgObj = null, _droppedFile = null, flipHState = false, flipVState = false, invertState = false, leatherPreviewUsed = false, imageTooSmall = false, pendingFreeOverride = false, pendingSampleFreeOverride = false;
+let imgObj = null, _droppedFile = null, flipHState = false, flipVState = false, invertState = false, leatherPreviewUsed = false, imageTooSmall = false, pendingFreeOverride = false, pendingSampleFreeOverride = false, imgZoom = 1.0;
 let orders = JSON.parse(localStorage.getItem('bc_orders') || '[]');
 
 // ══ MAKE.COM 通知 ══
@@ -2208,6 +2213,7 @@ function onShapeChange() {
     document.getElementById('ctrl-y').min = -_hh; document.getElementById('ctrl-y').max = _hh;
   }
   updatePreview();
+  refreshRequiredMarks();
 }
 
 // ══ IMAGE ══
@@ -2342,6 +2348,7 @@ function loadImageFile(file) {
 }
 function removeImage() {
   imgObj = null;
+  imgZoom = 1.0;
   _droppedFile = null;
   flipHState = flipVState = false;
   invertState = false;
@@ -2379,8 +2386,8 @@ function updatePreview() {
   // 物理サイズ固定: 1プレビューpx = shapePx/C 元画像px
   const shapePx = getShapePx();
   const sf = shapePx / C; // 元画像px → プレビューpxの逆数
-  const dw = imgObj.width / sf;
-  const dh = imgObj.height / sf;
+  const dw = imgObj.width / sf * imgZoom;
+  const dh = imgObj.height / sf * imgZoom;
 
   const shape = document.getElementById('f-shape').value;
   const cx = TOTAL / 2, cy = TOTAL / 2;
@@ -2551,12 +2558,27 @@ function updatePreviewWarning(dw, dh, dx, dy, shape, cx, cy, C, P) {
   }
 }
 
+
+function fitImageToPane() {
+  if (!imgObj) return;
+  const C = 244, shapePx = getShapePx();
+  const sf = shapePx / C;
+  const rawDw = imgObj.width / sf;
+  const rawDh = imgObj.height / sf;
+  // 短辺がカットラインに合うズーム（縮小のみ）
+  const zoom = Math.min(1.0, C / Math.min(rawDw, rawDh));
+  imgZoom = zoom;
+  // 中心に移動
+  document.getElementById('ctrl-x').value = 0;
+  document.getElementById('ctrl-y').value = 0;
+  updatePreview();
+}
 function autoSnapImage() {
   if (!imgObj) return;
   const C = 244, P = 58, TOTAL = C + P * 2;
   const shapePx = getShapePx();
   const sf = shapePx / C;
-  const dw = imgObj.width / sf, dh = imgObj.height / sf;
+  const dw = imgObj.width / sf * imgZoom, dh = imgObj.height / sf * imgZoom;
   const cx = TOTAL / 2, cy = TOTAL / 2;
   const shape = document.getElementById('f-shape').value;
   let dx = parseInt(document.getElementById('ctrl-x').value) || 0;
@@ -2584,7 +2606,7 @@ function autoSnapImage() {
   document.getElementById('val-y').textContent = yEl.value;
   updatePreview();
 }
-function resetControls(redraw=true){['ctrl-scale','ctrl-x','ctrl-y','ctrl-rot'].forEach(id=>{const el=document.getElementById(id);el.value=id==='ctrl-scale'?90:0;});flipHState=flipVState=false;if(redraw)updatePreview();}
+function resetControls(redraw=true){ imgZoom = 1.0;['ctrl-scale','ctrl-x','ctrl-y','ctrl-rot'].forEach(id=>{const el=document.getElementById(id);el.value=id==='ctrl-scale'?90:0;});flipHState=flipVState=false;if(redraw)updatePreview();}
 function flipH(){flipHState=!flipHState;updatePreview();}
 function flipV(){flipVState=!flipVState;updatePreview();}
 function toggleInvert(){invertState=!invertState;if(invertState)leatherPreviewUsed=true;const t=document.getElementById('invertToggle');t.classList.toggle('on',invertState);document.getElementById('invertDesc').textContent=invertState?'ON':'OFF';updatePreview();}
@@ -2780,11 +2802,11 @@ async function generateCutlineCropBlob() {
   const ctx = canvas.getContext('2d');
 
   // 元画像の中心からdx/dyオフセットした位置でshapePx×shapePxを切り抜く
-  // プレビュー上でのカットライン中心: (cx, cy)
-  // 画像中心はプレビュー上で (cx+dx, cy+dy)
-  // → カットライン中心の画像座標: (imgW/2 - dx*sf, imgH/2 - dy*sf)
-  const imgCX = imgObj.width  / 2 - dx * sf;
-  const imgCY = imgObj.height / 2 - dy * sf;
+  // imgZoom を考慮した描画サイズと位置
+  const drawW = imgObj.width  * imgZoom;
+  const drawH = imgObj.height * imgZoom;
+  const imgCX = drawW / 2 - dx * sf;
+  const imgCY = drawH / 2 - dy * sf;
 
   // 出力キャンバスの中心を画像の imgCX,imgCY に合わせて描画
   ctx.save();
@@ -2794,7 +2816,7 @@ async function generateCutlineCropBlob() {
   ctx.drawImage(
     imgObj,
     -imgCX, -imgCY,
-    imgObj.width, imgObj.height
+    drawW, drawH
   );
   ctx.restore();
 
@@ -2825,7 +2847,7 @@ function adjustQty(delta) {
 function validateForm(){
   let ok=true;
   const errs=[];
-  ['name','circle-name','email','qty','image','xaccount'].forEach(id=>clearError(id));
+  ['name','circle-name','email','qty','image','xaccount','shape'].forEach(id=>clearError(id));
   if (imageTooSmall) { showError('image', '画像の解像度がカットラインより小さいです。大きい画像をご用意ください。（プレビューの警告を確認してください）'); errs.push('📐 画像サイズが小さすぎます'); ok=false; }
   if(!document.getElementById('f-name').value.trim()){showError('name','おなまえを入力してください');errs.push('👤 おなまえが未入力');ok=false;}
   if(currentMode === 'circle' && !document.getElementById('f-circle-name').value.trim()){showError('circle-name','サークル名を入力してください');errs.push('🏷 サークル名が未入力');ok=false;}
@@ -2841,6 +2863,7 @@ function validateForm(){
     if(em && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){showError('email','正しいメールアドレスを入力してください');errs.push('✉️ メールアドレスを確認してください');ok=false;}
     if(!xa){showError('xaccount','Xアカウントを入力してください');errs.push('𝕏 Xアカウントが未入力');ok=false;}
   }
+  if(!document.getElementById('f-shape').value){showError('shape','形状を選択してください');errs.push('🔷 形状が未選択');ok=false;}
   const qty=parseInt(document.getElementById('f-qty').value), maxQ=getMaxQty(currentMode);
   if(!qty||qty<1||qty>maxQ){showError('qty',`1〜${maxQ}点で入力してください`);errs.push(`🔢 点数を確認してください（1〜${maxQ}点）`);ok=false;}
   if(!imgObj){showError('image','画像をアップロードしてください');errs.push('🖼️ 画像がアップロードされていません');ok=false;}
