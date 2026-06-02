@@ -3329,7 +3329,7 @@ function renderOrders() {
           ${o.earlyBird ? '<span style="color:var(--gold);font-size:.8rem;font-weight:700">⭐早割</span>' : ''}
           ${o.codeUsed ? '<span class="used-badge">使用済</span>' : ''}
         </div>
-        <span style="font-size:.76rem;color:var(--muted);white-space:nowrap">${o.date}</span>
+        <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:.76rem;color:var(--muted);white-space:nowrap">${o.date}</span><button onclick="deleteOrder('${o.ref}')" style="padding:3px 10px;border-radius:6px;border:1.5px solid #e05040;background:transparent;color:#e05040;font-size:.72rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:background .15s;" onmouseover="this.style.background='rgba(224,80,64,.1)'" onmouseout="this.style.background='transparent'">🗑 削除</button></div>
       </div>
 
       <!-- 行2: 引換コード・ステータス -->
@@ -4150,6 +4150,31 @@ function closeLabelPreview() {
   document.getElementById('labelPrintOverlay').classList.remove('show');
 }
 
+
+function deleteOrder(ref) {
+  if (!confirm(`注文 ${ref} を削除しますか？\nこの操作は取り消せません。`)) return;
+
+  // ローカルから削除
+  orders = orders.filter(o => o.ref !== ref);
+  saveOrders();
+
+  // Supabase からも削除
+  if (sbReady()) {
+    fetch(`${SUPABASE_URL}/rest/v1/orders?ref=eq.${encodeURIComponent(ref)}`, {
+      method: 'DELETE',
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+        'Prefer': 'return=minimal'
+      }
+    }).then(r => {
+      if (!r.ok) console.warn('Supabase削除失敗:', r.status);
+    });
+  }
+
+  renderOrders();
+  showToast(`注文 ${ref} を削除しました`);
+}
 function clearAllOrders() { if (!confirm('全件削除しますか？')) return; orders = []; saveOrders(); renderOrders(); }
 function zoomImg(src) { document.getElementById('zoomImg').src = src; document.getElementById('zoomBackdrop').classList.add('show'); }
 function closeZoom() { document.getElementById('zoomBackdrop').classList.remove('show'); }
