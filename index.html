@@ -314,7 +314,8 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:0;}
 .form-group{display:flex;flex-direction:column;gap:6px;}
 .form-group.full{grid-column:1/-1;}
 label{font-size:.8rem;font-weight:700;color:rgba(255,255,255,.8);}
-.required-mark{color:#f0a060;margin-left:3px;}
+.required-mark{color:#f0a060;margin-left:3px;font-style:normal;transition:color .2s;}
+.required-mark.valid{color:#6dbf7e;}
 input[type="text"],input[type="email"],input[type="number"],select,textarea{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);border-radius:7px;padding:10px 12px;color:#fff;font-family:var(--sans);font-size:.93rem;transition:border-color .15s,background .15s;outline:none;-webkit-appearance:none;}
 input::placeholder,textarea::placeholder{color:rgba(255,255,255,.35);}
 input:focus,select:focus,textarea:focus{border-color:var(--potato-light);background:rgba(255,255,255,.15);}
@@ -1087,7 +1088,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
     <div class="form-earlybird-note" id="formEarlyBirdNote"></div>
     <form class="order-form" id="orderForm" novalidate>
       <div class="form-group full">
-        <label>おなまえ<span class="required-mark">*</span></label>
+        <label>おなまえ<span class="required-mark" id="req-name">*</span></label>
         <input type="text" id="f-name" placeholder="ポコ太郎" required>
         <span class="field-error" id="e-name">お名前を入力してください</span>
       </div>
@@ -1100,7 +1101,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
         <span style="font-size:.68rem;color:rgba(255,255,255,.6);margin-top:2px;display:block;">半角英数字・自動大文字変換</span>
       </div>
       <div class="form-group" id="circleNameGroup" style="display:none;">
-        <label>サークル名<span class="required-mark">*</span></label>
+        <label>サークル名<span class="required-mark" id="req-circle-name">*</span></label>
         <input type="text" id="f-circle-name" onblur="onCircleNameBlur()" placeholder="例：いもけんぴ工房">
         <span class="field-error" id="e-circle-name">サークル名を入力してください</span>
       </div>
@@ -1118,10 +1119,10 @@ footer a{color:var(--potato-light);text-decoration:none;}
 
       <!-- 優先連絡方法（先に選ぶ） -->
       <div class="form-group full">
-        <label>連絡方法<span class="required-mark">*</span></label>
+        <label>連絡方法<span class="required-mark" id="req-contact">*</span></label>
         <div class="contact-pref-options">
           <div class="contact-pref-option">
-            <input type="radio" name="contact-pref" id="pref-email" value="email" checked onchange="onContactPrefChange()">
+            <input type="radio" name="contact-pref" id="pref-email" value="email" onchange="onContactPrefChange()">
             <label for="pref-email">✉️ メール優先</label>
           </div>
           <div class="contact-pref-option">
@@ -1153,7 +1154,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
 
       <!-- メールアドレス -->
       <div class="form-group">
-        <label id="label-email">メールアドレス<span class="required-mark">*</span></label>
+        <label id="label-email">メールアドレス<span class="required-mark" id="req-email">*</span></label>
         <input type="text" id="f-email" inputmode="email" autocomplete="email" placeholder="example@mail.com" oninput="this.value=this.value.replace(/[^\x20-\x7E]/g,'')" onblur="this.value=this.value.replace(/[^\x20-\x7E]/g,'').trim()">
         <span class="field-error" id="e-email">正しいメールアドレスを入力してください</span>
       </div>
@@ -1168,14 +1169,14 @@ footer a{color:var(--potato-light);text-decoration:none;}
         <span class="field-error" id="e-xaccount">Xアカウントを入力してください</span>
       </div>
       <div class="form-group">
-        <label>形状<span class="required-mark">*</span></label>
+        <label>形状<span class="required-mark" id="req-shape">*</span></label>
         <select id="f-shape" onchange="onShapeChange()">
           <option value="sq">スクエア（85×85 mm）</option>
           <option value="ci">サークル（φ90 mm）</option>
         </select>
       </div>
       <div class="form-group">
-        <label>点数<span class="required-mark">*</span></label>
+        <label>点数<span class="required-mark" id="req-qty">*</span></label>
         <div style="display:flex;align-items:center;gap:8px;">
           <button type="button" onclick="adjustQty(-1)" style="width:36px;height:36px;border-radius:8px;border:1.5px solid var(--border);background:var(--card);color:var(--ink);font-size:1.2rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">−</button>
           <input type="number" id="f-qty" min="1" step="1" value="1" oninput="this.value=Math.floor(Math.abs(this.value))||1;updateTotal()" style="text-align:center;width:60px;flex-shrink:0;">
@@ -1185,7 +1186,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
         <span class="field-error" id="e-qty"></span>
       </div>
       <div class="form-group full">
-        <label>デザイン画像<span class="required-mark">*</span></label>
+        <label>デザイン画像<span class="required-mark" id="req-image">*</span></label>
         <div class="upload-area" id="uploadArea">
           <input type="file" id="f-image" accept="image/*,.psd,.ai" onchange="onImageSelect(event)">
           <svg class="upload-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -1983,6 +1984,8 @@ function applyModeUI() {
   switchPricingTab(currentMode);
   renderCostBreakdown();
   applyDeadlineUI();
+  refreshRequiredMarks();
+  onContactPrefChange(); // 初期状態（無選択）のラベルを設定
   // 仕上がり確認画像は開催10日前まで
   const completionArea = document.getElementById('completionImgArea');
   if (completionArea) {
@@ -2297,6 +2300,7 @@ function loadImageFile(file) {
       flipHState = flipVState = false;
       document.getElementById('previewWrapper').classList.add('visible');
       document.getElementById('uploadArea')?.classList.add('has-image');
+      refreshRequiredMarks();
 
       // ファイル情報バー
       let bar = document.getElementById('imageFileInfo');
@@ -2344,6 +2348,7 @@ function removeImage() {
   document.getElementById('f-image').value = '';
   document.getElementById('previewWrapper').classList.remove('visible');
   document.getElementById('uploadArea')?.classList.remove('has-image');
+  refreshRequiredMarks();
   document.getElementById('previewCanvas').getContext('2d').clearRect(0, 0, 360, 360);
   document.getElementById('previewWarnBox').style.display = 'none';
   const bar = document.getElementById('imageFileInfo'); if (bar) bar.remove();
@@ -2622,6 +2627,61 @@ async function onCircleNameBlur() {
   renderCostBreakdown();
 }
 
+// ── 必須マークのチェック切り替え ──
+function setReqMark(id, valid) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = valid ? '✓' : '*';
+  el.classList.toggle('valid', valid);
+}
+
+function refreshRequiredMarks() {
+  const mode = currentMode;
+  // おなまえ
+  setReqMark('req-name', !!document.getElementById('f-name')?.value.trim());
+  // サークル名（サークルモード時のみ）
+  if (mode === 'circle') {
+    setReqMark('req-circle-name', !!document.getElementById('f-circle-name')?.value.trim());
+  }
+  // 連絡方法（ラジオ選択済みなら常にOK）
+  setReqMark('req-contact', !!document.querySelector('input[name="contact-pref"]:checked'));
+  // メール / Xアカウント
+  const pref = document.querySelector('input[name="contact-pref"]:checked')?.value || 'email';
+  const emailVal = document.getElementById('f-email')?.value.trim() || '';
+  const xVal = document.getElementById('f-xaccount')?.value.trim() || '';
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal);
+  if (pref === 'email') {
+    setReqMark('req-email', emailOk);
+    setReqMark('req-xaccount', true); // X は任意
+  } else {
+    setReqMark('req-email', !emailVal || emailOk); // 任意だが入力あれば形式チェック
+    setReqMark('req-xaccount', !!xVal);
+  }
+  // 形状（selectなので常に選択済み → 常に✓）
+  setReqMark('req-shape', !!document.getElementById('f-shape')?.value);
+  // 点数
+  const qty = parseInt(document.getElementById('f-qty')?.value || 0);
+  setReqMark('req-qty', qty >= 1 && qty <= getMaxQty(mode));
+  // デザイン画像
+  setReqMark('req-image', !!imgObj);
+}
+
+function initRequiredMarkListeners() {
+  [
+    ['f-name', 'input'],
+    ['f-circle-name', 'input'],
+    ['f-email', 'input'],
+    ['f-xaccount', 'input'],
+    ['f-qty', 'input'],
+  ].forEach(([id, ev]) => {
+    document.getElementById(id)?.addEventListener(ev, refreshRequiredMarks);
+  });
+  document.querySelectorAll('input[name="contact-pref"]').forEach(r =>
+    r.addEventListener('change', refreshRequiredMarks)
+  );
+  document.getElementById('f-shape')?.addEventListener('change', refreshRequiredMarks);
+}
+
 function initCanvasDrag() {
   const cv = document.getElementById('previewCanvas');
   const getPos = e => {
@@ -2667,15 +2727,21 @@ function initCanvasDrag() {
 
 // ══ CONTACT PREF ══
 function onContactPrefChange() {
-  const isX = document.querySelector('input[name="contact-pref"]:checked')?.value === 'x';
+  const pref = document.querySelector('input[name="contact-pref"]:checked')?.value || null;
+  const isX = pref === 'x';
+  const isEmail = pref === 'email';
   document.getElementById('xDmTip').style.display = isX ? 'block' : 'none';
-  // ラベルと必須マークを切り替え
+  // 無選択時は両方「任意」表示、選択後に必須/任意が決まる
   document.getElementById('label-email').innerHTML = isX
     ? 'メールアドレス（予備）'
-    : 'メールアドレス<span class="required-mark">*</span>';
+    : isEmail
+    ? 'メールアドレス<span class="required-mark" id="req-email">*</span>'
+    : 'メールアドレス';
   document.getElementById('label-xaccount').innerHTML = isX
-    ? 'X（旧Twitter）アカウント<span class="required-mark">*</span>'
-    : 'X（旧Twitter）アカウント（予備）';
+    ? 'X（旧Twitter）アカウント<span class="required-mark" id="req-xaccount">*</span>'
+    : isEmail
+    ? 'X（旧Twitter）アカウント（予備）'
+    : 'X（旧Twitter）アカウント';
 }
 function toggleXDmTip() {
   document.getElementById('xDmTip').classList.toggle('open');
@@ -2748,12 +2814,15 @@ function validateForm(){
   if (imageTooSmall) { showError('image', '画像の解像度がカットラインより小さいです。大きい画像をご用意ください。（プレビューの警告を確認してください）'); errs.push('📐 画像サイズが小さすぎます'); ok=false; }
   if(!document.getElementById('f-name').value.trim()){showError('name','おなまえを入力してください');errs.push('👤 おなまえが未入力');ok=false;}
   if(currentMode === 'circle' && !document.getElementById('f-circle-name').value.trim()){showError('circle-name','サークル名を入力してください');errs.push('🏷 サークル名が未入力');ok=false;}
-  const contactPref = document.querySelector('input[name="contact-pref"]:checked')?.value || 'email';
+  const contactPref = document.querySelector('input[name="contact-pref"]:checked')?.value;
+  if (!contactPref) {
+    errs.push('📬 連絡方法を選択してください'); ok=false;
+  }
   const em = document.getElementById('f-email').value.trim();
   const xa = document.getElementById('f-xaccount').value.trim();
   if (contactPref === 'email') {
     if(!em||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){showError('email','正しいメールアドレスを入力してください');errs.push('✉️ メールアドレスを確認してください');ok=false;}
-  } else {
+  } else if (contactPref === 'x') {
     if(em && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){showError('email','正しいメールアドレスを入力してください');errs.push('✉️ メールアドレスを確認してください');ok=false;}
     if(!xa){showError('xaccount','Xアカウントを入力してください');errs.push('𝕏 Xアカウントが未入力');ok=false;}
   }
@@ -5086,6 +5155,7 @@ if (localStorage.getItem('bc_participant_circle'))  applyParticipantState('circl
 if (localStorage.getItem('bc_participant_general')) applyParticipantState('general', true);
 initCanvasDrag();
 initVisitorCount();
+initRequiredMarkListeners();
 
 (function() {
   let _on = true, _downAt = null, _dragging = false;
