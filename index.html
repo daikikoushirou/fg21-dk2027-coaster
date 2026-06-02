@@ -2031,6 +2031,8 @@ function backToGate() {
   document.getElementById('participantBadge').className = 'participant-badge';
 }
 function applyModeUI() {
+  // 日程グリッドが空なら初期化し直す（ページ読み込み時のエラー対策）
+  if (!document.getElementById('datesGrid')?.children.length) initDatesUI();
   const isC = currentMode === 'circle';
   const badge = document.getElementById('participantBadge');
   badge.className = 'participant-badge ' + (isC ? 'circle-mode' : 'general-mode');
