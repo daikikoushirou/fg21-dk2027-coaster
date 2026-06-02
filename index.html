@@ -675,7 +675,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
     <hr class="gate-divider">
     <p class="gate-prompt" id="gateWhich">どちらですか？</p>
     <div class="gate-cards">
-      <div class="gate-card general-type" onclick="enterAs('general')">
+      <div id="gateGeneralCard" class="gate-card general-type" onclick="enterAs('general')">
         <div style="text-align:center;margin-bottom:3px;"><span class="gate-card-icon">🎫</span><span class="gate-card-name" id="gateGeneralName">一般参加者</span></div>
         <div class="gate-card-sub" id="gateGeneralSub">自宅用・プレゼント用</div>
         <div class="gate-card-restrict" id="gateGeneralRestrict" style="border-color:#e8b0a0;background:#fdf0ee;color:var(--red);">📖 カタログを購入して入場する方はこちら</div>
@@ -687,7 +687,15 @@ footer a{color:var(--potato-light);text-decoration:none;}
         </ul>
         <button class="gate-card-cta" id="gateGeneralCta">製作する →</button>
       </div>
-      <div class="gate-card circle-type" onclick="enterAs('circle')">
+      <!-- 一般参加者一次募集締め切りカード -->
+      <div id="gateGeneralClosedCard" class="gate-card general-type" style="display:none;cursor:default;">
+        <div style="text-align:center;font-size:1.4rem;margin-bottom:8px;">🙏</div>
+        <div style="text-align:center;margin-bottom:4px;"><span class="gate-card-icon">🎫</span><span class="gate-card-name">一般参加者</span></div>
+        <div style="text-align:center;font-size:.82rem;font-weight:700;color:#e05040;margin:6px 0;">一次募集 締め切り</div>
+        <div style="font-size:.75rem;color:var(--muted);line-height:1.6;text-align:center;margin-bottom:12px;">二次募集は<a href="https://x.com/daikikoushirou" target="_blank" rel="noopener" style="color:var(--general-color);font-weight:700;">X（@daikikoushirou）</a>で告知します</div>
+        <button class="gate-card-cta" onclick="enterAs('general')" style="font-size:.78rem;opacity:.8;">それでも入場する →</button>
+      </div>
+      <div id="gateCircleCard" class="gate-card circle-type" onclick="enterAs('circle')">
         <div style="text-align:center;margin-bottom:3px;"><span class="gate-card-icon">🪑</span><span class="gate-card-name" id="gateCircleName">サークル参加者</span></div>
         <div class="gate-card-sub" id="gateCircleSub">頒布用途OK</div>
         <div class="gate-card-restrict" id="gateCircleRestrict">⚠️ ふたば★学園祭２１にサークル参加している方のみ</div>
@@ -699,6 +707,14 @@ footer a{color:var(--potato-light);text-decoration:none;}
           <li id="gateCircleMax">最大20点まで</li>
         </ul>
         <button class="gate-card-cta" id="gateCircleCta">製作する →</button>
+      </div>
+      <!-- サークル一次募集締め切りカード（showGateCircleClosed()で表示） -->
+      <div id="gateCircleClosedCard" class="gate-card circle-type" style="display:none;cursor:default;">
+        <div style="text-align:center;font-size:1.4rem;margin-bottom:8px;">🙏</div>
+        <div style="text-align:center;margin-bottom:4px;"><span class="gate-card-icon">🪑</span><span class="gate-card-name">サークル参加者</span></div>
+        <div style="text-align:center;font-size:.82rem;font-weight:700;color:#e05040;margin:6px 0;">一次募集 締め切り</div>
+        <div style="font-size:.75rem;color:var(--muted);line-height:1.6;text-align:center;margin-bottom:12px;">二次募集は<a href="https://x.com/daikikoushirou" target="_blank" rel="noopener" style="color:var(--circle-color);font-weight:700;">X（@daikikoushirou）</a>で告知します</div>
+        <button class="gate-card-cta" onclick="enterAs('circle')" style="font-size:.78rem;opacity:.8;">それでも入場する →</button>
       </div>
     </div>
 
@@ -790,15 +806,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
 <!-- ══ MAIN ══ -->
 <div id="mainContent" style="display:none">
 
-  <!-- 受付終了メッセージ -->
-  <div id="orderClosedMsg" style="display:none;max-width:520px;margin:60px auto;padding:36px 28px;text-align:center;background:var(--card);border-radius:14px;border:1.5px solid var(--border);">
-    <div style="font-size:2rem;margin-bottom:12px;">🙏</div>
-    <h2 style="font-size:1.2rem;font-weight:700;color:var(--potato-dark);margin-bottom:10px;"><span id="orderClosedMode"></span>の一次募集を締め切りました</h2>
-    <p style="font-size:.88rem;color:var(--muted);line-height:1.8;margin-bottom:20px;">
-      二次募集は <a href="https://x.com/daikikoushirou" target="_blank" rel="noopener" style="color:var(--circle-color);font-weight:700;">X（@daikikoushirou）</a>、またはこちらのサイト上で告知します。
-    </p>
-    <button class="code-action-btn" onclick="backToGate()" style="margin:0 auto;">← ゲートページへ戻る</button>
-  </div>
+
 
 <!-- DEADLINE BANNER -->
 <div class="deadline-banner" id="deadlineBanner">
@@ -815,6 +823,12 @@ footer a{color:var(--potato-light);text-decoration:none;}
   <div class="header-zigzag"></div>
 </header>
 
+  <!-- サークル一次募集締め切りバナー（製作の流れの上） -->
+  <div id="circleClosedBanner" style="display:none;max-width:520px;margin:24px auto 16px;padding:16px 18px;background:rgba(224,80,64,.12);border:1.5px solid rgba(224,80,64,.35);border-radius:10px;text-align:center;">
+    <div style="font-size:.9rem;font-weight:700;color:#e05040;margin-bottom:6px;">🙏 サークル参加者の一次募集を締め切りました</div>
+    <div style="font-size:.78rem;color:var(--muted);line-height:1.6;margin-bottom:12px;">二次募集は<a href="https://x.com/daikikoushirou" target="_blank" rel="noopener" style="color:var(--circle-color);font-weight:700;">X（@daikikoushirou）</a>で告知します。</div>
+    <button class="code-action-btn" onclick="backToGate()" style="margin:0 auto;">← ゲートページへ戻る</button>
+  </div>
 <!-- 製作の流れ -->
 <div class="flow-section">
   <div class="section">
@@ -1033,10 +1047,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
   <button class="cal-show-btn" id="calShowBtn" onclick="toggleCalendarVisibility()">📅 カレンダーで確認する</button>
   <div class="cal-wrap" id="calWrap" style="display:none;"></div>
 <div id="calTooltip"></div>
-  <div class="pricing-tabs" id="pricingTabs">
-    <button class="pricing-tab general-tab" onclick="switchPricingTab('general')">🎫 一般参加者</button>
-    <button class="pricing-tab circle-tab" onclick="switchPricingTab('circle')">🪑 サークル参加者</button>
-  </div>
+
   <div class="pricing-panel" id="pricePanel-circle">
     <table class="price-tier-table" id="circlePriceTable">
       <thead><tr><th>点数</th><th>通常価格</th><th>早割価格（1か月前まで）</th><th>備考</th></tr></thead>
@@ -1334,6 +1345,27 @@ footer a{color:var(--potato-light);text-decoration:none;}
 <div class="admin-section" id="adminPanel" style="display:none">
   <div class="section">
     <div class="admin-label">🔒 管理パネル</div>
+
+    <!-- 受付上限設定 -->
+    <div style="background:var(--potato-dark);border-radius:12px;padding:16px;margin-bottom:16px;">
+      <div style="font-size:.8rem;font-weight:700;color:rgba(255,255,255,.85);margin-bottom:12px;">⚙️ 受付上限設定</div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <label style="font-size:.75rem;color:rgba(255,255,255,.6);">🪑 サークル参加者 上限</label>
+          <input type="number" id="adminLimitCircle" min="0" max="999" value="30"
+            class="verify-input" style="width:80px;text-align:center;"
+            oninput="this.value=Math.max(0,Math.floor(this.value))||0">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px;">
+          <label style="font-size:.75rem;color:rgba(255,255,255,.6);">🎫 一般参加者 上限</label>
+          <input type="number" id="adminLimitGeneral" min="0" max="999" value="30"
+            class="verify-input" style="width:80px;text-align:center;"
+            oninput="this.value=Math.max(0,Math.floor(this.value))||0">
+        </div>
+        <button class="admin-btn" onclick="applyOrderLimits()">適用</button>
+        <span id="adminLimitMsg" style="font-size:.75rem;color:rgba(255,255,255,.5);align-self:center;"></span>
+      </div>
+    </div>
 
     <!-- 簡易グラフ -->
     <div style="background:var(--potato-dark);border-radius:12px;padding:16px;margin-bottom:16px;">
@@ -1666,7 +1698,7 @@ async function sbPatch(ref, patch) {
 
 // ══ STATE ══
 let currentMode = null;
-let imgObj = null, _droppedFile = null, flipHState = false, flipVState = false, invertState = false, leatherPreviewUsed = false, imageTooSmall = false, pendingFreeOverride = false, pendingSampleFreeOverride = false, imgZoom = 1.0;
+let imgObj = null, _droppedFile = null, isCircleClosed = false, flipHState = false, flipVState = false, invertState = false, leatherPreviewUsed = false, imageTooSmall = false, pendingFreeOverride = false, pendingSampleFreeOverride = false, imgZoom = 1.0;
 let orders = JSON.parse(localStorage.getItem('bc_orders') || '[]');
 
 // ══ MAKE.COM 通知 ══
@@ -1894,7 +1926,7 @@ function updateSampleUI() {
 
 // ══ GATE ══
 // ══ 注文上限 ══
-const ORDER_LIMIT = { general: 30, circle: 30 };
+let ORDER_LIMIT = { general: 30, circle: 30 };
 
 async function checkOrderLimit(mode) {
   if (!sbReady()) return false;
@@ -1909,37 +1941,90 @@ async function checkOrderLimit(mode) {
 }
 
 function showOrderClosed(mode) {
-  const label = mode === 'circle' ? 'サークル参加者' : '一般参加者';
   const g = document.getElementById('gate');
   g.classList.add('hidden');
   setTimeout(() => g.style.display = 'none', 350);
   const mc = document.getElementById('mainContent');
   mc.style.display = 'block';
-  document.getElementById('orderClosedMode').textContent = label;
-  document.getElementById('orderClosedMsg').style.display = 'block';
-  document.getElementById('orderForm').style.display = 'none';
+  const banner = document.getElementById('circleClosedBanner');
+  if (mode === 'circle') {
+    banner.style.display = 'block';
+    isCircleClosed = true;
+    currentMode = 'circle';
+    document.getElementById('order').style.display = 'none';
+    applyModeUI();
+  } else {
+    // 一般参加者は締め切りバナー＋フォーム非表示
+    banner.innerHTML = '<div style="font-size:.9rem;font-weight:700;color:#e05040;margin-bottom:4px;">🙏 一般参加者の一次募集を締め切りました</div>'
+      + '<div style="font-size:.78rem;color:var(--muted);line-height:1.6;">二次募集は<a href="https://x.com/daikikoushirou" target="_blank" rel="noopener" style="color:var(--circle-color);font-weight:700;">X（@daikikoushirou）</a>で告知します。</div>'
+      + '<div style="margin-top:10px;"><button class="code-action-btn" onclick="backToGate()" style="margin:0 auto;">← ゲートページへ戻る</button></div>';
+    banner.style.display = 'block';
+    document.getElementById('order').style.display = 'none';
+    currentMode = 'general';
+    applyModeUI();
+  }
 }
 
+async 
+
+function showGateGeneralClosed() {
+  const normal = document.getElementById('gateGeneralCard');
+  const closed = document.getElementById('gateGeneralClosedCard');
+  if (normal) normal.style.display = 'none';
+  if (closed) closed.style.display = '';
+}
+function showGateCircleClosed() {
+  // ゲートページのサークルカードを締め切り表示に差し替え
+  const normal = document.getElementById('gateCircleCard');
+  const closed = document.getElementById('gateCircleClosedCard');
+  if (normal) normal.style.display = 'none';
+  if (closed) closed.style.display = '';
+}
 async function enterAs(mode) {
   if (isPastDeadline()) { showToast('申し込みは締め切りました'); return; }
-  // 上限チェック
   const isFull = await checkOrderLimit(mode);
-  if (isFull) { showOrderClosed(mode); return; }
+
+  // ── ゲートを閉じてメインを開く共通処理 ──
+  const showMain = () => {
+    const g = document.getElementById('gate');
+    g.classList.add('hidden');
+    setTimeout(() => g.style.display = 'none', 350);
+    document.getElementById('mainContent').style.display = 'block';
+    document.getElementById('circleClosedBanner').style.display = 'none';
+    document.getElementById('order').style.display = '';
+  };
+
+  if (isFull && mode === 'circle') {
+    // サークル上限: ゲートカードを締め切り表示に差し替え → フォームは非表示
+    showGateCircleClosed();
+    isCircleClosed = true;
+    showMain();
+    document.getElementById('circleClosedBanner').style.display = 'block';
+    document.getElementById('order').style.display = 'none';
+    currentMode = 'circle';
+    applyModeUI();
+    return;
+  }
+
+  if (isFull && mode === 'general') {
+    showGateGeneralClosed();
+    showOrderClosed('general');
+    return;
+  }
+
+  // 通常フロー
   currentMode = mode;
-  const g = document.getElementById('gate');
-  g.classList.add('hidden');
-  setTimeout(() => g.style.display = 'none', 350);
-  document.getElementById('mainContent').style.display = 'block';
-  document.getElementById('orderClosedMsg').style.display = 'none';
-  document.getElementById('orderForm').style.display = '';
+  showMain();
   applyModeUI();
 }
 function backToGate() {
+  isCircleClosed = false;
   pendingFreeOverride = false;
   pendingSampleFreeOverride = false;
   document.getElementById('mainContent').style.display = 'none';
-  document.getElementById('orderClosedMsg').style.display = 'none';
-  document.getElementById('orderForm').style.display = '';
+  document.getElementById('orderClosedMsg')?.style && (document.getElementById('orderClosedMsg').style.display = 'none');
+  document.getElementById('circleClosedBanner').style.display = 'none';
+  document.getElementById('order').style.display = '';
   const g = document.getElementById('gate');
   g.style.display = 'flex'; g.classList.remove('hidden');
   currentMode = null;
@@ -2191,11 +2276,7 @@ function switchPricingTab(tab) {
   });
   // カレンダーをタブに合わせて再描画
   renderCalendar(tab);
-  // フォーム表示中なら製作依頼フォームのモードも切り替える
-  if (currentMode !== null && currentMode !== tab) {
-    currentMode = tab;
-    applyModeUI();
-  }
+
 }
 
 // ══ SHAPE ══
@@ -2845,6 +2926,16 @@ function adjustQty(delta) {
 }
 
 function validateForm(){
+  // サークル一次募集締め切り後は送信ブロック
+  if (isCircleClosed && currentMode === 'circle') {
+    const summary = document.getElementById('submitErrorSummary');
+    if (summary) {
+      summary.innerHTML = '⚠️ サークル参加者の一次募集は締め切りました。二次募集をお待ちください。';
+      summary.style.display = 'block';
+      summary.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    return false;
+  }
   let ok=true;
   const errs=[];
   ['name','circle-name','email','qty','image','xaccount','shape'].forEach(id=>clearError(id));
@@ -3127,11 +3218,25 @@ function saveOrders() { localStorage.setItem('bc_orders', JSON.stringify(orders)
 
 // ══ ADMIN ══
 let adminVisible = false;
+
+function applyOrderLimits() {
+  const c = parseInt(document.getElementById('adminLimitCircle').value) || 0;
+  const g = parseInt(document.getElementById('adminLimitGeneral').value) || 0;
+  ORDER_LIMIT.circle  = c;
+  ORDER_LIMIT.general = g;
+  const msg = document.getElementById('adminLimitMsg');
+  msg.textContent = `✓ 適用しました（サークル:${c}件 / 一般:${g}件）`;
+  setTimeout(() => msg.textContent = '', 3000);
+}
 function toggleAdmin(e) {
   e.preventDefault();
   if (!adminVisible) { const pw = prompt('管理者パスワード:'); if (pw !== 'Xt4p8VrC2K9') { showToast('パスワードが違います'); return; } }
   adminVisible = !adminVisible;
   document.getElementById('adminPanel').style.display = adminVisible ? 'block' : 'none';
+  if (adminVisible) {
+    document.getElementById('adminLimitCircle').value  = ORDER_LIMIT.circle;
+    document.getElementById('adminLimitGeneral').value = ORDER_LIMIT.general;
+  }
   if (adminVisible) { loadAndRenderOrders(); reloadInterestsAdmin(); renderAdminChart(); document.getElementById('adminPanel').scrollIntoView({ behavior: 'smooth' }); }
 }
 
@@ -5195,6 +5300,11 @@ if (localStorage.getItem('bc_participant_general')) applyParticipantState('gener
 initCanvasDrag();
 initVisitorCount();
 initRequiredMarkListeners();
+// ゲートページのサークルカード上限確認
+(async () => {
+  if (await checkOrderLimit('circle'))  showGateCircleClosed();
+  if (await checkOrderLimit('general')) showGateGeneralClosed();
+})();
 
 (function() {
   let _on = true, _downAt = null, _dragging = false;
