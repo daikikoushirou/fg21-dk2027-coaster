@@ -688,12 +688,12 @@ footer a{color:var(--potato-light);text-decoration:none;}
         <button class="gate-card-cta" id="gateGeneralCta">製作する →</button>
       </div>
       <!-- 一般参加者一次募集締め切りカード -->
-      <div id="gateGeneralClosedCard" class="gate-card general-type" style="display:none;cursor:default;">
+      <div id="gateGeneralClosedCard" class="gate-card general-type" style="display:none;cursor:pointer;" onclick="enterAs('general')">
         <div style="text-align:center;font-size:1.4rem;margin-bottom:8px;">🙏</div>
         <div style="text-align:center;margin-bottom:4px;"><span class="gate-card-icon">🎫</span><span class="gate-card-name">一般参加者</span></div>
         <div style="text-align:center;font-size:.82rem;font-weight:700;color:#e05040;margin:6px 0;">一次募集 締め切り</div>
-        <div style="font-size:.75rem;color:var(--muted);line-height:1.6;text-align:center;margin-bottom:12px;">二次募集は<a href="https://x.com/daikikoushirou" target="_blank" rel="noopener" style="color:var(--general-color);font-weight:700;">X（@daikikoushirou）</a>で告知します</div>
-        <button class="gate-card-cta" onclick="enterAs('general')" style="font-size:.78rem;opacity:.8;">それでも入場する →</button>
+        <div style="font-size:.75rem;color:var(--muted);line-height:1.6;text-align:center;margin-bottom:12px;">二次募集は<a href="https://x.com/daikikoushirou" target="_blank" rel="noopener" onclick="event.stopPropagation();" style="color:var(--general-color);font-weight:700;">X（@daikikoushirou）</a>で告知します</div>
+        <button class="gate-card-cta" onclick="event.stopPropagation();enterAs('general')" style="font-size:.78rem;opacity:.8;">それでも入場する →</button>
       </div>
       <div id="gateCircleCard" class="gate-card circle-type" onclick="enterAs('circle')">
         <div style="text-align:center;margin-bottom:3px;"><span class="gate-card-icon">🪑</span><span class="gate-card-name" id="gateCircleName">サークル参加者</span></div>
@@ -709,12 +709,12 @@ footer a{color:var(--potato-light);text-decoration:none;}
         <button class="gate-card-cta" id="gateCircleCta">製作する →</button>
       </div>
       <!-- サークル一次募集締め切りカード（showGateCircleClosed()で表示） -->
-      <div id="gateCircleClosedCard" class="gate-card circle-type" style="display:none;cursor:default;">
+      <div id="gateCircleClosedCard" class="gate-card circle-type" style="display:none;cursor:pointer;" onclick="enterAs('circle')">
         <div style="text-align:center;font-size:1.4rem;margin-bottom:8px;">🙏</div>
         <div style="text-align:center;margin-bottom:4px;"><span class="gate-card-icon">🪑</span><span class="gate-card-name">サークル参加者</span></div>
         <div style="text-align:center;font-size:.82rem;font-weight:700;color:#e05040;margin:6px 0;">一次募集 締め切り</div>
-        <div style="font-size:.75rem;color:var(--muted);line-height:1.6;text-align:center;margin-bottom:12px;">二次募集は<a href="https://x.com/daikikoushirou" target="_blank" rel="noopener" style="color:var(--circle-color);font-weight:700;">X（@daikikoushirou）</a>で告知します</div>
-        <button class="gate-card-cta" onclick="enterAs('circle')" style="font-size:.78rem;opacity:.8;">それでも入場する →</button>
+        <div style="font-size:.75rem;color:var(--muted);line-height:1.6;text-align:center;margin-bottom:12px;">二次募集は<a href="https://x.com/daikikoushirou" target="_blank" rel="noopener" onclick="event.stopPropagation();" style="color:var(--circle-color);font-weight:700;">X（@daikikoushirou）</a>で告知します</div>
+        <button class="gate-card-cta" onclick="event.stopPropagation();enterAs('circle')" style="font-size:.78rem;opacity:.8;">それでも入場する →</button>
       </div>
     </div>
 
@@ -833,7 +833,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
   <!-- サークル一次募集締め切りバナー（製作の流れの上） -->
   <div id="circleClosedBanner" style="display:none;max-width:520px;margin:24px auto 16px;padding:16px 18px;background:rgba(224,80,64,.12);border:1.5px solid rgba(224,80,64,.35);border-radius:10px;text-align:center;">
     <div style="font-size:.9rem;font-weight:700;color:#e05040;margin-bottom:6px;">🙏 サークル参加者の一次募集を締め切りました</div>
-    <div style="font-size:.78rem;color:var(--muted);line-height:1.6;margin-bottom:12px;">二次募集は<a href="https://x.com/daikikoushirou" target="_blank" rel="noopener" style="color:var(--circle-color);font-weight:700;">X（@daikikoushirou）</a>で告知します。</div>
+    <div style="font-size:.78rem;color:var(--muted);line-height:1.6;margin-bottom:12px;">二次募集は<a href="https://x.com/daikikoushirou" target="_blank" rel="noopener" onclick="event.stopPropagation();" style="color:var(--circle-color);font-weight:700;">X（@daikikoushirou）</a>で告知します。</div>
     <button class="code-action-btn" onclick="backToGate()" style="margin:0 auto;">← ゲートページへ戻る</button>
   </div>
 <!-- 製作の流れ -->
@@ -2034,7 +2034,7 @@ function showOrderClosed(mode) {
   } else {
     // 一般参加者は締め切りバナー＋フォーム非表示
     banner.innerHTML = '<div style="font-size:.9rem;font-weight:700;color:#e05040;margin-bottom:4px;">🙏 一般参加者の一次募集を締め切りました</div>'
-      + '<div style="font-size:.78rem;color:var(--muted);line-height:1.6;">二次募集は<a href="https://x.com/daikikoushirou" target="_blank" rel="noopener" style="color:var(--circle-color);font-weight:700;">X（@daikikoushirou）</a>で告知します。</div>'
+      + '<div style="font-size:.78rem;color:var(--muted);line-height:1.6;">二次募集は<a href="https://x.com/daikikoushirou" target="_blank" rel="noopener" onclick="event.stopPropagation();" style="color:var(--circle-color);font-weight:700;">X（@daikikoushirou）</a>で告知します。</div>'
       + '<div style="margin-top:10px;"><button class="code-action-btn" onclick="backToGate()" style="margin:0 auto;">← ゲートページへ戻る</button></div>';
     banner.style.display = 'block';
     document.getElementById('order').style.display = 'none';
