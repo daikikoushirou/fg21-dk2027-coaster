@@ -3232,14 +3232,35 @@ function applyOrderLimits() {
 }
 function toggleAdmin(e) {
   e.preventDefault();
-  if (!adminVisible) { const pw = prompt('管理者パスワード:'); if (pw !== 'Xt4p8VrC2K9') { showToast('パスワードが違います'); return; } }
-  adminVisible = !adminVisible;
-  document.getElementById('adminPanel').style.display = adminVisible ? 'block' : 'none';
   if (adminVisible) {
-    document.getElementById('adminLimitCircle').value  = ORDER_LIMIT.circle;
-    document.getElementById('adminLimitGeneral').value = ORDER_LIMIT.general;
+    // ログアウト
+    adminVisible = false;
+    document.getElementById('adminPanel').style.display = 'none';
+    return;
   }
-  if (adminVisible) { loadAndRenderOrders(); reloadInterestsAdmin(); renderAdminChart(); document.getElementById('adminPanel').scrollIntoView({ behavior: 'smooth' }); }
+  // パスワードモーダルを表示
+  const modal = document.getElementById('adminPwModal');
+  modal.style.display = 'flex';
+  document.getElementById('adminPwInput').value = '';
+  document.getElementById('adminPwError').style.display = 'none';
+  setTimeout(() => document.getElementById('adminPwInput').focus(), 50);
+}
+function submitAdminPw() {
+  const pw = document.getElementById('adminPwInput').value;
+  if (pw !== 'Xt4p8VrC2K9') {
+    document.getElementById('adminPwError').style.display = 'block';
+    return;
+  }
+  closeAdminPwModal();
+  adminVisible = true;
+  document.getElementById('adminPanel').style.display = 'block';
+  document.getElementById('adminLimitCircle').value  = ORDER_LIMIT.circle;
+  document.getElementById('adminLimitGeneral').value = ORDER_LIMIT.general;
+  loadAndRenderOrders(); reloadInterestsAdmin(); renderAdminChart();
+  document.getElementById('adminPanel').scrollIntoView({ behavior: 'smooth' });
+}
+function closeAdminPwModal() {
+  document.getElementById('adminPwModal').style.display = 'none';
 }
 
 async function loadAndRenderOrders() {
@@ -5397,5 +5418,20 @@ initRequiredMarkListeners();
   <div class="print-labels-grid" id="printLabelsGrid"></div>
 </div>
 
+
+<!-- 管理者パスワードモーダル -->
+<div id="adminPwModal" style="display:none;position:fixed;inset:0;background:rgba(20,14,8,.7);z-index:9999;display:none;align-items:center;justify-content:center;">
+  <div style="background:#fffdf6;border-radius:12px;padding:28px 24px;width:300px;box-shadow:0 8px 32px rgba(0,0,0,.25);">
+    <div style="font-size:.95rem;font-weight:700;color:#2c2418;margin-bottom:16px;">🔒 管理者パスワード</div>
+    <input type="password" id="adminPwInput" placeholder="パスワードを入力"
+      style="width:100%;padding:10px 12px;border:1.5px solid #d6cdb4;border-radius:7px;font-size:.93rem;box-sizing:border-box;outline:none;font-family:inherit;"
+      onkeydown="if(event.key==='Enter')submitAdminPw();">
+    <div id="adminPwError" style="color:#e05040;font-size:.78rem;margin-top:6px;display:none;">パスワードが違います</div>
+    <div style="display:flex;gap:8px;margin-top:16px;justify-content:flex-end;">
+      <button onclick="closeAdminPwModal()" style="padding:8px 16px;border:1.5px solid #d6cdb4;background:#fff;border-radius:7px;cursor:pointer;font-family:inherit;font-size:.85rem;">キャンセル</button>
+      <button onclick="submitAdminPw()" style="padding:8px 16px;background:#5c4a1e;color:#fff;border:none;border-radius:7px;cursor:pointer;font-family:inherit;font-size:.85rem;font-weight:700;">ログイン</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
