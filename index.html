@@ -848,14 +848,17 @@ footer a{color:var(--potato-light);text-decoration:none;}
 <div class="tone tone-1"><div class="section">
   <div class="section-title">📖 この企画について</div>
   <p style="color:var(--muted);font-size:.92rem;line-height:1.9;margin:14px 0 0;">
-    お送りいただいたイラストを、レーザーで本革のコースターに刻印してお渡しする参加型企画です。ふたば★学園祭２１における頒布・挨拶まわりのノベルティとしても、記念の品としてもお使いいただけます。
+    お送りいただいたイラストを革のコースターに刻印して、ふたば★学園祭２１において基本無料にてお渡しする参加型企画です。一般参加者は自宅用や記念の品として、サークル参加者は頒布用・ノベルティとしてもお使いいただけます。
   </p>
   <div id="aboutMore">
   <p style="color:var(--muted);font-size:.92rem;line-height:1.9;margin:14px 0 0;">
-    前回のふたば★学園祭２０でも同じ内容で開催し、ご好評の声をいただいた一方、私の力不足から至らない点も多くありました。そこで今回は、土台となるこのサイトを構築し、どなたが見てもどういった企画かわかるよう説明を充実させ、イラストを入稿する際の補助もしていくことを目指しました。
+    一般参加とサークル参加のちょうど中間くらいのゆるい参加のかたちをつくってみたいと思い、前回のふたば★学園祭２０において初めて当企画を催し、ご好評の声をいただいた一方で、私の力不足から至らない点も多くありました。そこで今回は、土台となるコースターについて紹介から発注までを行えるこのサイトを構築し、誰が見てもどういった企画かわかるよう説明を充実させ、イラストを入稿する際の補助もしていくことを目指しました。
   </p>
   <p style="color:var(--muted);font-size:.92rem;line-height:1.9;margin:14px 0 0;">
-    「なぜ無料なの?」と思うかもしれません。これは、一般参加とサークル参加のちょうど中間くらいの、ゆるい参加のかたちをつくってみたかったからです。コースターを受け取るために会場へ遊びに来るきっかけになればうれしいです。いただいたイラストのコースターは、当スペースの一角で展示したり、(当初は合同企画を名乗っていたこともあり、)1〜2点ほど頒布させてもらうことを考えています。コースターは、そのお礼のようなものだと思ってください。結果としてふたば★学園祭が少しでもにぎやかになったら最高だなと思っているわけです。
+    「なぜ1点無料なの？」と思うかもしれません。いただいたイラストのコースターは、当スペースの一角で展示したり、(当初は合同企画を名乗っていたこともあり、)1〜2点ほど頒布させてもらうことを考えています。コースターは、そのお礼のようなものだと思ってください。また、現場で展示を見た他の参加者の方が、イラストを描いた方のサークルへ足を運んでみるという動線づくりになったり、自分の描いたコースターを受け取るために会場へ遊びに来るきっかけになればうれしいです。
+  </p>
+  <p style="color:var(--muted);font-size:.92rem;line-height:1.9;margin:14px 0 0;">
+    そのようなもろもろの結果として、ふたば★学園祭が少しでもにぎやかになったら最高だな...！と思っているわけです。
   </p>
   <p style="color:var(--muted);font-size:.92rem;line-height:1.9;margin:14px 0 0;">
     下にスクロールすると、受け取れるもの・参加できる条件・製作の流れ・料金を順にご案内しています。ご不明な点があれば<a onclick="openContactModal()" style="color:var(--accent);font-weight:700;cursor:pointer;text-decoration:underline;">お気軽にお問い合わせください</a>。
@@ -2386,7 +2389,7 @@ function applyModeUI() {
   document.getElementById('f-sample').checked = false;
   // 問い合わせセクションの連絡先リンクを設定(運営のXアカウント等があれば)
   document.getElementById('inquiryContactLinks').innerHTML =
-    `<a href="mailto:daikikoushirou@gmail.com" style="font-size:.84rem;color:var(--circle-color);font-weight:700;">✉️ メールで問い合わせる</a>`;
+    `<a onclick="openContactModal()" style="font-size:.84rem;color:var(--accent);font-weight:700;cursor:pointer;text-decoration:underline;">お気軽にお問い合わせください</a>`;
   updateSampleUI();
   switchPricingTab(currentMode);
   renderCostBreakdown();
@@ -2430,7 +2433,7 @@ function renderCalendar(mode) {
     new Date(y, 4, 1), // 5月
   ];
 
-  // 期間バー定義(開始〜終了、色、ラベル)
+  // 期間バー定義(開始〜終了、色、ラベル、row=同じ値で同一行に重ねる)
   const PERIODS = [
     { start: new Date(y, 1, 1),
       end:   EARLY_BIRD_END,
@@ -2438,12 +2441,12 @@ function renderCalendar(mode) {
     { start: new Date(y, 1, 1),
       end:   DEADLINE,
       color: '#8ca8c8', label: '申し込み受付期間', opacity: .7 },
-    { start: new Date(y, 1, 1),
-      end:   COMPLETION_IMG_END,
-      color: '#d07080', label: '確認画像 無料受付', opacity: .85 },
     { start: COMPLETION_IMG_END,
       end:   COMPLETION_IMG_PAID_END,
-      color: '#e0a0b0', label: '確認画像 有料(¥100)受付', opacity: .7 },
+      color: '#e0a0b0', label: '確認画像 有料(¥100)受付', opacity: .7, row: 'ci' },
+    { start: new Date(y, 1, 1),
+      end:   COMPLETION_IMG_END,
+      color: '#d07080', label: '確認画像 無料受付', opacity: .85, row: 'ci' },
     { start: new Date(y, 1, 1),
       end:   BULK_ORDER_END,
       color: '#a070d0', label: '大量注文可能期間 🪑', opacity: .85, circleOnly: true },
@@ -2484,8 +2487,9 @@ function renderCalendar(mode) {
       }
     });
 
-    // バーマップ: 各日にどの期間が有効か
+    // バーマップ: 各日にどの期間が有効か（同じrowのバーは同一セルに合流）
     const barMap = {};
+    // rowごとに同日のバーを合流させるため、まずrowキーごとに処理
     activePeriods.forEach((p, pi) => {
       const ps = toDay0(p.start);
       const pe = toDay0(p.end);
@@ -2493,6 +2497,7 @@ function renderCalendar(mode) {
         const dt = new Date(y2, m, d);
         if (dt >= ps && dt <= pe) {
           if (!barMap[d]) barMap[d] = [];
+          // 同じrowキーがすでにある場合は追記（同一セルに複数バーを描く）
           barMap[d].push({ ...p, idx: pi });
         }
       }
@@ -2515,17 +2520,44 @@ function renderCalendar(mode) {
       const bars = barMap[day] || [];
 
       // バー表示(各期間を小さな帯として積む)
-      const barHtml = bars.map(b => {
-        const dtStart = toDay0(b.start);
-        const dtEnd   = toDay0(b.end);
-        const isFirst = dt.getTime() === dtStart.getTime();
-        const isLast  = dt.getTime() === dtEnd.getTime();
-        const brL = isFirst ? '4px' : '0';
-        const brR = isLast  ? '4px' : '0';
-        const br  = `${brL} ${brR} ${brR} ${brL}`;
-        const w   = isLast ? '50%' : '100%';
-        const tip = `${b.label}　〜 ${fmtDate(b.end)} まで`;
-        return `<div class="cal-bar" data-tip="${tip}" style="background:${b.color};border-radius:${br};opacity:${isPast?.45:b.opacity};width:${w};"></div>`;
+      // 同じrowのバーは同一行に横並びで表示
+      const rowGroups = {};
+      bars.forEach(b => {
+        const rk = b.row || b.idx;
+        if (!rowGroups[rk]) rowGroups[rk] = [];
+        rowGroups[rk].push(b);
+      });
+      const barHtml = Object.values(rowGroups).map(group => {
+        if (group.length === 1) {
+          const b = group[0];
+          const dtStart = toDay0(b.start);
+          const dtEnd   = toDay0(b.end);
+          const isFirst = dt.getTime() === dtStart.getTime();
+          const isLast  = dt.getTime() === dtEnd.getTime();
+          const brL = isFirst ? '4px' : '0';
+          const brR = isLast  ? '4px' : '0';
+          const br  = `${brL} ${brR} ${brR} ${brL}`;
+          const w   = (isFirst || isLast) ? '50%' : '100%';
+          const ml  = isFirst ? '50%' : '0';
+          const tip = `${b.label}　〜 ${fmtDate(b.end)} まで`;
+          return `<div class="cal-bar" data-tip="${tip}" style="background:${b.color};border-radius:${br};opacity:${isPast?.45:b.opacity};width:${w};margin-left:${ml};flex-shrink:0;"></div>`;
+        }
+        // 同じrow(確認画像2本)：接続して1行に横並び
+        // 無料(左)→有料(右)の順で並べる（PERIODSの並び順通り）
+        const segs = group.map(b => {
+          const dtStart = toDay0(b.start);
+          const dtEnd   = toDay0(b.end);
+          const isFirst = dt.getTime() === dtStart.getTime();
+          const isLast  = dt.getTime() === dtEnd.getTime();
+          // 開始日・終了日は50%幅、それ以外は100%（flex内なのでflex:1で均等）
+          const flex = (isFirst || isLast) ? '0 0 50%' : '1';
+          const brL = isFirst ? '4px' : '0';
+          const brR = isLast  ? '4px' : '0';
+          const br  = `${brL} ${brR} ${brR} ${brL}`;
+          const tip = `${b.label}　〜 ${fmtDate(b.end)} まで`;
+          return `<div class="cal-bar" data-tip="${tip}" style="background:${b.color};border-radius:${br};opacity:${isPast?.45:b.opacity};flex:${flex};min-width:0;"></div>`;
+        });
+        return `<div style="display:flex;width:100%;height:4px;flex-shrink:0;">${segs.join('')}</div>`;
       }).join('');
 
       const dotHtml = dots.map(ev =>
@@ -5296,6 +5328,68 @@ function genSoudaneName() {
   }
 }
 
+// ── 命名トースト（ふたばミーム・レトロゲー・湾岸系） ──
+function genSoudaneToast(name) {
+  const T = [
+    // ── ふたばミーム ──
+    n => `「」！「」の名前は今日から${n}！「」にはピッタリのいい名前だよね！`,
+    n => `としくん！としくんの名前は${n}だよ！どうしてもイヤならママに相談してね！`,
+    n => `junくんは改造されてしまいました―― 君の名前は今日から${n}です`,
+    n => `ねえ知ってる？あなたの名前は${n}なんだって。ふたばで話題になってたよ。`,
+    n => `${n}という名前がすごく気になる。なんか…ビビッときた。`,
+    n => `もうあなたのことは${n}と呼ぶことにした。以上。`,
+    n => `やあ${n}。会いたかったよ。`,
+    n => `${n}だ！！！！！！！！！！！！！！！！`,
+    n => `おじさんはね、君に「${n}」って名前をつけることにしたんだ。`,
+    n => `あなたの本当の名前は${n}です。驚きましたか？`,
+    n => `${n}……その名前、誰かさんにそっくりだ。`,
+    n => `ようこそ。ここではみんな${n}と名乗るんだ。`,
+    n => `なんと！あなたの名前は${n}に決まりました！おめでとうございます！`,
+    n => `${n}という名前で登録されました。変更は受け付けておりません。`,
+    n => `ふたばからの速報：${n}が目撃されました。`,
+    n => `実はずっと前から、あなたのことを${n}だと思っていたんだ。`,
+    // ── レトロゲー・ドラクエ・FF系 ──
+    n => `おめでとう！${n}は　なかまに　なりたそうに　こちらをみている！`,
+    n => `${n}が　あらわれた！`,
+    n => `${n}は　どうする？`,
+    n => `${n}は　ちからをためている…`,
+    n => `しかし${n}には　なにも　おきなかった。`,
+    n => `${n}のHPが　1に　なった！`,
+    n => `${n}に　200のダメージ！`,
+    n => `${n}は　混乱した！`,
+    n => `${n}の　こうげき！　ミス！`,
+    n => `${n}は　レベルが　あがった！`,
+    n => `「${n}よ、おまえはもう死んでいる」`,
+    n => `「${n}……その名前、一生忘れないよ」`,
+    n => `「${n}、ラスボスはおまえだったのか……」`,
+    n => `${n}はアイテムを手に入れた！　→「そうだねボタン」`,
+    // ── 湾岸ミッドナイト系 ──
+    n => `悪魔が住んでいる……あの${n}の中に。`,
+    n => `${n}……おまえは速すぎる。`,
+    n => `俺はこの${n}に魂を売った。`,
+    n => `${n}に乗ったとき、俺は変わった。`,
+    n => `この${n}を超える名前は存在しない。`,
+    n => `「${n}……俺のすべてを賭けてもいい」`,
+    n => `${n}は今夜、湾岸を走っている。`,
+    n => `夜の首都高で、${n}という名の何かに出会った。`,
+    // ── その他ミーム・ネットスラング系 ──
+    n => `${n}、爆誕。`,
+    n => `世界は今日から${n}中心で回る。`,
+    n => `${n}という概念が生まれてしまった。`,
+    n => `ビッグバン以来の大事件：${n}の誕生。`,
+    n => `${n}……このフォルム、このオーラ……本物だ。`,
+    n => `マジで？${n}って本当にいたの？`,
+    n => `全俺が泣いた。理由：${n}。`,
+    n => `伝説は作るものじゃない。${n}のことを言う。`,
+    n => `${n}はまだ生きていた。`,
+    n => `${n}……おかえり。`,
+    n => `時代は${n}を求めていた。`,
+    n => `${n}、見つけた。`,
+  ];
+  const fn = T[Math.floor(Math.random() * T.length)];
+  return fn(name);
+}
+
 // そうだねボタンのクールダウン（ミリ秒）
 const SOUDANE_COOLDOWN = 60 * 60 * 1000;  // 1時間
 const _soudaneLock = { circle: false, general: false };  // メモリ上の連打ロック(localStorage非依存)
@@ -5304,7 +5398,7 @@ const _soudaneLock = { circle: false, general: false };  // メモリ上の連�
 // 入力モーダルは無し。1時間のクールダウン後に再度押せる（ピンクも白に戻る）。
 async function onHeartClick(type) {
   // ★メモリ連打ロック：同一セッション内の高速連打を即座に弾く（localStorage非依存）
-  if (_soudaneLock[type]) { showToast('ちょっと待ってね♡'); return; }
+  if (_soudaneLock[type]) { showToast('そ爆はできないよ'); return; }
 
   const untilKey = `bc_soudane_until_${type}`;
   const nowMs = Date.now();
@@ -5333,7 +5427,7 @@ async function onHeartClick(type) {
   localStorage.setItem('bc_interests', JSON.stringify(localList));
 
   // ★トーストは await の前に即出す（ネットワーク待ちでUIが固まらないように）
-  showToast(`そうだね！「${nickname}」が仲間入り♡`);
+  showToast(genSoudaneToast(nickname));
 
   // DB保存と再描画はバックグラウンドで（UIをブロックしない）
   try { await sbInsertInterest(data); } catch(e) {}
@@ -6321,6 +6415,22 @@ initRequiredMarkListeners();
   }
 })();
 
+// ── 「この企画について」：3回目以降は折りたたむ ──
+function applyAboutFold() {
+  const more = document.getElementById('aboutMore');
+  const btn  = document.getElementById('aboutMoreBtn');
+  if (!more || !btn) return;
+  const visits = parseInt(localStorage.getItem('fg21_visit_count') || '1', 10);
+  if (visits >= 3) { more.style.display = 'none'; btn.style.display = 'inline-block'; }
+  else             { more.style.display = '';      btn.style.display = 'none'; }
+}
+function expandAbout() {
+  const more = document.getElementById('aboutMore');
+  const btn  = document.getElementById('aboutMoreBtn');
+  if (more) more.style.display = '';
+  if (btn)  btn.style.display  = 'none';
+}
+
 </script>
 <!-- CONTACT MODAL -->
 <div class="interest-modal-bg" id="contactModalBg" onclick="closeContactModal(event)">
@@ -6416,24 +6526,3 @@ initRequiredMarkListeners();
 </div>
 </body>
 </html>
-
-// 「この企画について」：3回目以降の訪問では折りたたむ（初見〜2回目は全文）
-function applyAboutFold() {
-  const more = document.getElementById('aboutMore');
-  const btn  = document.getElementById('aboutMoreBtn');
-  if (!more || !btn) return;
-  const visits = parseInt(localStorage.getItem('fg21_visit_count') || '1', 10);
-  if (visits >= 3) {
-    more.style.display = 'none';   // 続きを隠す
-    btn.style.display  = 'inline-block';
-  } else {
-    more.style.display = '';       // 全文表示
-    btn.style.display  = 'none';
-  }
-}
-function expandAbout() {
-  const more = document.getElementById('aboutMore');
-  const btn  = document.getElementById('aboutMoreBtn');
-  if (more) more.style.display = '';
-  if (btn)  btn.style.display  = 'none';
-}
