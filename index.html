@@ -844,7 +844,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
 <div class="tone tone-1"><div class="section">
   <div class="section-title">📖 この企画について</div>
   <p style="color:var(--muted);font-size:.92rem;line-height:1.9;margin:14px 0 0;">
-    お送りいただいたイラストを、レーザーで本革のコースターに刻印してお渡しする参加型企画です。同人誌即売会の頒布・挨拶まわりのノベルティとしても、記念の品としてもお使いいただけます。
+    お送りいただいたイラストを、レーザーで本革のコースターに刻印してお渡しする参加型企画です。ふたば★学園祭２１における頒布・挨拶まわりのノベルティとしても、記念の品としてもお使いいただけます。
   </p>
   <p style="color:var(--muted);font-size:.92rem;line-height:1.9;margin:14px 0 0;">
     前回のふたば★学園祭２０でも同じ内容で開催し、ご好評の声をいただいた一方、私の力不足から至らない点も多くありました。そこで今回は、土台となるこのサイトを構築し、どなたが見てもどういった企画かわかるよう説明を充実させ、イラストを入稿する際の補助もしていくことを目指しました。
@@ -5192,14 +5192,119 @@ function onParticipantClick(type) {
   setTimeout(() => document.getElementById('interest-x').focus(), 100);
 }
 
-function onHeartClick(type) {
-  const likedKey = `bc_interest_liked_${type}`;
-  if (localStorage.getItem(likedKey)) { showToast('すでに登録済みです ♥'); return; }
-  _pendingInterestType = type;
-  document.getElementById('interestModalTitle').textContent = '♡ 興味あり！';
-  document.getElementById('interestModalSub').textContent = 'Xアカウントを入れると顔アイコンが表示されます。空欄のまま送信すると名無しで登録されます。';
-  document.getElementById('interestModalBg').classList.add('show');
-  setTimeout(() => document.getElementById('interest-x').focus(), 100);
+
+// ══ 賑やかし名ジェネレーター（外部依存なし・多言語ミックス）══
+const SOUDANE_NAMES = {
+  // 日本語：修飾 × 名詞
+  jpMod: ['謎の','通りすがりの','三丁目の','無敵の','腹ぺこ','伝説の','迷子の','深夜の','野生の','元気な','物憂げな','光速の','こだわりの','駆け出しの','大物の','名もなき','ねぼすけ','ごきげんな','放浪の','ひとくち'],
+  jpNoun: ['芋侍','肉まん','哲学者','たぬき','枝豆','コースター職人','革命家','旅人','ねこ','こけし','団子','梅干し','妖精','社長','忍者','río','ぬし','店長','吟遊詩人','もぐら'],
+  // 英語：title × noun
+  enTitle: ['Captain','Lord','Sir','Madam','Doctor','Professor','Baron','Lady','Master','Agent','Chief','Mega','Super','Mighty','Lonely','Sleepy','Hungry','Cosmic'],
+  enNoun: ['Pickleton','Potato','Dumpling','Tanuki','Wizard','Edamame','Walrus','Pancake','Pigeon','Noodle','Mochi','Badger','Hedgehog','Turnip','Otter','Biscuit','Goblin','Wombat'],
+  // 他言語の称号
+  esTitle: ['Señor','Señora','Don','Doña'],
+  esNoun: ['Patata','Tomate','Churro','Gato','Pulpo','Sol','Luna','Mango'],
+  deTitle: ['Herr','Frau','Graf','König'],
+  deNoun: ['Kartoffel','Wurst','Brezel','Igel','Eule','Bär','Fuchs','Mond'],
+  frTitle: ['Monsieur','Madame','Capitaine','Comte'],
+  frNoun: ['Pomme','Baguette','Renard','Hibou','Escargot','Soleil','Lune','Canard'],
+};
+function genSoudaneName() {
+  const R = a => a[Math.floor(Math.random()*a.length)];
+  const S = SOUDANE_NAMES;
+  // スタイルをランダムに選ぶ：日本語 / 英語 / 多言語ミックス / 他言語のみ
+  const style = Math.floor(Math.random()*6);
+  switch(style) {
+    case 0: case 1: return R(S.jpMod)+R(S.jpNoun);                 // 日本語(やや多め)
+    case 2: return R(S.enTitle)+' '+R(S.enNoun);                   // 英語のみ
+    case 3: {                                                       // 多言語ミックス
+      const mix = Math.floor(Math.random()*3);
+      if (mix===0) return R(S.enTitle)+' '+R(S.jpNoun);            // Captain たぬき
+      if (mix===1) return '無敵の'+R(S.enNoun);                    // 無敵のWizard
+      return R(S.jpMod)+R(S.esNoun);                               // 謎のPatata
+    }
+    case 4: {                                                       // 他言語(西/独/仏)
+      const L = Math.floor(Math.random()*3);
+      if (L===0) return R(S.esTitle)+' '+R(S.esNoun);
+      if (L===1) return R(S.deTitle)+' '+R(S.deNoun);
+      return R(S.frTitle)+' '+R(S.frNoun);
+    }
+    default: return R(S.jpMod)+R(S.jpNoun);
+  }
+}
+
+// そうだねボタンのクールダウン（ミリ秒）
+const SOUDANE_COOLDOWN = 60 * 60 * 1000;  // 1時間
+
+// そうだね＝賑やかしボタン：押すと多言語名＋アバターを自動付与してカウントアップ。
+// 入力モーダルは無し。1時間のクールダウン後に再度押せる（ピンクも白に戻る）。
+async function onHeartClick(type) {
+  const untilKey = `bc_soudane_until_${type}`;
+  const until = parseInt(localStorage.getItem(untilKey) || '0', 10);
+  const nowMs = Date.now();
+  if (nowMs < until) {
+    const mins = Math.ceil((until - nowMs) / 60000);
+    showToast(`また後でね♡（あと約${mins}分）`);
+    return;
+  }
+
+  // 多言語のふざけた名前を自動生成。アバターは名前シードで一意。
+  const nickname = genSoudaneName();
+  const data = { x_account: '', display_name: nickname, type, ip_address: '' };
+
+  // ローカルにも反映（即座にカウント・アバターへ）
+  const localList = JSON.parse(localStorage.getItem('bc_interests') || '[]');
+  localList.push(data);
+  localStorage.setItem('bc_interests', JSON.stringify(localList));
+
+  // クールダウン開始＆ピンク表示
+  localStorage.setItem(untilKey, String(nowMs + SOUDANE_COOLDOWN));
+  applyHeartState(type, true);
+  scheduleSoudaneReset(type);
+
+  try { await sbInsertInterest(data); } catch(e) {}
+  await loadInterests();
+  showToast(`そうだね！「${nickname}」が仲間入り♡`);
+}
+
+// クールダウン満了でピンクを白に戻し、再度押せるようにする
+function scheduleSoudaneReset(type) {
+  const untilKey = `bc_soudane_until_${type}`;
+  const until = parseInt(localStorage.getItem(untilKey) || '0', 10);
+  const remain = until - Date.now();
+  if (remain <= 0) { applyHeartState(type, false); return; }
+  setTimeout(() => {
+    // 満了時、まだ期限が過ぎていれば白に戻す
+    if (Date.now() >= parseInt(localStorage.getItem(untilKey) || '0', 10)) {
+      applyHeartState(type, false);
+    }
+  }, Math.min(remain, 2147483647));
+}
+
+// ページ表示時にクールダウン状態を復元（ピンク維持 or リセット）
+function restoreSoudaneState() {
+  ['circle','general'].forEach(type => {
+    const until = parseInt(localStorage.getItem(`bc_soudane_until_${type}`) || '0', 10);
+    if (Date.now() < until) { applyHeartState(type, true); scheduleSoudaneReset(type); }
+    else { applyHeartState(type, false); }
+  });
+}
+
+// 「そうだねしてね♡」フキダシは3日間隔でのみ表示（毎回出すとうるさいため）
+const SOUDANE_BUBBLE_INTERVAL = 3 * 24 * 60 * 60 * 1000;  // 3日
+function applyBubbleInterval() {
+  const bubble = document.getElementById('heartBubble');
+  if (!bubble) return;
+  // そうだね済み（クールダウン中）は applyHeartState 側で既に非表示
+  const lastShown = parseInt(localStorage.getItem('bc_soudane_bubble_shown') || '0', 10);
+  const liked = ['circle','general'].some(t => Date.now() < parseInt(localStorage.getItem(`bc_soudane_until_${t}`) || '0', 10));
+  if (liked) { bubble.style.display = 'none'; return; }
+  if (Date.now() - lastShown < SOUDANE_BUBBLE_INTERVAL) {
+    bubble.style.display = 'none';  // 前回表示から3日未満は出さない
+  } else {
+    bubble.style.display = '';
+    localStorage.setItem('bc_soudane_bubble_shown', String(Date.now()));  // 表示した時刻を記録
+  }
 }
 
 function closeInterestModal(e) {
@@ -6033,8 +6138,8 @@ switchPricingTab('general');
   loadGallery();
   await loadInterests();
 })();
-if (localStorage.getItem('bc_interest_liked_circle'))  applyHeartState('circle',  true);
-if (localStorage.getItem('bc_interest_liked_general')) applyHeartState('general', true);
+restoreSoudaneState();  // そうだねのクールダウン状態を復元（ピンク維持 or 白に戻す）
+applyBubbleInterval();   // フキダシは3日間隔でのみ表示
 if (localStorage.getItem('bc_participant_circle'))  applyParticipantState('circle',  true);
 if (localStorage.getItem('bc_participant_general')) applyParticipantState('general', true);
 initCanvasDrag();
