@@ -602,7 +602,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
 .zoom-img{max-width:90vw;max-height:90vh;object-fit:contain;border-radius:6px;}
 
 /* TOAST */
-.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(14px);background:var(--green);color:#fff;padding:11px 22px;border-radius:8px;font-size:.85rem;font-weight:700;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;z-index:1000;text-align:center;max-width:90vw;}
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(14px);background:var(--green);color:#fff;padding:11px 22px;border-radius:8px;font-size:.85rem;font-weight:700;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;z-index:3000;text-align:center;max-width:90vw;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
 /* 中盤セクションの段階配色（上から下へ徐々に濃く・各段は独立した帯） */
@@ -846,6 +846,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
   <p style="color:var(--muted);font-size:.92rem;line-height:1.9;margin:14px 0 0;">
     お送りいただいたイラストを、レーザーで本革のコースターに刻印してお渡しする参加型企画です。ふたば★学園祭２１における頒布・挨拶まわりのノベルティとしても、記念の品としてもお使いいただけます。
   </p>
+  <div id="aboutMore">
   <p style="color:var(--muted);font-size:.92rem;line-height:1.9;margin:14px 0 0;">
     前回のふたば★学園祭２０でも同じ内容で開催し、ご好評の声をいただいた一方、私の力不足から至らない点も多くありました。そこで今回は、土台となるこのサイトを構築し、どなたが見てもどういった企画かわかるよう説明を充実させ、イラストを入稿する際の補助もしていくことを目指しました。
   </p>
@@ -855,6 +856,8 @@ footer a{color:var(--potato-light);text-decoration:none;}
   <p style="color:var(--muted);font-size:.92rem;line-height:1.9;margin:14px 0 0;">
     下にスクロールすると、受け取れるもの・参加できる条件・製作の流れ・料金を順にご案内しています。ご不明な点があれば<a onclick="openContactModal()" style="color:var(--accent);font-weight:700;cursor:pointer;text-decoration:underline;">お気軽にお問い合わせください</a>。
   </p>
+  </div>
+  <button id="aboutMoreBtn" onclick="expandAbout()" style="display:none;margin-top:14px;background:none;border:none;color:var(--accent);font-weight:700;font-size:.88rem;cursor:pointer;font-family:inherit;padding:4px 0;">続きを読む ▼</button>
 </div></div>
 
 <!-- 受け取れるもの -->
@@ -1943,7 +1946,13 @@ function closeContactModal(e) {
 }
 function toggleDmInfo() {
   const d = document.getElementById('dmInfoDetail');
-  if (d) d.style.display = d.style.display === 'none' ? 'inline' : 'none';
+  const btn = document.getElementById('dmInfoToggle');
+  if (!d) return;
+  const open = d.style.display === 'none' || !d.style.display;
+  d.style.display = open ? 'block' : 'none';
+  if (btn) btn.textContent = open
+    ? 'ℹ️ フォローしていなくてもDMできます（閉じる ▲）'
+    : 'ℹ️ フォローしていなくてもDMできます（送り方を見る ▼）';
 }
 async function submitContact() {
   const name  = document.getElementById('contact-name').value.trim();
@@ -5319,9 +5328,12 @@ async function onHeartClick(type) {
   localList.push(data);
   localStorage.setItem('bc_interests', JSON.stringify(localList));
 
-  try { await sbInsertInterest(data); } catch(e) {}
-  await loadInterests();
+  // ★トーストは await の前に即出す（ネットワーク待ちでUIが固まらないように）
   showToast(`そうだね！「${nickname}」が仲間入り♡`);
+
+  // DB保存と再描画はバックグラウンドで（UIをブロックしない）
+  try { await sbInsertInterest(data); } catch(e) {}
+  loadInterests();  // await しない：アバター反映は完了を待たずに進める
 }
 
 // クールダウン満了でピンクを白に戻し、再度押せるようにする
@@ -6202,6 +6214,7 @@ if (localStorage.getItem('bc_participant_circle'))  applyParticipantState('circl
 if (localStorage.getItem('bc_participant_general')) applyParticipantState('general', true);
 initCanvasDrag();
 initVisitorCount();
+applyAboutFold();
 initRequiredMarkListeners();
 // ゲートページのサークルカード上限確認
 (async () => {
@@ -6314,11 +6327,11 @@ initRequiredMarkListeners();
     <!-- フォーム送信 -->
     <div class="interest-field">
       <label>お名前・ハンドルネーム(任意)</label>
-      <input type="text" id="contact-name" placeholder="例：芋野たろう">
+      <input type="text" id="contact-name" class="plain" placeholder="例：芋野たろう">
     </div>
     <div class="interest-field">
       <label>ご連絡先メールアドレス(返信が必要な場合)</label>
-      <input type="email" id="contact-email" placeholder="example@mail.com">
+      <input type="email" id="contact-email" class="plain" placeholder="example@mail.com">
     </div>
     <div class="interest-field">
       <label>お問い合わせ内容</label>
@@ -6335,9 +6348,13 @@ initRequiredMarkListeners();
     <!-- X DM 誘導 -->
     <div style="text-align:center;">
       <a href="https://x.com/daikikoushirou" target="_blank" rel="noopener" class="interest-submit" style="display:inline-block;text-decoration:none;background:#1a1a1a;">𝕏 @daikikoushirou にDMで聞く</a>
-      <div style="font-size:.74rem;color:var(--muted);line-height:1.6;margin-top:8px;display:flex;align-items:flex-start;gap:5px;justify-content:center;text-align:left;">
-        <span style="flex-shrink:0;cursor:pointer;" onclick="toggleDmInfo()" title="フォロー外でもDMできます">ℹ️</span>
-        <span>フォローしていなくてもDMを送れます。<span id="dmInfoDetail" style="display:none;">Xアプリでプロフィールを開き、メッセージ(封筒)アイコンをタップしてください。表示されない場合は、アカウントの「設定→プライバシーと安全→ダイレクトメッセージ」で「すべてのアカウントからのメッセージを許可」が必要なことがあります。それがしの方では誰からでも受け取れるようにしてあります。</span></span>
+      <div style="margin-top:10px;text-align:center;">
+        <button type="button" onclick="toggleDmInfo()" id="dmInfoToggle" style="background:none;border:none;color:var(--accent);font-size:.76rem;font-weight:700;cursor:pointer;font-family:inherit;text-decoration:underline;padding:2px 0;">
+          ℹ️ フォローしていなくてもDMできます（送り方を見る ▼）
+        </button>
+        <div id="dmInfoDetail" style="display:none;font-size:.74rem;color:var(--muted);line-height:1.7;margin-top:8px;text-align:left;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 12px;">
+          Xアプリで <strong>@daikikoushirou</strong> のプロフィールを開き、メッセージ(封筒)アイコンをタップしてください。アイコンが見当たらない場合は、お手数ですが少し時間をおいて再度お試しください。誰からでもDMを受け取れる設定にしています。
+        </div>
       </div>
     </div>
   </div>
@@ -6393,3 +6410,24 @@ initRequiredMarkListeners();
 </div>
 </body>
 </html>
+
+// 「この企画について」：3回目以降の訪問では折りたたむ（初見〜2回目は全文）
+function applyAboutFold() {
+  const more = document.getElementById('aboutMore');
+  const btn  = document.getElementById('aboutMoreBtn');
+  if (!more || !btn) return;
+  const visits = parseInt(localStorage.getItem('fg21_visit_count') || '1', 10);
+  if (visits >= 3) {
+    more.style.display = 'none';   // 続きを隠す
+    btn.style.display  = 'inline-block';
+  } else {
+    more.style.display = '';       // 全文表示
+    btn.style.display  = 'none';
+  }
+}
+function expandAbout() {
+  const more = document.getElementById('aboutMore');
+  const btn  = document.getElementById('aboutMoreBtn');
+  if (more) more.style.display = '';
+  if (btn)  btn.style.display  = 'none';
+}
