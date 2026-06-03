@@ -196,15 +196,21 @@ h1.site-title small{display:block;font-size:.6em;color:var(--potato-light);font-
 .cal-show-btn:hover{background:var(--potato-bg);}
 .cal-months{display:flex;flex-direction:column;gap:10px;}
 .cal-month{background:var(--card);border:1.5px solid var(--border);border-radius:10px;overflow:hidden;}
-.cal-month-title{background:var(--potato-dark);color:#fff;font-size:.78rem;font-weight:700;padding:6px 12px;text-align:center;letter-spacing:.06em;}
+.cal-month-title{background:var(--potato-dark);color:#fff;font-size:.85rem;font-weight:700;padding:8px 12px;text-align:center;letter-spacing:.06em;}
 .cal-dow{display:grid;grid-template-columns:repeat(7,1fr);background:var(--potato-bg);}
-.cal-dow-cell{font-size:.6rem;font-weight:700;color:var(--muted);text-align:center;padding:4px 0;}
-.cal-days{display:grid;grid-template-columns:repeat(7,1fr);gap:0;background:var(--border);border-top:1px solid var(--border);}
-.cal-day{background:var(--card);min-height:64px;padding:3px 0;display:flex;flex-direction:column;align-items:flex-start;gap:1px;}
-.cal-day-num{align-self:center;}
+.cal-dow-cell{font-size:.72rem;font-weight:700;color:var(--muted);text-align:center;padding:5px 0;}
+.cal-dow-cell.sun{color:#c04030;}
+.cal-dow-cell.sat{color:#3060b0;}
+.cal-days{display:grid;grid-template-columns:repeat(7,1fr);grid-auto-rows:minmax(72px,auto);gap:0;background:var(--border);border-top:1px solid var(--border);}
+.cal-day{background:var(--card);min-height:72px;padding:3px 0 4px;display:flex;flex-direction:column;align-items:stretch;gap:2px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);overflow:hidden;box-sizing:border-box;}
+.cal-day:nth-child(7n){border-right:none;}
+.cal-day-num{text-align:center;line-height:1.6;font-size:.75rem;font-weight:600;flex-shrink:0;}
 .cal-day.empty{background:var(--bg);}
-.cal-day-num{font-size:.62rem;line-height:1.4;font-weight:500;}
-.cal-event-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;align-self:center;}
+.cal-day.sun-col{background:#fdf5f5;}
+.cal-day.sat-col{background:#f5f5fd;}
+.cal-day.empty.sun-col{background:#f8eded;}
+.cal-day.empty.sat-col{background:#ededf8;}
+.cal-day.event-day{outline:2px solid rgba(200,150,20,.5);outline-offset:-2px;}
 .cal-bar{width:100%;height:4px;flex-shrink:0;cursor:default;}
 #calTooltip{display:none;position:fixed;background:#2c2418;color:#fff;font-size:.75rem;line-height:1.6;padding:7px 11px;border-radius:7px;white-space:nowrap;z-index:9999;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.3);transform:translateX(-50%);}
 #calTooltip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#2c2418;}
@@ -243,9 +249,9 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:0;}
 .early-bird-note{font-size:.82rem;background:var(--gold-bg);border:1.5px solid var(--gold-border);border-radius:8px;padding:10px 14px;margin-top:12px;color:var(--gold);line-height:1.6;}
 
 /* FLOW */
-.flow-section{background:var(--card);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.flow-section{background:#ddceaa;border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
 .flow-list{display:flex;flex-direction:column;gap:12px;margin-top:20px;}
-.flow-item{border:1.5px solid var(--border);border-radius:10px;overflow:hidden;background:#fff;}
+.flow-item{border:1.5px solid var(--border);border-radius:10px;overflow:hidden;background:var(--card);}
 .flow-head{display:flex;align-items:center;gap:14px;padding:14px 18px;cursor:pointer;user-select:none;transition:background .15s;}
 .flow-head:hover{background:var(--potato-bg);}
 .flow-num{width:32px;height:32px;flex-shrink:0;background:var(--potato-dark);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;}
@@ -254,7 +260,7 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:0;}
 .flow-head-brief{font-size:.8rem;color:var(--muted);margin-top:1px;}
 .flow-toggle{font-size:1rem;color:var(--muted);transition:transform .2s;flex-shrink:0;}
 .flow-item.open .flow-toggle{transform:rotate(180deg);}
-.flow-body{display:none;padding:0 18px 18px 64px;border-top:1px solid var(--border);background:#fafaf4;}
+.flow-body{display:none;padding:0 18px 18px 64px;border-top:1px solid var(--border);background:var(--card);}
 .flow-item.open .flow-body{display:block;}
 .flow-body-inner{padding-top:14px;font-size:.88rem;color:var(--ink);line-height:1.75;}
 .flow-body-inner h4{font-size:.9rem;font-weight:700;color:var(--potato-dark);margin:14px 0 6px;}
@@ -858,7 +864,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
     「なぜ1点無料なの？」と思うかもしれません。いただいたイラストのコースターは、当スペースの一角で展示したり、(当初は合同企画を名乗っていたこともあり、)1〜2点ほど頒布させてもらうことを考えています。コースターは、そのお礼のようなものだと思ってください。また、現場で展示を見た他の参加者の方が、イラストを描いた方のサークルへ足を運んでみるという動線づくりになったり、自分の描いたコースターを受け取るために会場へ遊びに来るきっかけになればうれしいです。
   </p>
   <p style="color:var(--muted);font-size:.92rem;line-height:1.9;margin:14px 0 0;">
-    そのようなもろもろの結果として、ふたば★学園祭が少しでもにぎやかになったら最高だな...！と思っているわけです。
+    私としてはそのようなもろもろの結果として、ふたば★学園祭が少しでもにぎやかになったら最高だな...！と思っているわけです。
   </p>
   <p style="color:var(--muted);font-size:.92rem;line-height:1.9;margin:14px 0 0;">
     下にスクロールすると、受け取れるもの・参加できる条件・製作の流れ・料金を順にご案内しています。ご不明な点があれば<a onclick="openContactModal()" style="color:var(--accent);font-weight:700;cursor:pointer;text-decoration:underline;">お気軽にお問い合わせください</a>。
@@ -1125,6 +1131,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
   <div class="dates-box" id="datesBox">
     <div class="dates-box-title">📅 重要な日程(<span id="eventDateDisplay"></span> 開催)</div>
     <div class="dates-grid" id="datesGrid"></div>
+    <div id="todayBannerWrap"></div>
   </div>
   <!-- カレンダー -->
   <button class="cal-show-btn" id="calShowBtn" onclick="toggleCalendarVisibility()">📅 カレンダーで確認する</button>
@@ -2127,14 +2134,16 @@ function initDatesUI() {
       tip: '端材サンプル試し刷りとは、本番と同じイラストを端材(はぎれ素材)に試し刷りし、仕上がりイメージを事前に確認できるオプションです。この期限内の申込者は初回1回が無料。' },
     { label: '大量注文締め切り', date: BULK_ORDER_END, note: 'サークル6点以上の申込期限', active: n < BULK_ORDER_END, circleOnly: true,
       tip: 'この期日までに申し込んだサークル参加者のみ、6点以上(最大20点)の注文が可能です。以降は最大5点に制限されます。' },
-    { label: '仕上がり確認画像 無料受付終了', date: COMPLETION_IMG_END, note: '開催10日前', active: n < COMPLETION_IMG_END,
+    { label: '仕上がり確認画像 無料受付終了', date: COMPLETION_IMG_END, note: '開催10日前まで¥0', active: n < COMPLETION_IMG_END,
+      hideWhen: () => n >= COMPLETION_IMG_END,
       tip: '1点目の刻印完了後に画像をお送りするオプションです。確認・OKをいただいてから残りを製作します。開催10日前まで無料。以降は¥100の有料オプションとして開催5日前まで受け付けます。' },
-    { label: '仕上がり確認画像 受付終了(有料分)', date: COMPLETION_IMG_PAID_END, note: '開催5日前', active: n < COMPLETION_IMG_PAID_END,
+    { label: '仕上がり確認画像 受付終了(有料分)', date: COMPLETION_IMG_PAID_END, note: '開催5日前まで¥100', active: n < COMPLETION_IMG_PAID_END,
+      hideWhen: () => n < COMPLETION_IMG_END,
       tip: '開催10日前を過ぎると¥100の有料オプションになります。開催5日前を過ぎると、製作スケジュールの都合でこのオプション自体を受け付けられなくなります。' },
     { label: '申し込み締め切り', date: DEADLINE, note: '開催2日前 朝4時', active: n < DEADLINE,
       tip: 'コースターの製作には時間が必要なため、開催2日前の朝4時を申し込み締め切りとしています。お早めにどうぞ。' },
   ];
-  document.getElementById('datesGrid').innerHTML = items.map(it => {
+  document.getElementById('datesGrid').innerHTML = items.filter(it => !(it.hideWhen && it.hideWhen())).map(it => {
     const expired = !it.active;
     const tipHtml = it.tip ? `<span class="tip-icon" tabindex="0">ⓘ<span class="tip-popup">${it.tip}</span></span>` : '';
     return `<div class="date-item${it.circleOnly ? ' circle-only-date' : ''}">
@@ -2409,7 +2418,7 @@ function applyModeUI() {
       const priceEl = document.getElementById('completionPriceTag');
       if (priceEl) {
         priceEl.textContent = ci.fee > 0 ? `¥${ci.fee}` : '無料';
-        priceEl.className = ci.fee > 0 ? 'sample-price-bad' : 'sample-price-good';
+        priceEl.className = `sample-price-badge ${ci.fee > 0 ? 'sample-price-paid' : 'sample-price-free'}`;
       }
       const noteEl = document.getElementById('completionPaidNote');
       if (noteEl) noteEl.style.display = ci.fee > 0 ? 'block' : 'none';
@@ -2426,154 +2435,140 @@ function renderCalendar(mode) {
   const wrap = document.getElementById('calWrap');
   if (!wrap) return;
 
-  // 2〜5月固定
-  const y    = EVENT_DATE.getFullYear(); // 2027
-  const SHOW_MONTHS = [
-    new Date(y, 3, 1), // 4月
-    new Date(y, 4, 1), // 5月
-  ];
-
-  // 期間バー定義(開始〜終了、色、ラベル、row=同じ値で同一行に重ねる)
-  const PERIODS = [
-    { start: new Date(y, 1, 1),
-      end:   EARLY_BIRD_END,
-      color: '#f0a040', label: '早割期間 🪑', opacity: .85 },
-    { start: new Date(y, 1, 1),
-      end:   DEADLINE,
-      color: '#8ca8c8', label: '申し込み受付期間', opacity: .7 },
-    { start: COMPLETION_IMG_END,
-      end:   COMPLETION_IMG_PAID_END,
-      color: '#e0a0b0', label: '確認画像 有料(¥100)受付', opacity: .7, row: 'ci' },
-    { start: new Date(y, 1, 1),
-      end:   COMPLETION_IMG_END,
-      color: '#d07080', label: '確認画像 無料受付', opacity: .85, row: 'ci' },
-    { start: new Date(y, 1, 1),
-      end:   BULK_ORDER_END,
-      color: '#a070d0', label: '大量注文可能期間 🪑', opacity: .85, circleOnly: true },
-    { start: new Date(y, 1, 1),
-      end:   SAMPLE_FREE_END,
-      color: '#60b8e0', label: 'サンプル無料期間', opacity: .85 },
-  ];
-
-  // 締め切り単発イベント(ドット)※バーが終わる日はバーで表現するのでdotは除外
-  // 一般参加者タブではサークル専用バーを除外
-  const activePeriods = PERIODS.filter(p => !p.circleOnly || mode === 'circle');
-
-  const DOTS = [
-  ];
-
+  const y = EVENT_DATE.getFullYear();
+  function toDay0(d) { const x = new Date(d); x.setHours(0,0,0,0); return x; }
   const todayD = new Date(); todayD.setHours(0,0,0,0);
+
+  // ── 期間バー定義（上から順。開始が遅いものは下に配置）──
+  const _ciPaidStart = (() => { const d = new Date(COMPLETION_IMG_END); d.setDate(d.getDate()+1); return d; })();
+  const ALL_PERIODS = [
+    { start: new Date(y, 1, 1), end: EARLY_BIRD_END,          color: '#d08020', label: '早割期間',            circleOnly: true },
+    { start: new Date(y, 1, 1), end: SAMPLE_FREE_END,         color: '#2090b8', label: 'サンプル無料期間' },
+    { start: new Date(y, 1, 1), end: BULK_ORDER_END,          color: '#7050b8', label: '大量注文可能期間',     circleOnly: true },
+    { start: new Date(y, 1, 1), end: COMPLETION_IMG_END,      color: '#c03870', label: '確認画像 無料受付' },
+    { start: new Date(y, 1, 1), end: DEADLINE,                color: '#6888a8', label: '申し込み受付期間' },
+    { start: _ciPaidStart,      end: COMPLETION_IMG_PAID_END, color: '#c06080', label: '確認画像 有料受付' },
+  ];
+  const PERIODS = ALL_PERIODS.filter(p => !p.circleOnly || mode === 'circle');
+
+  // ── 締め切りイベント（今日バナー用）──
+  const ALL_EVENTS = [
+    { date: EARLY_BIRD_END,          color: '#d08020', label: '早割',
+      benefit: '早割が適用される',         discount: 340, badge: '最大¥340引き', circleOnly: true },
+    { date: SAMPLE_FREE_END,         color: '#2090b8', label: 'サンプル無料',
+      benefit: 'サンプル試し刷りが無料になる', discount: 300, badge: '¥300引き' },
+    { date: BULK_ORDER_END,          color: '#7050b8', label: '大量注文',
+      benefit: '6〜20点の大量注文が可能',   discount: 0,   badge: null, circleOnly: true },
+    { date: COMPLETION_IMG_END,      color: '#c03870', label: '確認画像(無料)',
+      benefit: '仕上がり確認画像が無料でもらえる', discount: 100, badge: '¥100引き' },
+    { date: COMPLETION_IMG_PAID_END, color: '#c06080', label: '確認画像(有料)',
+      benefit: '仕上がり確認画像(¥100)を申し込める', discount: 0, badge: '¥100' },
+    { date: DEADLINE,                color: '#6888a8', label: '申し込み',
+      benefit: null },
+  ];
+  const EVENTS = ALL_EVENTS.filter(e => !e.circleOnly || mode === 'circle');
+
+  const SHOW_MONTHS = [
+    new Date(y, 3, 1),
+    new Date(y, 4, 1),
+  ];
+
   const DOW      = ['日','月','火','水','木','金','土'];
   const MONTH_JP = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
-
-  function toDay0(d) { const x = new Date(d); x.setHours(0,0,0,0); return x; }
 
   const monthsHtml = SHOW_MONTHS.map(monthStart => {
     const y2 = monthStart.getFullYear();
     const m  = monthStart.getMonth();
-    const firstDow   = monthStart.getDay();
+    const firstDow    = monthStart.getDay();
     const daysInMonth = new Date(y2, m+1, 0).getDate();
-    // 5月は第1週(7日まで)のみ表示
-    const displayDays = (m === 4) ? 7 : daysInMonth;
+    // 5月は開催日(3日)を含む週の土曜まで表示
+    const eventDayOfWeek = new Date(y2, m, EVENT_DATE.getDate()).getDay(); // 3日の曜日
+    const daysUntilSat = eventDayOfWeek === 6 ? 0 : 6 - eventDayOfWeek;
+    const displayDays = (m === 4) ? Math.min(EVENT_DATE.getDate() + daysUntilSat, daysInMonth) : daysInMonth;
+    const monthEnd    = new Date(y2, m, displayDays);
 
-    // ドットマップ
-    const dotMap = {};
-    DOTS.forEach(ev => {
-      const ed = toDay0(ev.date);
-      if (ed.getFullYear() === y2 && ed.getMonth() === m) {
-        const d = ed.getDate();
-        if (!dotMap[d]) dotMap[d] = [];
-        dotMap[d].push(ev);
-      }
-    });
-
-    // バーマップ: 各日にどの期間が有効か（同じrowのバーは同一セルに合流）
-    const barMap = {};
-    // rowごとに同日のバーを合流させるため、まずrowキーごとに処理
-    activePeriods.forEach((p, pi) => {
+    // 各日に表示するバーのリスト（期間内かつ月内）
+    const barsByDay = {};
+    PERIODS.forEach((p, pi) => {
       const ps = toDay0(p.start);
       const pe = toDay0(p.end);
+      if (pe < new Date(y2, m, 1)) return; // この月より前に終了
+      if (ps > new Date(y2, m, displayDays)) return; // この月より後に開始
       for (let d = 1; d <= displayDays; d++) {
         const dt = new Date(y2, m, d);
-        if (dt >= ps && dt <= pe) {
-          if (!barMap[d]) barMap[d] = [];
-          // 同じrowキーがすでにある場合は追記（同一セルに複数バーを描く）
-          barMap[d].push({ ...p, idx: pi });
-        }
+        if (dt < ps) continue; // 開始前はスキップ
+        if (dt > pe) break;
+        if (!barsByDay[d]) barsByDay[d] = [];
+        barsByDay[d].push({ ...p, pi,
+          isFirst: dt.getTime() === ps.getTime(),
+          isLast:  dt.getTime() === pe.getTime(),
+        });
       }
     });
 
-    const dowRow = DOW.map((d,i) =>
-      `<div class="cal-dow-cell" style="${i===0?'color:#e05040':i===6?'color:#4070c0':''}">${d}</div>`
-    ).join('');
+    const dowRow = DOW.map((d,i) => {
+      const cls = i===0 ? ' sun' : i===6 ? ' sat' : '';
+      return `<div class="cal-dow-cell${cls}">${d}</div>`;
+    }).join('');
 
-    const blanks = Array(firstDow).fill('<div class="cal-day empty"></div>').join('');
+    const blanks = Array(firstDow).fill(0).map((_,bi) => {
+      const dow2 = bi % 7;
+      let cls = 'cal-day empty';
+      if (dow2===0) cls += ' sun-col';
+      if (dow2===6) cls += ' sat-col';
+      return `<div class="${cls}"></div>`;
+    }).join('');
 
     const dayCells = Array.from({length: displayDays}, (_, i) => {
       const day = i + 1;
       const dt  = new Date(y2, m, day);
       const dow = dt.getDay();
-      const isToday  = dt.getTime() === todayD.getTime();
-      const isPast    = dt < todayD;
+      const isToday    = dt.getTime() === todayD.getTime();
+      const isPast     = dt < todayD;
       const isEventDay = dt.getTime() === toDay0(EVENT_DATE).getTime();
-      const dots = dotMap[day] || [];
-      const bars = barMap[day] || [];
+      const isSun = dow === 0, isSat = dow === 6;
 
-      // バー表示(各期間を小さな帯として積む)
-      // 同じrowのバーは同一行に横並びで表示
-      const rowGroups = {};
-      bars.forEach(b => {
-        const rk = b.row || b.idx;
-        if (!rowGroups[rk]) rowGroups[rk] = [];
-        rowGroups[rk].push(b);
-      });
-      const barHtml = Object.values(rowGroups).map(group => {
-        if (group.length === 1) {
-          const b = group[0];
-          const dtStart = toDay0(b.start);
-          const dtEnd   = toDay0(b.end);
-          const isFirst = dt.getTime() === dtStart.getTime();
-          const isLast  = dt.getTime() === dtEnd.getTime();
-          const brL = isFirst ? '4px' : '0';
-          const brR = isLast  ? '4px' : '0';
-          const br  = `${brL} ${brR} ${brR} ${brL}`;
-          const w   = (isFirst || isLast) ? '50%' : '100%';
-          const ml  = isFirst ? '50%' : '0';
-          const tip = `${b.label}　〜 ${fmtDate(b.end)} まで`;
-          return `<div class="cal-bar" data-tip="${tip}" style="background:${b.color};border-radius:${br};opacity:${isPast?.45:b.opacity};width:${w};margin-left:${ml};flex-shrink:0;"></div>`;
+      // この日が属する週（日曜起点）にバーが1本でもあるか判定
+      const weekStartDay = day - dow;
+      let weekHasBar = false;
+      for (let wd = weekStartDay; wd < weekStartDay + 7; wd++) {
+        if (wd >= 1 && wd <= displayDays && barsByDay[wd] && barsByDay[wd].length > 0) {
+          weekHasBar = true; break;
         }
-        // 同じrow(確認画像2本)：接続して1行に横並び
-        // 無料(左)→有料(右)の順で並べる（PERIODSの並び順通り）
-        const segs = group.map(b => {
-          const dtStart = toDay0(b.start);
-          const dtEnd   = toDay0(b.end);
-          const isFirst = dt.getTime() === dtStart.getTime();
-          const isLast  = dt.getTime() === dtEnd.getTime();
-          // 開始日・終了日は50%幅、それ以外は100%（flex内なのでflex:1で均等）
-          const flex = (isFirst || isLast) ? '0 0 50%' : '1';
-          const brL = isFirst ? '4px' : '0';
-          const brR = isLast  ? '4px' : '0';
-          const br  = `${brL} ${brR} ${brR} ${brL}`;
-          const tip = `${b.label}　〜 ${fmtDate(b.end)} まで`;
-          return `<div class="cal-bar" data-tip="${tip}" style="background:${b.color};border-radius:${br};opacity:${isPast?.45:b.opacity};flex:${flex};min-width:0;"></div>`;
-        });
-        return `<div style="display:flex;width:100%;height:4px;flex-shrink:0;">${segs.join('')}</div>`;
-      }).join('');
+      }
 
-      const dotHtml = dots.map(ev =>
-        `<div class="cal-event-dot" style="background:${ev.color}" title="${ev.label}"></div>`
-      ).join('');
-
-      const numStyle = dow===0 ? 'color:#e05040' : dow===6 ? 'color:#4070c0' : '';
+      const numColor = isSun ? '#c04030' : isSat ? '#3060b0' : 'var(--ink)';
+      const numOpacity = isPast ? 'opacity:.4;' : '';
       const dayNumHtml = isToday
-        ? `<span class="cal-day-num" style="background:var(--potato-dark);color:#fff;border-radius:50%;width:15px;height:15px;display:flex;align-items:center;justify-content:center;">${day}</span>`
-        : `<span class="cal-day-num" style="${numStyle}${isPast?';opacity:.45':''}">${day}</span>`;
+        ? `<div class="cal-day-num"><span style="background:var(--potato-dark);color:#fff;border-radius:50%;width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;font-size:.75rem;">${day}</span></div>`
+        : `<div class="cal-day-num" style="color:${numColor};${numOpacity}">${day}</div>`;
 
-      const eventIconHtml = isEventDay
-        ? `<span style="font-size:11px;align-self:center;line-height:1;margin-top:1px;" title="ふたば★学園祭２１ 開催日">🌿</span>`
+      const bars = barsByDay[day] || [];
+      // この週にバーが1本でもあるか（バーのない週は透明スロットを出さず詰める）
+      // バーはPERIODSの順番（終了日昇順）で上から積む
+      const barHtml = weekHasBar ? PERIODS.map((p, pi) => {
+        const b = bars.find(b => b.pi === pi);
+        if (!b) {
+          return `<div style="height:4px;flex-shrink:0;"></div>`;
+        }
+        const brL = b.isFirst ? '3px' : '0';
+        const brR = b.isLast  ? '3px' : '0';
+        const op  = isPast ? .35 : .85;
+        const tip = `${b.label}　〜 ${fmtDate(b.end)}まで`;
+        return `<div class="cal-bar-tip" data-tip="${tip}" style="height:4px;flex-shrink:0;background:${b.color};border-radius:${brL} ${brR} ${brR} ${brL};opacity:${op};cursor:default;"></div>`;
+      }).join('') : '';
+
+      // 開催日テキスト：バーのない週は縦中央、ある週は下寄せ
+      const eventAlign = weekHasBar ? 'flex-end' : 'center';
+      const eventIcon = isEventDay
+        ? `<div style="text-align:center;font-size:9px;font-weight:700;color:#a07800;line-height:1.4;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:${eventAlign};padding-bottom:2px;">ふたば★学園祭２１<br>開催日🌿</div>`
         : '';
 
-      return `<div class="cal-day"${isEventDay ? ' style="background:rgba(232,176,32,.12);border:1.5px solid rgba(232,176,32,.4);"' : ''}>${dayNumHtml}${barHtml}${dotHtml}${eventIconHtml}</div>`;
+      let cls = 'cal-day';
+      if (isSun) cls += ' sun-col';
+      if (isSat) cls += ' sat-col';
+      if (isEventDay) cls += ' event-day';
+      return `<div class="${cls}">${dayNumHtml}${barHtml}${eventIcon}</div>`;
     }).join('');
 
     return `<div class="cal-month">
@@ -2583,34 +2578,117 @@ function renderCalendar(mode) {
     </div>`;
   }).join('');
 
-  // 凡例
-  const periodLegend = activePeriods.map(p =>
-    `<div class="cal-legend-item"><div class="cal-legend-dot" style="background:${p.color};border-radius:2px;width:18px;height:6px;"></div>${p.label}</div>`
-  ).join('');
+  // 凡例（色＋名前＋期間）
+  // バーの描画順とは別に、凡例テキストは終了日の昇順で並べる（無料受付→有料受付の順）
+  const legendPeriods = [...PERIODS].sort((a, b) => a.end - b.end);
+  const legendRows = legendPeriods.map(p => {
+    // 開始日が2月1日（全期間共通の仮起点）以外の場合は開始日も表示
+    const showStart = p.start && p.start.getMonth() !== 1; // 2月=month1 以外
+    const rangeText = showStart
+      ? `${fmtDate(p.start)} 〜 ${fmtDate(p.end)}`
+      : `〜 ${fmtDate(p.end)}`;
+    return `<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);">
+      <div style="width:24px;height:6px;border-radius:3px;background:${p.color};flex-shrink:0;"></div>
+      <span style="font-size:.82rem;color:var(--ink);flex:1;">${p.label}</span>
+      <span style="font-size:.82rem;font-weight:700;color:${p.color};">${rangeText}</span>
+    </div>`;
+  }).join('');
+
+  // 「今日申し込むと」バナー
+  const todayNow = new Date();
+  const applicable = EVENTS.filter(e => e.benefit && todayNow <= e.date);
+  let bannerHtml = '';
+  if (applicable.length > 0) {
+    // ── 表示項目を統合して組み立てる ──
+    const hasEarlyBird  = applicable.some(e => e.date === EARLY_BIRD_END);
+    const hasBulk       = applicable.some(e => e.date === BULK_ORDER_END);
+    const hasSample     = applicable.some(e => e.date === SAMPLE_FREE_END);
+    const hasCiFree     = applicable.some(e => e.date === COMPLETION_IMG_END);
+    const hasCiPaid     = applicable.some(e => e.date === COMPLETION_IMG_PAID_END);
+
+    const mergedItems = [];
+
+    // 無料枠は常に表示（日付に関係なく）
+    if (mode === 'circle') {
+      mergedItems.push({ text: '1〜3点目のコースターが無料', badge: null });
+    } else {
+      mergedItems.push({ text: '1点目のコースターが無料', badge: null });
+    }
+
+    // 早割＋大量注文はセットで1行に（両方ある場合）
+    if (hasEarlyBird && hasBulk) {
+      mergedItems.push({ text: '6〜20点の大量注文が可能で、早割も適用される', badge: '最大¥340引き' });
+    } else if (hasEarlyBird) {
+      mergedItems.push({ text: '早割が適用される', badge: '最大¥340引き' });
+    } else if (hasBulk) {
+      mergedItems.push({ text: '6〜20点の大量注文が可能' });
+    }
+
+    if (hasSample) {
+      mergedItems.push({ text: 'サンプル試し刷りオプションが無料', badge: '¥300引き' });
+    }
+
+    // 確認画像：無料期間中なら「無料」だけ言えばいい。有料のみなら費用を明示
+    if (hasCiFree) {
+      mergedItems.push({ text: '仕上がり確認画像送信オプションが無料', badge: '¥100引き' });
+    } else if (hasCiPaid) {
+      mergedItems.push({ text: '仕上がり確認画像送信オプションを申し込める', badge: '¥100' });
+    }
+
+    const discountTotal = mergedItems.reduce((s, e) => {
+      if (!e.badge) return s;
+      const m = e.badge.match(/¥(\d+)引き/);
+      return s + (m ? parseInt(m[1]) : 0);
+    }, 0);
+
+    const items = mergedItems.map(e => {
+      const tag = e.badge
+        ? `<span style="font-size:.7rem;font-weight:700;background:#fff3cd;color:#856404;padding:1px 7px;border-radius:10px;margin-left:5px;">${e.badge}</span>`
+        : '';
+      return `<li style="margin-bottom:2px;">${e.text}${tag}</li>`;
+    }).join('');
+
+    const summary = discountTotal > 0
+      ? `値引き合計は最大 <strong style="color:var(--accent);">¥${discountTotal.toLocaleString()}</strong> になる可能性があります。`
+      : '';
+
+    bannerHtml = `
+      <div style="margin-top:12px;background:var(--gold-bg);border:1.5px solid var(--gold-border);border-radius:8px;padding:12px 14px;">
+        <div style="font-size:.78rem;font-weight:700;color:var(--gold);margin-bottom:5px;">⭐ 今日申し込むと…</div>
+        <ul style="font-size:.82rem;color:var(--ink);line-height:1.7;padding-left:1.2em;margin:0 0 5px;">${items}</ul>
+        ${summary ? `<div style="font-size:.78rem;color:var(--muted);line-height:1.6;">${summary}</div>` : ''}
+      </div>`;
+  }
 
   wrap.innerHTML = `
     <div class="cal-months">${monthsHtml}</div>
-    <div class="cal-legend" style="margin-top:10px;">${periodLegend}</div>
+    <div style="margin-top:12px;border:1.5px solid var(--border);border-radius:8px;background:var(--card);padding:4px 12px 8px;">
+      <div style="font-size:.7rem;font-weight:700;color:var(--muted);padding:6px 0 2px;letter-spacing:.05em;">凡例</div>
+      ${legendRows}
+    </div>
   `;
 
-  // ツールチップ(fixed位置でマウス追従)
-  const tip = document.getElementById('calTooltip');
-  wrap.querySelectorAll('.cal-bar[data-tip]').forEach(bar => {
+  // 「今日申し込むと」バナーは重要な日程の直下に表示
+  const bannerWrap = document.getElementById('todayBannerWrap');
+  if (bannerWrap) bannerWrap.innerHTML = bannerHtml;
+
+  // ツールチップ
+  const tipEl = document.getElementById('calTooltip');
+  wrap.querySelectorAll('.cal-bar-tip[data-tip]').forEach(bar => {
     bar.addEventListener('mouseenter', e => {
-      tip.textContent = bar.dataset.tip;
-      tip.style.display = 'block';
+      tipEl.textContent = bar.dataset.tip;
+      tipEl.style.display = 'block';
+      tipEl.style.left = e.clientX + 'px';
+      tipEl.style.top  = (e.clientY - 44) + 'px';
     });
     bar.addEventListener('mousemove', e => {
-      tip.style.left  = e.clientX + 'px';
-      tip.style.top   = (e.clientY - 44) + 'px';
+      tipEl.style.left = e.clientX + 'px';
+      tipEl.style.top  = (e.clientY - 44) + 'px';
     });
     bar.addEventListener('mouseleave', () => {
-      tip.style.display = 'none';
+      tipEl.style.display = 'none';
     });
   });
-
-  // 初期高さ設定(遅延してDOM確定後に計算)
-
 }
 
 function toggleCalendarVisibility() {
