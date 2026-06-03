@@ -1156,6 +1156,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
     <div class="shape-note" style="margin-top:8px;background:#f0f8ff;border-left:3px solid #7ab8e0;border-radius:0 8px 8px 0;">
       🔬 <strong>端材サンプル試し刷り</strong>：3週間前まで の申込者 または 11点以上 の申込者は初回無料。それ以外は¥300。端材を使用するため形状が不完全・非平坦な場合があります。
     </div>
+    <div class="shape-note completion-img-note-box" id="ciNoteCircle" style="margin-top:8px;background:#fdf0f5;border-left:3px solid #d07090;border-radius:0 8px 8px 0;display:none;"></div>
     <div class="shape-note" style="margin-top:8px;background:#fff0f0;border-left:3px solid #e08080;border-radius:0 8px 8px 0;">
       ⚠️ <strong>無料枠(1〜3点目)は、同一サークルの最初の注文にのみ適用されます。</strong>複数デザインを分けて申し込む場合や複数回注文する場合、2回目以降の注文は全点数有料となります。
     </div>
@@ -1176,6 +1177,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
     <div class="shape-note" style="margin-top:8px;background:#f0f8ff;border-left:3px solid #7ab8e0;border-radius:0 8px 8px 0;">
       🔬 <strong>端材サンプル試し刷り</strong>：3週間前まで の申込者は初回無料。それ以外は¥300。端材を使用するため形状が不完全・非平坦な場合があります。
     </div>
+    <div class="shape-note completion-img-note-box" id="ciNoteGeneral" style="margin-top:8px;background:#fdf0f5;border-left:3px solid #d07090;border-radius:0 8px 8px 0;display:none;"></div>
     <div class="shape-note" style="margin-top:8px;background:#fff8f0;border-left:3px solid #e8b060;border-radius:0 8px 8px 0;font-size:.82rem;line-height:1.75;color:var(--ink);">
       📝 <strong>価格変更の可能性について：</strong>1人で製作しているため、作業量が著しく増えた場合、単価が上がる可能性があります。早めのお申し込みをお待ちしております。
     </div>
@@ -2044,6 +2046,26 @@ function completionImgState() {
   return { available: false, fee: 0, phase: 'closed' };
 }
 
+// 価格表の「仕上がり確認画像」説明を現在のフェーズに応じて出し分け
+function renderCompletionImgNote() {
+  const ci = completionImgState();
+  let html = '';
+  if (ci.phase === 'free') {
+    html = `🖼️ <strong>仕上がり確認画像</strong>：1点目の刻印が完了した時点で、仕上がりの写真をお送りするオプションです。確認・OKのご連絡をいただいてから残りを製作します。<strong>開催10日前(${fmtDate(COMPLETION_IMG_END)})まで無料</strong>。以降は¥${COMPLETION_IMG_PRICE}の有料オプションになります。`;
+  } else if (ci.phase === 'paid') {
+    html = `🖼️ <strong>仕上がり確認画像</strong>：1点目の刻印が完了した時点で、仕上がりの写真をお送りするオプションです。確認・OKのご連絡をいただいてから残りを製作します。無料受付は終了し、現在は<strong>¥${COMPLETION_IMG_PRICE}の有料オプション(開催5日前 ${fmtDate(COMPLETION_IMG_PAID_END)}まで)</strong>です。`;
+  } else {
+    // closed: 受付終了 → 表示しない
+    html = '';
+  }
+  ['ciNoteCircle', 'ciNoteGeneral'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (html) { el.innerHTML = html; el.style.display = ''; }
+    else      { el.style.display = 'none'; }
+  });
+}
+
 function calcCost(mode, qty, sampleRequested, sampleFreeEligible, sampleCount, earlyBirdOverride, freeOverride) {
   const p = PRICING_BASE[mode];
   const earlyBird = (earlyBirdOverride !== undefined ? earlyBirdOverride : isEarlyBird()) && mode === 'circle';
@@ -2160,6 +2182,7 @@ function initDatesUI() {
   // ゲート画面のサークル最大表示
   document.getElementById('gateCircleMax').textContent = isCircleBulkAllowed() ? '最大20点まで' : '最大5点まで(2週間前以降)';
   renderCalendar();
+  renderCompletionImgNote();
 
   // イベントまでのカウントダウン(常時表示)
   const t = TRANSLATIONS[_currentLang] || TRANSLATIONS.ja;
