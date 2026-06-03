@@ -1712,8 +1712,12 @@ async function sbInsert(order) {
     made_at: order.madeAt||null,
     status: order.status, code_used: order.codeUsed||false
   };
+  // 申込INSERTは行を読み返さない（return=minimal）。
+  // anonにはSELECT権限が無いため representation だと読み返しでRLS拒否されるのを回避。
   const res = await fetch(`${SUPABASE_URL}/rest/v1/orders`, {
-    method: 'POST', headers: SB_H(), body: JSON.stringify(payload)
+    method: 'POST',
+    headers: { ...SB_H(), 'Prefer': 'return=minimal' },
+    body: JSON.stringify(payload)
   });
   if (!res.ok) throw new Error('DB保存失敗 ' + res.status);
 }
@@ -5000,7 +5004,7 @@ function showToast(msg) { const t = document.getElementById('toast'); t.textCont
 async function sbInsertInterest(data) {
   if (!sbReady()) return;
   await fetch(`${SUPABASE_URL}/rest/v1/interests`, {
-    method: 'POST', headers: SB_H(), body: JSON.stringify(data)
+    method: 'POST', headers: { ...SB_H(), 'Prefer': 'return=minimal' }, body: JSON.stringify(data)
   });
 }
 async function sbFetchInterests() {
