@@ -703,7 +703,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
           <div class="gate-pcol-section">
             <div class="gate-pcol-section-body">
               <div class="gate-avatars" id="interestGeneralAvatars"></div>
-              <div class="gate-pcol-count interest" id="interestGeneralCount">💬 興味あり：0人</div>
+              <div class="gate-pcol-count interest" id="interestGeneralCount">💬 そうだね ×0</div>
             </div>
             <button class="soudane-btn" id="heartBtnGeneral" onclick="onHeartClick('general')" style="flex-shrink:0;">
               <span class="soudane-cell">だ</span><span class="soudane-cell">そ</span>
@@ -728,7 +728,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
           <div class="gate-pcol-section">
             <div class="gate-pcol-section-body">
               <div class="gate-avatars" id="interestCircleAvatars"></div>
-              <div class="gate-pcol-count interest" id="interestCircleCount">💬 興味あり：0人</div>
+              <div class="gate-pcol-count interest" id="interestCircleCount">💬 そうだね ×0</div>
             </div>
             <div class="heart-bubble-wrap" style="align-self:flex-end;flex-shrink:0;">
               <button class="soudane-btn" id="heartBtnCircle" onclick="onHeartClick('circle')">
@@ -5457,9 +5457,9 @@ function renderInterests(list) {
   renderInterestAvatars('gateCircleAvatars',  circleParticipants);
   renderInterestAvatars('gateGeneralAvatars', generalParticipants);
 
-  // 興味あり(そうだね)カウント・アバター
-  document.getElementById('interestCircleCount').textContent  = (t.interestPre||'💬 興味あり：') + circleList.length  + (t.interestSuf||'人');
-  document.getElementById('interestGeneralCount').textContent = (t.interestPre||'💬 興味あり：') + generalList.length + (t.interestSuf||'人');
+  // そうだねカウント・アバター（ふたば風 ×N 表記）
+  document.getElementById('interestCircleCount').textContent  = '💬 そうだね ×' + circleList.length;
+  document.getElementById('interestGeneralCount').textContent = '💬 そうだね ×' + generalList.length;
   renderInterestAvatars('interestCircleAvatars',  circleList);
   renderInterestAvatars('interestGeneralAvatars', generalList);
 }
