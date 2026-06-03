@@ -1188,7 +1188,6 @@ footer a{color:var(--potato-light);text-decoration:none;}
     <div class="section-title">製作依頼フォーム</div>
     <div class="section-sub">画像をアップロードして仕上がりを確認しながら注文できます</div>
     <div class="form-deadline-note" id="formDeadlineNote">🚫 申し込みは締め切りました。ありがとうございました！</div>
-    <div class="form-earlybird-note" id="formEarlyBirdNote"></div>
     <form class="order-form" id="orderForm" novalidate>
       <div class="form-group full">
         <label>おなまえ<span class="required-mark" id="req-name">*</span></label>
@@ -1683,12 +1682,14 @@ const EVENT_DATE = new Date('2027-05-03T00:00:00+09:00');
 // ══════════════════════════════════════════
 
 // 派生日付(自動計算)
+// DEADLINEのみ「開催2日前の朝4時」。それ以外の「○日まで」系は、
+// その日いっぱい(23:59:59)を境界にする＝表記通り「その日まで」有効。
 const DEADLINE = (() => { const d = new Date(EVENT_DATE); d.setDate(d.getDate() - 2); d.setHours(4,0,0,0); return d; })();
-const EARLY_BIRD_END = (() => { const d = new Date(EVENT_DATE); d.setMonth(d.getMonth() - 1); return d; })();
-const SAMPLE_FREE_END = (() => { const d = new Date(EVENT_DATE); d.setDate(d.getDate() - 21); return d; })();
-const BULK_ORDER_END = (() => { const d = new Date(EVENT_DATE); d.setDate(d.getDate() - 14); return d; })();
-const COMPLETION_IMG_END = (() => { const d = new Date(EVENT_DATE); d.setDate(d.getDate() - 10); return d; })();
-const COMPLETION_IMG_PAID_END = (() => { const d = new Date(EVENT_DATE); d.setDate(d.getDate() - 5); return d; })();
+const EARLY_BIRD_END = (() => { const d = new Date(EVENT_DATE); d.setMonth(d.getMonth() - 1); d.setHours(23,59,59,999); return d; })();
+const SAMPLE_FREE_END = (() => { const d = new Date(EVENT_DATE); d.setDate(d.getDate() - 21); d.setHours(23,59,59,999); return d; })();
+const BULK_ORDER_END = (() => { const d = new Date(EVENT_DATE); d.setDate(d.getDate() - 14); d.setHours(23,59,59,999); return d; })();
+const COMPLETION_IMG_END = (() => { const d = new Date(EVENT_DATE); d.setDate(d.getDate() - 10); d.setHours(23,59,59,999); return d; })();
+const COMPLETION_IMG_PAID_END = (() => { const d = new Date(EVENT_DATE); d.setDate(d.getDate() - 5); d.setHours(23,59,59,999); return d; })();
 const COMPLETION_IMG_PRICE = 100;
 
 
@@ -1729,8 +1730,12 @@ function isSampleFreeEligible(mode, qty) {
 function isCircleBulkAllowed() { return now() < BULK_ORDER_END; }
 
 function fmtDate(d) {
+  const h = d.getHours(), mi = d.getMinutes();
+  // 23:59(日の終わりマーカー)は時刻を表示しない＝日付のみ
+  const isDayEnd = (h === 23 && mi === 59);
+  const showTime = (h || mi) && !isDayEnd;
   return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日` +
-    (d.getHours() || d.getMinutes() ? ` ${d.getHours()}時${d.getMinutes() ? d.getMinutes()+'分' : ''}` : '');
+    (showTime ? ` ${h}時${mi ? mi+'分' : ''}` : '');
 }
 
 // ══════════════════════════════════════════════════
@@ -2376,14 +2381,6 @@ function applyModeUI() {
       : `最大5点まで(開催2週間前以降の制限)${isEarlyBird() ? ' ⭐早割適用中' : ''}`;
   } else {
     qtyHint.textContent = '最大2点まで(1点目無料)同じイラストで複数枚製作できます';
-  }
-  // 早割バナー
-  const ebNote = document.getElementById('formEarlyBirdNote');
-  if (isC && isEarlyBird()) {
-    ebNote.classList.add('show');
-    ebNote.textContent = `⭐ 早割適用中！${fmtDate(EARLY_BIRD_END)}まで有料分が各段階で¥20割引になります`;
-  } else {
-    ebNote.classList.remove('show');
   }
   document.getElementById('generalImageNotice').style.display = isC ? 'none' : 'block';
   // サークル名フィールドの表示切替
