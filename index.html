@@ -604,6 +604,14 @@ footer a{color:var(--potato-light);text-decoration:none;}
 /* TOAST */
 .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(14px);background:var(--green);color:#fff;padding:11px 22px;border-radius:8px;font-size:.85rem;font-weight:700;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;z-index:1000;text-align:center;max-width:90vw;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* 中盤セクションのグラデーション帯（クリーム→フォームの濃茶へ橋渡し） */
+.grad-band{width:100%;}
+.grad-1{background:linear-gradient(180deg,#f4f0e4 0%,#efe8d6 100%);}
+.grad-2{background:linear-gradient(180deg,#efe8d6 0%,#e7dcc2 100%);}
+.grad-3{background:linear-gradient(180deg,#e7dcc2 0%,#d8c39e 100%);}
+.grad-4{background:linear-gradient(180deg,#d8c39e 0%,#5c4a1e 100%);}
+
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
@@ -1025,7 +1033,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
 <hr class="divider">
 
 <!-- 参加資格 -->
-<div class="section">
+<div class="grad-band grad-1"><div class="section">
   <div class="section-title">参加資格・イラストの制限</div>
   <div class="req-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px;">
     <div style="background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:22px 20px;">
@@ -1048,12 +1056,10 @@ footer a{color:var(--potato-light);text-decoration:none;}
       </div>
     </div>
   </div>
-</div>
-
-<hr class="divider">
+</div></div>
 
 <!-- 受け取れるもの -->
-<div class="section">
+<div class="grad-band grad-2"><div class="section">
   <div class="section-title">参加して受け取れるもの</div>
   <p style="color:var(--muted);font-size:.92rem;line-height:1.8;margin:14px 0 22px;">
     イラストをお送りいただくと、それを刻印したレザーコースターと、その完成品をきれいに撮影した宣材写真をお渡しします。写真はSNSへの投稿などにご自由にお使いいただけます。
@@ -1076,12 +1082,10 @@ footer a{color:var(--potato-light);text-decoration:none;}
       </div>
     </div>
   </div>
-</div>
-
-<hr class="divider">
+</div></div>
 
 <!-- 料金表 -->
-<div class="section">
+<div class="grad-band grad-3"><div class="section">
   <div class="section-title">料金表</div>
   <!-- 日程情報ボックス -->
   <div class="dates-box" id="datesBox">
@@ -1135,9 +1139,10 @@ footer a{color:var(--potato-light);text-decoration:none;}
       📝 <strong>価格変更の可能性について：</strong>1人で製作しているため、作業量が著しく増えた場合、単価が上がる可能性があります。早めのお申し込みをお待ちしております。
     </div>
   </div>
-</div>
+</div></div>
 
-<hr class="divider">
+<!-- フォームへの色の橋渡し -->
+<div class="grad-band grad-4" style="height:80px;"></div>
 
 <!-- フォーム -->
 <div class="form-section" id="order">
