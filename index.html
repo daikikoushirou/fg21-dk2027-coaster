@@ -1650,7 +1650,7 @@ function fmtDate(d) {
 
 // ══════════════════════════════════════════════════
 // ▼▼▼ STEP 6: ここにSupabaseの値を貼り付けてください ▼▼▼
-const SUPABASE_URL      = 'https://bzjwhtemobtrfaghsdwt.supabase.co/';
+const SUPABASE_URL      = 'https://bzjwhtemobtrfaghsdwt.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ6andodGVtb2J0cmZhZ2hzZHd0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MDY3MzEsImV4cCI6MjA5NTQ4MjczMX0.NJuzPVdv3KWfNFswlfhYqX-ppC5wFUX-7nGXN_HiCLI';
 // ▲▲▲ ここだけ変更すればSupabase連携が有効になります ▲▲▲
 // ══════════════════════════════════════════════════
@@ -1671,13 +1671,14 @@ const SB_H = () => ({
 
 // 画像をStorageにアップロード → 公開URLを返す
 async function sbUploadImage(file, filename) {
+  // x-upsert は付けない：上書き(UPDATE)はanon権限で拒否されるため。
+  // 注文ごとにファイル名は一意なので新規作成(INSERT)で十分。
   const res = await fetch(`${SUPABASE_URL}/storage/v1/object/order-images/${filename}`, {
     method: 'POST',
     headers: {
       'apikey': SUPABASE_ANON_KEY,
       'Authorization': authBearer(),
-      'Content-Type': file.type || 'image/png',
-      'x-upsert': 'true'
+      'Content-Type': file.type || 'image/png'
     },
     body: file
   });
