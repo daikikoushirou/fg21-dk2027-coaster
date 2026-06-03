@@ -3440,45 +3440,32 @@ function toggleAdmin(e) {
   setTimeout(() => document.getElementById('adminPwInput').focus(), 50);
 }
 // 移行期の旧パスワード（Supabase認証アカウント運用が定着したら削除予定）
-const LEGACY_ADMIN_PW = 'Xt4p8VrC2K9';
-
 async function submitAdminPw() {
   const email = (document.getElementById('adminEmailInput')?.value || '').trim();
   const pw    = document.getElementById('adminPwInput').value;
   const errEl = document.getElementById('adminPwError');
   errEl.style.display = 'none';
 
-  // メールが入力されていれば Supabase 認証を試みる（本来の安全な経路）
-  if (email) {
-    try {
-      const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
-        method: 'POST',
-        headers: { 'apikey': SUPABASE_ANON_KEY, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password: pw })
-      });
-      if (res.ok) {
-        const data = await res.json();
-        _authToken = data.access_token || null;   // 以降の管理操作はこのトークンで実行
-        openAdminPanel();
-        return;
-      }
-      // 認証失敗 → エラー表示（旧パスワードのフォールバックには進まない）
-      errEl.style.display = 'block';
-      return;
-    } catch (e) {
-      console.warn('認証通信エラー:', e);
-      errEl.style.display = 'block';
+  if (!email) { errEl.style.display = 'block'; return; }
+
+  // メール＋パスワードによる Supabase 認証（唯一のログイン経路）
+  try {
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+      method: 'POST',
+      headers: { 'apikey': SUPABASE_ANON_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password: pw })
+    });
+    if (res.ok) {
+      const data = await res.json();
+      _authToken = data.access_token || null;   // 以降の管理操作はこのトークンで実行
+      openAdminPanel();
       return;
     }
+    errEl.style.display = 'block';
+  } catch (e) {
+    console.warn('認証通信エラー:', e);
+    errEl.style.display = 'block';
   }
-
-  // メール未入力 → 移行期の旧パスワード判定（anonモードで管理画面に入る）
-  if (pw === LEGACY_ADMIN_PW) {
-    _authToken = null;  // 旧経路：トークンなし（RLS適用前のみ有効）
-    openAdminPanel();
-    return;
-  }
-  errEl.style.display = 'block';
 }
 
 // ログイン成功後の共通処理：管理パネルを開いてデータを読み込む
@@ -6021,11 +6008,11 @@ initRequiredMarkListeners();
 <div id="adminPwModal" style="display:none;position:fixed;inset:0;background:rgba(20,14,8,.7);z-index:9999;display:none;align-items:center;justify-content:center;">
   <div style="background:#fffdf6;border-radius:12px;padding:28px 24px;width:300px;box-shadow:0 8px 32px rgba(0,0,0,.25);">
     <div style="font-size:.95rem;font-weight:700;color:#2c2418;margin-bottom:16px;">🔒 管理者ログイン</div>
-    <input type="email" id="adminEmailInput" placeholder="メールアドレス（未登録時は空欄）" autocomplete="username"
-      style="width:100%;padding:10px 12px;border:1.5px solid #d6cdb4;border-radius:7px;font-size:.93rem;box-sizing:border-box;outline:none;font-family:inherit;margin-bottom:8px;"
+    <input type="email" id="adminEmailInput" placeholder="メールアドレス" autocomplete="username"
+      style="width:100%;padding:10px 12px;border:1.5px solid #d6cdb4;border-radius:7px;font-size:.93rem;box-sizing:border-box;outline:none;font-family:inherit;margin-bottom:8px;color:#2c2418;background:#fff;"
       onkeydown="if(event.key==='Enter')submitAdminPw();">
     <input type="password" id="adminPwInput" placeholder="パスワード" autocomplete="current-password"
-      style="width:100%;padding:10px 12px;border:1.5px solid #d6cdb4;border-radius:7px;font-size:.93rem;box-sizing:border-box;outline:none;font-family:inherit;"
+      style="width:100%;padding:10px 12px;border:1.5px solid #d6cdb4;border-radius:7px;font-size:.93rem;box-sizing:border-box;outline:none;font-family:inherit;color:#2c2418;background:#fff;"
       onkeydown="if(event.key==='Enter')submitAdminPw();">
     <div id="adminPwError" style="color:#e05040;font-size:.78rem;margin-top:6px;display:none;">ログインに失敗しました</div>
     <div style="display:flex;gap:8px;margin-top:16px;justify-content:flex-end;">
