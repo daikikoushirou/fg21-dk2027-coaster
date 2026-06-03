@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- 検索エンジンに登録されないようにする（公開アピール開始時にこのブロックを削除） -->
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
 <title>ふたば★学園祭２１ 参加型企画 イラスト入りレザーコースター</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
@@ -779,7 +782,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
 
 
 <!-- DEADLINE BANNER -->
-<div class="deadline-banner" id="deadlineBanner">
+<div class="deadline-banner" id="deadlineBanner" role="status" aria-live="polite">
   🚫 申し込みは締め切りました(開催2日前 朝4時に締め切り)
 </div>
 
@@ -963,27 +966,27 @@ footer a{color:var(--potato-light);text-decoration:none;}
 
                           <div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
                             <div style="display:flex;gap:6px;align-items:center;">
-                              <img src="https://bzjwhtemobtrfaghsdwt.supabase.co/storage/v1/object/public/order-images/exemplar1_input.png" style="width:70px;height:70px;object-fit:contain;border-radius:6px;border:1.5px solid var(--border);" alt="元データ1">
+                              <img src="https://bzjwhtemobtrfaghsdwt.supabase.co/storage/v1/object/public/order-images/exemplar1_input.png" style="width:70px;height:70px;object-fit:contain;border-radius:6px;border:1.5px solid var(--border);" loading="lazy" alt="元データ1">
                               <span style="font-size:.85rem;color:var(--muted);">→</span>
-                              <img src="https://bzjwhtemobtrfaghsdwt.supabase.co/storage/v1/object/public/order-images/exemplar1_result.png" style="width:70px;height:70px;object-fit:contain;border-radius:6px;border:1.5px solid var(--border);" alt="仕上がり1">
+                              <img src="https://bzjwhtemobtrfaghsdwt.supabase.co/storage/v1/object/public/order-images/exemplar1_result.png" style="width:70px;height:70px;object-fit:contain;border-radius:6px;border:1.5px solid var(--border);" loading="lazy" alt="仕上がり1">
                             </div>
                             <div style="font-size:.67rem;color:var(--muted);">丸型・人型キャラ</div>
                           </div>
 
                           <div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
                             <div style="display:flex;gap:6px;align-items:center;">
-                              <img src="https://bzjwhtemobtrfaghsdwt.supabase.co/storage/v1/object/public/order-images/exemplar2_input.png" style="width:70px;height:70px;object-fit:contain;border-radius:6px;border:1.5px solid var(--border);" alt="元データ2">
+                              <img src="https://bzjwhtemobtrfaghsdwt.supabase.co/storage/v1/object/public/order-images/exemplar2_input.png" style="width:70px;height:70px;object-fit:contain;border-radius:6px;border:1.5px solid var(--border);" loading="lazy" alt="元データ2">
                               <span style="font-size:.85rem;color:var(--muted);">→</span>
-                              <img src="https://bzjwhtemobtrfaghsdwt.supabase.co/storage/v1/object/public/order-images/exemplar2_result.png" style="width:70px;height:70px;object-fit:contain;border-radius:6px;border:1.5px solid var(--border);" alt="仕上がり2">
+                              <img src="https://bzjwhtemobtrfaghsdwt.supabase.co/storage/v1/object/public/order-images/exemplar2_result.png" style="width:70px;height:70px;object-fit:contain;border-radius:6px;border:1.5px solid var(--border);" loading="lazy" alt="仕上がり2">
                             </div>
                             <div style="font-size:.67rem;color:var(--muted);">角型・パターン柄</div>
                           </div>
 
                           <div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
                             <div style="display:flex;gap:6px;align-items:center;">
-                              <img src="https://bzjwhtemobtrfaghsdwt.supabase.co/storage/v1/object/public/order-images/exemplar3_input.png" style="width:70px;height:70px;object-fit:contain;border-radius:6px;border:1.5px solid var(--border);" alt="元データ3">
+                              <img src="https://bzjwhtemobtrfaghsdwt.supabase.co/storage/v1/object/public/order-images/exemplar3_input.png" style="width:70px;height:70px;object-fit:contain;border-radius:6px;border:1.5px solid var(--border);" loading="lazy" alt="元データ3">
                               <span style="font-size:.85rem;color:var(--muted);">→</span>
-                              <img src="https://bzjwhtemobtrfaghsdwt.supabase.co/storage/v1/object/public/order-images/exemplar3_result.png" style="width:70px;height:70px;object-fit:contain;border-radius:6px;border:1.5px solid var(--border);" alt="仕上がり3">
+                              <img src="https://bzjwhtemobtrfaghsdwt.supabase.co/storage/v1/object/public/order-images/exemplar3_result.png" style="width:70px;height:70px;object-fit:contain;border-radius:6px;border:1.5px solid var(--border);" loading="lazy" alt="仕上がり3">
                             </div>
                             <div style="font-size:.67rem;color:var(--muted);">丸型・動物キャラ</div>
                           </div>
@@ -1140,20 +1143,20 @@ footer a{color:var(--potato-light);text-decoration:none;}
       <div class="form-group full">
         <label>おなまえ<span class="required-mark" id="req-name">*</span></label>
         <input type="text" id="f-name" placeholder="ポコ太郎" required onkeydown="if(event.key==='Enter')event.preventDefault();">
-        <span class="field-error" id="e-name">お名前を入力してください</span>
+        <span class="field-error" role="alert" aria-live="polite" id="e-name">お名前を入力してください</span>
       </div>
 
       <!-- サークルスペース・サークル名(サークルモードのみ) -->
       <div class="form-group" id="circleSpaceGroup" style="display:none;">
         <label>サークルスペース<span style="font-size:.72rem;font-weight:400;color:rgba(255,255,255,.6);margin-left:6px;">任意</span></label>
         <input type="text" id="f-circle-space" placeholder="例：A-01A" oninput="this.value=this.value.replace(/[^A-Za-z0-9\-]/g,'').toUpperCase()" autocomplete="off" inputmode="text" onkeydown="if(event.key==='Enter')event.preventDefault();">
-        <span class="field-error" id="e-circle-space">サークルスペースを入力してください</span>
+        <span class="field-error" role="alert" aria-live="polite" id="e-circle-space">サークルスペースを入力してください</span>
         <span style="font-size:.68rem;color:rgba(255,255,255,.6);margin-top:2px;display:block;">半角英数字・自動大文字変換</span>
       </div>
       <div class="form-group" id="circleNameGroup" style="display:none;">
         <label>サークル名<span class="required-mark" id="req-circle-name">*</span></label>
         <input type="text" id="f-circle-name" onblur="onCircleNameBlur()" placeholder="例：いもけんぴ工房" onkeydown="if(event.key==='Enter')event.preventDefault();">
-        <span class="field-error" id="e-circle-name">サークル名を入力してください</span>
+        <span class="field-error" role="alert" aria-live="polite" id="e-circle-name">サークル名を入力してください</span>
       </div>
 
       <!-- 一般参加者向けサークル名(任意) -->
@@ -1206,7 +1209,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
       <div class="form-group">
         <label id="label-email">メールアドレス<span class="required-mark" id="req-email">*</span></label>
         <input type="text" id="f-email" inputmode="email" autocomplete="email" placeholder="example@mail.com" oninput="this.value=this.value.replace(/[^\x20-\x7E]/g,'')" onblur="this.value=this.value.replace(/[^\x20-\x7E]/g,'').trim()" onkeydown="if(event.key==='Enter')event.preventDefault();">
-        <span class="field-error" id="e-email">正しいメールアドレスを入力してください</span>
+        <span class="field-error" role="alert" aria-live="polite" id="e-email">正しいメールアドレスを入力してください</span>
       </div>
 
       <!-- X アカウント -->
@@ -1216,7 +1219,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
           <div class="x-account-at">@</div>
           <input type="text" id="f-xaccount" placeholder="username(@なし)" onkeydown="if(event.key==='Enter')event.preventDefault();">
         </div>
-        <span class="field-error" id="e-xaccount">Xアカウントを入力してください</span>
+        <span class="field-error" role="alert" aria-live="polite" id="e-xaccount">Xアカウントを入力してください</span>
       </div>
       <div class="form-group">
         <label>形状<span class="required-mark" id="req-shape">*</span></label>
@@ -1225,7 +1228,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
           <option value="sq">スクエア(85×85 mm)</option>
           <option value="ci">サークル(φ90 mm)</option>
         </select>
-        <span class="field-error" id="e-shape"></span>
+        <span class="field-error" role="alert" aria-live="polite" id="e-shape"></span>
       </div>
       <div class="form-group">
         <label>点数<span class="required-mark" id="req-qty">*</span></label>
@@ -1235,7 +1238,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
           <button type="button" onclick="adjustQty(1)" style="width:36px;height:36px;border-radius:8px;border:1.5px solid var(--border);background:var(--card);color:var(--ink);font-size:1.2rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">＋</button>
         </div>
         <div class="qty-hint" id="qtyHint"></div>
-        <span class="field-error" id="e-qty"></span>
+        <span class="field-error" role="alert" aria-live="polite" id="e-qty"></span>
       </div>
       <div class="form-group full">
         <label>デザイン画像<span class="required-mark" id="req-image">*</span></label>
@@ -1248,7 +1251,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
           <div class="upload-text-main">クリックまたはドラッグ＆ドロップ</div>
           <div class="upload-text-sub">PNG・JPG・SVG・WEBP・BMP(最大10MB)/ PSD・AI(要圧縮・プレビュー非対応)</div>
         </div>
-        <span class="field-error" id="e-image">画像をアップロードしてください</span>
+        <span class="field-error" role="alert" aria-live="polite" id="e-image">画像をアップロードしてください</span>
         <div class="preview-wrapper" id="previewWrapper">
           <div class="preview-pane">
             <div class="preview-label"><span class="dot"></span>プレビュー(<span id="previewShapeLabel">スクエア</span>)</div>
@@ -1373,7 +1376,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
         </div>
       </div>
       <div class="submit-row">
-        <div id="submitErrorSummary" style="display:none;width:100%;margin-bottom:10px;background:rgba(224,80,64,.15);border:1.5px solid rgba(224,80,64,.5);border-radius:8px;padding:10px 14px;font-size:.82rem;color:rgba(255,180,160,1);line-height:1.7;"></div>
+        <div id="submitErrorSummary" role="alert" aria-live="assertive" style="display:none;width:100%;margin-bottom:10px;background:rgba(224,80,64,.15);border:1.5px solid rgba(224,80,64,.5);border-radius:8px;padding:10px 14px;font-size:.82rem;color:rgba(255,180,160,1);line-height:1.7;"></div>
         <div class="submit-note">送信後に引換コードが発行されます。当日ご持参ください。</div>
         <button type="submit" class="btn-submit" id="submitBtn">製作情報送信 🔨</button>
       </div>
@@ -1620,7 +1623,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
 </div>
 
 <div class="zoom-backdrop" id="zoomBackdrop" onclick="closeZoom()"><img class="zoom-img" id="zoomImg" src="" alt=""></div>
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
 // ══════════════════════════════════════════
@@ -5595,10 +5598,10 @@ async function loadGallery() {
     const photos = parsePhotos(r.completion_photo);
     const mainPhoto = photos[0] || '';
     const subThumbs = photos.length > 1
-      ? `<div style="display:flex;gap:4px;margin-top:4px;justify-content:center;flex-wrap:wrap;">${photos.slice(1).map(u => `<img src="${escapeHTML(u)}" alt="" style="width:38px;height:38px;object-fit:cover;border-radius:4px;border:1px solid var(--border);cursor:pointer;" onclick="zoomImg('${escapeHTML(u)}')">`).join('')}</div>`
+      ? `<div style="display:flex;gap:4px;margin-top:4px;justify-content:center;flex-wrap:wrap;">${photos.slice(1).map(u => `<img src="${escapeHTML(u)}" loading="lazy" alt="" style="width:38px;height:38px;object-fit:cover;border-radius:4px;border:1px solid var(--border);cursor:pointer;" onclick="zoomImg('${escapeHTML(u)}')">`).join('')}</div>`
       : '';
     return `<div style="background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:10px;text-align:center;">
-      <img src="${escapeHTML(mainPhoto)}" alt="完成品" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:7px;cursor:pointer;" onclick="zoomImg('${escapeHTML(mainPhoto)}')">
+      <img src="${escapeHTML(mainPhoto)}" loading="lazy" alt="完成品" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:7px;cursor:pointer;" onclick="zoomImg('${escapeHTML(mainPhoto)}')">
       ${subThumbs}
       ${infoLines ? `<div style="margin-top:8px;line-height:1.5;">${infoLines}</div>` : ''}
       ${qrImg}
@@ -5759,8 +5762,8 @@ initRequiredMarkListeners();
       document.body.appendChild(bar);
     }
   } else {
-    console.log('✅ 起動チェック OK(全' + Object.keys(checks).length + '項目)');
     if (location.search.includes('debug')) {
+      console.log('✅ 起動チェック OK(全' + Object.keys(checks).length + '項目)');
       const bar = document.createElement('div');
       bar.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#4a7c40;color:#fff;padding:10px;z-index:99999;font-size:13px;text-align:center;font-weight:700;';
       bar.textContent = '✅ 起動チェック OK(全' + Object.keys(checks).length + '項目)';
@@ -5807,7 +5810,7 @@ function expandAbout() {
       <label>お問い合わせ内容</label>
       <textarea id="contact-body" rows="4" placeholder="ご質問・ご相談の内容をご記入ください" style="width:100%;padding:9px 11px;border:1.5px solid var(--border);border-radius:7px;font-size:.9rem;box-sizing:border-box;font-family:inherit;resize:vertical;color:var(--ink);"></textarea>
     </div>
-    <div id="contactError" style="color:#e05040;font-size:.78rem;margin-bottom:8px;display:none;">お問い合わせ内容をご記入ください</div>
+    <div id="contactError" role="alert" aria-live="assertive" style="color:#e05040;font-size:.78rem;margin-bottom:8px;display:none;">お問い合わせ内容をご記入ください</div>
     <button class="interest-submit" onclick="submitContact()">この内容で送信する</button>
 
     <!-- 区切り -->
@@ -5872,7 +5875,7 @@ function expandAbout() {
     <input type="password" id="adminPwInput" placeholder="パスワード" autocomplete="current-password"
       style="width:100%;padding:10px 12px;border:1.5px solid #d6cdb4;border-radius:7px;font-size:.93rem;box-sizing:border-box;outline:none;font-family:inherit;color:#2c2418;background:#fff;"
       onkeydown="if(event.key==='Enter')submitAdminPw();">
-    <div id="adminPwError" style="color:#e05040;font-size:.78rem;margin-top:6px;display:none;">ログインに失敗しました</div>
+    <div id="adminPwError" role="alert" aria-live="assertive" style="color:#e05040;font-size:.78rem;margin-top:6px;display:none;">ログインに失敗しました</div>
     <div style="display:flex;gap:8px;margin-top:16px;justify-content:flex-end;">
       <button onclick="closeAdminPwModal()" style="padding:8px 16px;border:1.5px solid #d6cdb4;background:#fff;border-radius:7px;cursor:pointer;font-family:inherit;font-size:.85rem;">キャンセル</button>
       <button onclick="submitAdminPw()" style="padding:8px 16px;background:#5c4a1e;color:#fff;border:none;border-radius:7px;cursor:pointer;font-family:inherit;font-size:.85rem;font-weight:700;">ログイン</button>
