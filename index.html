@@ -1392,7 +1392,10 @@ footer a{color:var(--potato-light);text-decoration:none;}
 <!-- ADMIN -->
 <div class="admin-section" id="adminPanel" style="display:none">
   <div class="section">
-    <div class="admin-label">🔒 管理パネル</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+      <div class="admin-label">🔒 管理パネル</div>
+      <button class="admin-btn" onclick="logoutAdmin()" style="font-size:.78rem;">ログアウト</button>
+    </div>
 
     <!-- 受付上限設定 -->
     <div style="background:var(--potato-dark);border-radius:12px;padding:16px;margin-bottom:16px;">
@@ -1655,9 +1658,13 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 function sbReady() {
   return SUPABASE_URL !== 'YOUR_SUPABASE_URL' && SUPABASE_ANON_KEY !== 'YOUR_SUPABASE_ANON_KEY';
 }
+// 管理者ログインのアクセストークン（未ログイン時はnull→anonキーで動作）
+let _authToken = null;
+// Authorizationに使うBearer値：ログイン中はユーザートークン、未ログインはanonキー
+const authBearer = () => 'Bearer ' + (_authToken || SUPABASE_ANON_KEY);
 const SB_H = () => ({
   'apikey': SUPABASE_ANON_KEY,
-  'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+  'Authorization': authBearer(),
   'Content-Type': 'application/json',
   'Prefer': 'return=representation'
 });
@@ -1668,7 +1675,7 @@ async function sbUploadImage(file, filename) {
     method: 'POST',
     headers: {
       'apikey': SUPABASE_ANON_KEY,
-      'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+      'Authorization': authBearer(),
       'Content-Type': file.type || 'image/png',
       'x-upsert': 'true'
     },
@@ -1714,7 +1721,7 @@ async function sbInsert(order) {
 // 全注文をDBから取得
 async function sbFetch() {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/orders?order=created_at.desc&limit=500`, {
-    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
+    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': authBearer() }
   });
   if (!res.ok) throw new Error('取得失敗 ' + res.status);
   const rows = await res.json();
@@ -1741,6 +1748,57 @@ async function sbFetch() {
     image_url: r.image_url, cutlineUrl: r.cutline_url||'', freeOverride: r.free_override||false, leatherPreview: r.leather_preview||false, status: r.status, codeUsed: r.code_used,
     thumb: ''
   }));
+}
+
+// ── 公開用取得（RLS適用後は orders_public ビュー、未適用時は orders にフォールバック）──
+// 参加者アバター用：type と アバター種(xAccount)、dedup用の name/ref のみ
+async function sbFetchPublic() {
+  const H = { 'apikey': SUPABASE_ANON_KEY, 'Authorization': authBearer() };
+  // ① 公開ビューを試す
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/orders_public?select=ref,type,avatar_x_account,pub_name&limit=500`, { headers: H });
+    if (res.ok) {
+      const rows = await res.json();
+      return rows.map(r => ({ ref: r.ref, type: r.type, xAccount: r.avatar_x_account || '', name: r.pub_name || '' }));
+    }
+  } catch (e) { /* フォールバックへ */ }
+  // ② フォールバック：orders を直接（RLS未適用時のみ成功）
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/orders?select=ref,type,x_account,name&limit=500`, { headers: H });
+    if (!res.ok) return [];
+    const rows = await res.json();
+    return rows.map(r => ({ ref: r.ref, type: r.type, xAccount: r.x_account || '', name: r.name || '' }));
+  } catch (e) { return []; }
+}
+
+// ギャラリー用：公開許可済みの項目のみ（ビューは許可外をNULLで返す）
+async function sbFetchGallery() {
+  const H = { 'apikey': SUPABASE_ANON_KEY, 'Authorization': authBearer() };
+  // ① 公開ビューを試す
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/orders_public?gallery_ok=eq.true&status=eq.made&order=created_at.desc`, { headers: H });
+    if (res.ok) {
+      const rows = await res.json();
+      return rows.map(r => ({
+        completion_photo: r.completion_photo,
+        name: r.pub_name || null, circle_name: r.pub_circle_name || null, x_account: r.pub_x_account || null,
+        gallery_publish_at: r.gallery_publish_at, made_at: r.made_at, status: r.status
+      }));
+    }
+  } catch (e) { /* フォールバックへ */ }
+  // ② フォールバック：orders を直接（許可フラグはこちらで適用）
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/orders?select=*&gallery_ok=eq.true&status=eq.made&order=date.desc`, { headers: H });
+    if (!res.ok) return [];
+    const rows = await res.json();
+    return rows.map(r => ({
+      completion_photo: r.completion_photo,
+      name: r.gallery_show_name ? r.name : null,
+      circle_name: r.gallery_show_circle ? r.circle_name : null,
+      x_account: r.gallery_show_x ? r.x_account : null,
+      gallery_publish_at: r.gallery_publish_at, made_at: r.made_at, status: r.status
+    }));
+  } catch (e) { return []; }
 }
 
 // 注文データを部分更新(patchは{status:'done'}などオブジェクト)
@@ -2017,7 +2075,7 @@ async function checkOrderLimit(mode) {
   try {
     const res = await fetch(
       `${SUPABASE_URL}/rest/v1/orders?type=eq.${mode}&select=ref`,
-      { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } }
+      { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': authBearer() } }
     );
     const rows = res.ok ? await res.json() : [];
     return rows.length >= ORDER_LIMIT[mode];
@@ -2030,7 +2088,7 @@ async function loadOrderLimits() {
   try {
     const res = await fetch(
       `${SUPABASE_URL}/rest/v1/settings?key=in.(order_limit_circle,order_limit_general)&select=key,value`,
-      { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } }
+      { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': authBearer() } }
     );
     if (!res.ok) return;
     const rows = await res.json();
@@ -3283,7 +3341,7 @@ async function sbFetchByCircleName(circleName) {
   const encoded = encodeURIComponent(circleName.trim());
   const res = await fetch(
     `${SUPABASE_URL}/rest/v1/orders?circle_name=ilike.${encoded}&select=ref,circle_name,sample_requested&limit=20`,
-    { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } }
+    { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': authBearer() } }
   );
   return res.ok ? await res.json() : [];
 }
@@ -3381,20 +3439,68 @@ function toggleAdmin(e) {
   document.getElementById('adminPwError').style.display = 'none';
   setTimeout(() => document.getElementById('adminPwInput').focus(), 50);
 }
+// 移行期の旧パスワード（Supabase認証アカウント運用が定着したら削除予定）
+const LEGACY_ADMIN_PW = 'Xt4p8VrC2K9';
+
 async function submitAdminPw() {
-  const pw = document.getElementById('adminPwInput').value;
-  if (pw !== 'Xt4p8VrC2K9') {
-    document.getElementById('adminPwError').style.display = 'block';
+  const email = (document.getElementById('adminEmailInput')?.value || '').trim();
+  const pw    = document.getElementById('adminPwInput').value;
+  const errEl = document.getElementById('adminPwError');
+  errEl.style.display = 'none';
+
+  // メールが入力されていれば Supabase 認証を試みる（本来の安全な経路）
+  if (email) {
+    try {
+      const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+        method: 'POST',
+        headers: { 'apikey': SUPABASE_ANON_KEY, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password: pw })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        _authToken = data.access_token || null;   // 以降の管理操作はこのトークンで実行
+        openAdminPanel();
+        return;
+      }
+      // 認証失敗 → エラー表示（旧パスワードのフォールバックには進まない）
+      errEl.style.display = 'block';
+      return;
+    } catch (e) {
+      console.warn('認証通信エラー:', e);
+      errEl.style.display = 'block';
+      return;
+    }
+  }
+
+  // メール未入力 → 移行期の旧パスワード判定（anonモードで管理画面に入る）
+  if (pw === LEGACY_ADMIN_PW) {
+    _authToken = null;  // 旧経路：トークンなし（RLS適用前のみ有効）
+    openAdminPanel();
     return;
   }
+  errEl.style.display = 'block';
+}
+
+// ログイン成功後の共通処理：管理パネルを開いてデータを読み込む
+async function openAdminPanel() {
   closeAdminPwModal();
   adminVisible = true;
   document.getElementById('adminPanel').style.display = 'block';
-  await loadOrderLimits();  // DBから最新の上限値を取得してから入力欄に反映
+  await loadOrderLimits();
   document.getElementById('adminLimitCircle').value  = ORDER_LIMIT.circle;
   document.getElementById('adminLimitGeneral').value = ORDER_LIMIT.general;
   loadAndRenderOrders(); reloadInterestsAdmin(); renderAdminChart();
   document.getElementById('adminPanel').scrollIntoView({ behavior: 'smooth' });
+}
+
+// ログアウト：トークンを破棄して管理画面を閉じる
+function logoutAdmin() {
+  _authToken = null;
+  adminVisible = false;
+  document.getElementById('adminPanel').style.display = 'none';
+  const em = document.getElementById('adminEmailInput'); if (em) em.value = '';
+  const pwi = document.getElementById('adminPwInput'); if (pwi) pwi.value = '';
+  showToast('ログアウトしました');
 }
 function closeAdminPwModal() {
   document.getElementById('adminPwModal').style.display = 'none';
@@ -4205,7 +4311,7 @@ async function sbDeleteInterest(id) {
   if (!sbReady()) return;
   await fetch(`${SUPABASE_URL}/rest/v1/interests?id=eq.${id}`, {
     method: 'DELETE',
-    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
+    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': authBearer() }
   });
 }
 
@@ -4213,7 +4319,7 @@ async function sbDeleteAllInterests() {
   if (!sbReady()) return;
   await fetch(`${SUPABASE_URL}/rest/v1/interests?id=gt.0`, {
     method: 'DELETE',
-    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
+    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': authBearer() }
   });
 }
 
@@ -4500,7 +4606,7 @@ async function deleteOrder(ref) {
         method: 'DELETE',
         headers: {
           'apikey': SUPABASE_ANON_KEY,
-          'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+          'Authorization': authBearer(),
           'Prefer': 'return=minimal'
         }
       });
@@ -4913,7 +5019,7 @@ async function sbInsertInterest(data) {
 async function sbFetchInterests() {
   if (!sbReady()) return [];
   const res = await fetch(`${SUPABASE_URL}/rest/v1/interests?order=created_at.asc&limit=200`, {
-    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
+    headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': authBearer() }
   });
   return res.ok ? await res.json() : [];
 }
@@ -5649,9 +5755,7 @@ async function loadGallery() {
   if (!sbReady()) return;
   let rows = [];
   try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/orders?select=*&gallery_ok=eq.true&status=eq.made&order=date.desc`, { headers: SB_H() });
-    if (!res.ok) return;
-    rows = await res.json();
+    rows = await sbFetchGallery();  // 公開ビュー優先・許可済み項目のみ（個人情報は出ない）
   } catch (e) { return; }
 
   // 4条件: 掲載許可 + 完成写真あり + 製作済(クエリ済) + 公開予定時刻を過ぎている
@@ -5679,9 +5783,9 @@ async function loadGallery() {
 
   // 各カードを生成(QRは非同期)
   const cards = await Promise.all(items.map(async r => {
-    const showName   = r.gallery_show_name && r.name;
-    const showCircle = r.gallery_show_circle && r.circle_name;
-    const showX      = r.gallery_show_x && r.x_account;
+    const showName   = !!r.name;        // sbFetchGalleryが許可済みの値のみ返す
+    const showCircle = !!r.circle_name;
+    const showX      = !!r.x_account;
 
     // 公開情報のテキスト
     let infoLines = '';
@@ -5724,15 +5828,12 @@ async function loadGateParticipants() {
   renderGateParticipants(pool);
   if (sbReady()) {
     try {
-      const remote = await sbFetch();
-      pool = remote.map(r => {
-        const local = pool.find(l => l.ref === r.ref);
-        return { ...r, thumb: (local && local.thumb) || '' };
-      });
-      localStorage.setItem('bc_orders', JSON.stringify(pool));
-      // グローバルのordersも更新(renderInterestsが正確なカウントを出せるように)
-      orders = pool;
-      renderGateParticipants(pool);
+      // 公開用取得（個人情報を含まない限定項目／RLS適用後も anon で読める）
+      const remote = await sbFetchPublic();
+      // ゲートの参加者カウント・アバター表示用。管理ログイン時は loadAndRenderOrders が
+      // 全項目で orders を取り直すため、ここは限定項目で問題ない。
+      orders = remote;
+      renderGateParticipants(remote);
       // _interestsList がロード済みなら再描画(ロード前なら loadInterests が後で呼ぶ)
       if (_interestsList.length > 0) renderInterests(_interestsList);
     } catch(e) { /* ローカルのまま */ }
@@ -5919,11 +6020,14 @@ initRequiredMarkListeners();
 <!-- 管理者パスワードモーダル -->
 <div id="adminPwModal" style="display:none;position:fixed;inset:0;background:rgba(20,14,8,.7);z-index:9999;display:none;align-items:center;justify-content:center;">
   <div style="background:#fffdf6;border-radius:12px;padding:28px 24px;width:300px;box-shadow:0 8px 32px rgba(0,0,0,.25);">
-    <div style="font-size:.95rem;font-weight:700;color:#2c2418;margin-bottom:16px;">🔒 管理者パスワード</div>
-    <input type="password" id="adminPwInput" placeholder="パスワードを入力"
+    <div style="font-size:.95rem;font-weight:700;color:#2c2418;margin-bottom:16px;">🔒 管理者ログイン</div>
+    <input type="email" id="adminEmailInput" placeholder="メールアドレス（未登録時は空欄）" autocomplete="username"
+      style="width:100%;padding:10px 12px;border:1.5px solid #d6cdb4;border-radius:7px;font-size:.93rem;box-sizing:border-box;outline:none;font-family:inherit;margin-bottom:8px;"
+      onkeydown="if(event.key==='Enter')submitAdminPw();">
+    <input type="password" id="adminPwInput" placeholder="パスワード" autocomplete="current-password"
       style="width:100%;padding:10px 12px;border:1.5px solid #d6cdb4;border-radius:7px;font-size:.93rem;box-sizing:border-box;outline:none;font-family:inherit;"
       onkeydown="if(event.key==='Enter')submitAdminPw();">
-    <div id="adminPwError" style="color:#e05040;font-size:.78rem;margin-top:6px;display:none;">パスワードが違います</div>
+    <div id="adminPwError" style="color:#e05040;font-size:.78rem;margin-top:6px;display:none;">ログインに失敗しました</div>
     <div style="display:flex;gap:8px;margin-top:16px;justify-content:flex-end;">
       <button onclick="closeAdminPwModal()" style="padding:8px 16px;border:1.5px solid #d6cdb4;background:#fff;border-radius:7px;cursor:pointer;font-family:inherit;font-size:.85rem;">キャンセル</button>
       <button onclick="submitAdminPw()" style="padding:8px 16px;background:#5c4a1e;color:#fff;border:none;border-radius:7px;cursor:pointer;font-family:inherit;font-size:.85rem;font-weight:700;">ログイン</button>
