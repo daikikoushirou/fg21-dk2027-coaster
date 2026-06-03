@@ -559,9 +559,9 @@ footer a{color:var(--potato-light);text-decoration:none;}
 .heart-btn .heart-icon{font-size:1rem;transition:transform .2s;}
 .heart-btn:hover .heart-icon,.heart-btn.liked .heart-icon{transform:scale(1.25);}
 .gate-interests-avatars{display:flex;flex-wrap:wrap;gap:0;min-height:22px;}
-.interest-modal-bg{display:none;position:fixed;inset:0;background:rgba(20,14,8,.55);z-index:2100;align-items:flex-end;justify-content:center;padding:0 0 40px;}
+.interest-modal-bg{display:none;position:fixed;inset:0;background:rgba(20,14,8,.55);z-index:2100;align-items:flex-end;justify-content:center;padding:0 0 40px;overflow-y:auto;}
 .interest-modal-bg.show{display:flex;}
-.interest-modal{background:var(--card);border-radius:14px;padding:24px 22px;width:100%;max-width:380px;box-shadow:0 8px 32px rgba(0,0,0,.25);color:#1a1208;}
+.interest-modal{background:var(--card);border-radius:14px;padding:24px 22px 22px;width:100%;max-width:380px;box-shadow:0 8px 32px rgba(0,0,0,.25);color:#1a1208;position:relative;max-height:calc(100dvh - 60px);overflow-y:auto;}
 .interest-modal-title{font-size:1.1rem;font-weight:700;margin-bottom:4px;color:#1a1208;}
 .interest-modal-sub{font-size:.82rem;color:#5a4a30;margin-bottom:18px;}
 .interest-field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
@@ -574,8 +574,12 @@ footer a{color:var(--potato-light);text-decoration:none;}
 .interest-field input.plain:focus{border-color:var(--potato);}
 .interest-submit-btn{width:100%;background:#e05080;color:#fff;border:none;padding:11px;font-family:var(--sans);font-size:.9rem;font-weight:700;border-radius:8px;cursor:pointer;transition:background .15s;}
 .interest-submit-btn:hover{background:#c03060;}
+.interest-submit{display:block;width:100%;padding:11px;background:var(--potato-dark);color:#fff;border:none;border-radius:8px;font-family:var(--sans);font-size:.9rem;font-weight:700;cursor:pointer;transition:background .15s;text-align:center;box-sizing:border-box;}
+.interest-submit:hover{background:var(--potato);}
 .interest-cancel{display:block;text-align:center;margin-top:10px;font-size:.82rem;color:var(--muted);cursor:pointer;}
 .interest-cancel:hover{color:var(--ink);}
+.modal-close-x{position:absolute;top:10px;right:12px;background:none;border:none;font-size:1.2rem;line-height:1;cursor:pointer;color:var(--muted);padding:4px 6px;border-radius:6px;transition:background .15s,color .15s;}
+.modal-close-x:hover{background:var(--potato-bg);color:var(--ink);}
 .completion-img-area{background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.28);border-radius:8px;padding:12px 16px;margin-top:10px;}
 .completion-img-head{display:flex;align-items:flex-start;gap:10px;cursor:pointer;}
 .completion-img-head input[type="checkbox"]{width:18px;height:18px;flex-shrink:0;margin-top:2px;cursor:pointer;accent-color:var(--potato-light);}
@@ -6321,6 +6325,7 @@ initRequiredMarkListeners();
 <!-- CONTACT MODAL -->
 <div class="interest-modal-bg" id="contactModalBg" onclick="closeContactModal(event)">
   <div class="interest-modal" onclick="event.stopPropagation()">
+    <button class="modal-close-x" onclick="closeContactModal()" aria-label="閉じる">✕</button>
     <div class="interest-modal-title">✉️ お問い合わせ</div>
     <div class="interest-modal-sub">ご質問・ご相談はこちらから。お返事はメールまたはXのDMでお送りします。</div>
 
@@ -6347,7 +6352,7 @@ initRequiredMarkListeners();
 
     <!-- X DM 誘導 -->
     <div style="text-align:center;">
-      <a href="https://x.com/daikikoushirou" target="_blank" rel="noopener" class="interest-submit" style="display:inline-block;text-decoration:none;background:#1a1a1a;">𝕏 @daikikoushirou にDMで聞く</a>
+      <a href="https://x.com/daikikoushirou" target="_blank" rel="noopener" class="interest-submit" style="display:inline-block;text-decoration:none;background:#1a1a1a;color:#fff;">𝕏 @daikikoushirou にDMで聞く</a>
       <div style="margin-top:10px;text-align:center;">
         <button type="button" onclick="toggleDmInfo()" id="dmInfoToggle" style="background:none;border:none;color:var(--accent);font-size:.76rem;font-weight:700;cursor:pointer;font-family:inherit;text-decoration:underline;padding:2px 0;">
           ℹ️ フォローしていなくてもDMできます（送り方を見る ▼）
@@ -6363,6 +6368,7 @@ initRequiredMarkListeners();
 <!-- INTEREST MODAL -->
 <div class="interest-modal-bg" id="interestModalBg" onclick="closeInterestModal(event)">
   <div class="interest-modal" onclick="event.stopPropagation()">
+    <button class="modal-close-x" onclick="closeInterestModal()" aria-label="閉じる">✕</button>
     <div class="interest-modal-title" id="interestModalTitle">♡ 興味あり！</div>
     <div class="interest-modal-sub" id="interestModalSub">Xアカウントを入れると顔アイコンが表示されます(省略可)</div>
     <div class="interest-field">
