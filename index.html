@@ -221,6 +221,7 @@ h1.site-title small{display:block;font-size:.6em;color:var(--potato-light);font-
 .section-sub{font-size:.88rem;color:var(--muted);margin-bottom:24px;}
 hr.divider{border:none;border-top:1px solid var(--border);margin:0;}
 @media(max-width:560px){.req-grid{grid-template-columns:1fr !important;}}
+@media(max-width:600px){.receive-grid{grid-template-columns:1fr !important;}}
 
 /* DATES INFO BOX */
 .dates-box{background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:18px 20px;margin-bottom:24px;}
@@ -1051,6 +1052,34 @@ footer a{color:var(--potato-light);text-decoration:none;}
 
 <hr class="divider">
 
+<!-- 受け取れるもの -->
+<div class="section">
+  <div class="section-title">参加して受け取れるもの</div>
+  <p style="color:var(--muted);font-size:.92rem;line-height:1.8;margin:14px 0 22px;">
+    イラストをお送りいただくと、それを刻印したレザーコースターと、その完成品をきれいに撮影した宣材写真をお渡しします。写真はSNSへの投稿などにご自由にお使いいただけます。
+  </p>
+  <div class="receive-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
+    <div style="background:var(--card);border:1.5px solid var(--border);border-radius:12px;overflow:hidden;">
+      <img src="https://bzjwhtemobtrfaghsdwt.supabase.co/storage/v1/object/public/order-images/20260603-compimg01.png" alt="イラスト入りレザーコースターの完成品" loading="lazy"
+        style="width:100%;aspect-ratio:1;object-fit:cover;display:block;">
+      <div style="padding:14px 16px;">
+        <div style="font-weight:700;color:var(--potato-dark);font-size:.95rem;margin-bottom:4px;">🪵 イラスト入りレザーコースター（実物）</div>
+        <div style="color:var(--muted);font-size:.83rem;line-height:1.7;">お送りいただいたイラストをレーザーで刻印した本革のコースター。当日、会場ブースでお渡しします。</div>
+      </div>
+    </div>
+    <div style="background:var(--card);border:1.5px solid var(--border);border-radius:12px;overflow:hidden;">
+      <img src="https://bzjwhtemobtrfaghsdwt.supabase.co/storage/v1/object/public/order-images/20260603-compimg02.png" alt="完成品の宣材写真" loading="lazy"
+        style="width:100%;aspect-ratio:1;object-fit:cover;display:block;">
+      <div style="padding:14px 16px;">
+        <div style="font-weight:700;color:var(--potato-dark);font-size:.95rem;margin-bottom:4px;">📸 完成品の宣材写真</div>
+        <div style="color:var(--muted);font-size:.83rem;line-height:1.7;">完成したコースターをきれいに撮影した画像をお送りします。SNS投稿などにご自由にお使いください。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
 <!-- 料金表 -->
 <div class="section">
   <div class="section-title">料金表</div>
@@ -1283,8 +1312,9 @@ footer a{color:var(--potato-light);text-decoration:none;}
           <label class="completion-img-head" for="f-completion-img">
             <input type="checkbox" id="f-completion-img" onchange="toggleCompletionNote();renderCostBreakdown();">
             <div>
-              <div class="completion-img-title">1点目が完成した時点で仕上がり確認画像を受け取る <span class="sample-price-badge sample-price-free">無料</span></div>
-              <div style="font-size:.75rem;color:rgba(255,235,160,1);margin-top:3px;">開催10日前までの無料オプション。</div>
+              <div class="completion-img-title">1点目が完成した時点で仕上がり確認画像を受け取る <span id="completionPriceTag" class="sample-price-badge sample-price-free">無料</span></div>
+              <div style="font-size:.75rem;color:rgba(255,235,160,1);margin-top:3px;">開催10日前までは無料。以降〜5日前までは¥100で受付。</div>
+              <div id="completionPaidNote" style="display:none;font-size:.75rem;color:rgba(255,200,120,1);margin-top:3px;font-weight:700;">⚠️ 無料受付期間は終了しました。現在は¥100の有料オプションです（開催5日前まで）。</div>
               <div class="completion-img-note">刻印が完了した段階で画像をお送りします。OKのご連絡をいただいたらそのままのデータで製作を進めます。</div>
               <div style="font-size:.8rem;color:rgba(255,255,255,.85);line-height:1.7;margin-top:5px;">
                 <strong>こんな方にオススメ：</strong>大体の仕上がりはイメージできていて、より丁寧に仕上がりを確認したい方。端材サンプルと組み合わせて使うこともできます。
@@ -1615,6 +1645,8 @@ const EARLY_BIRD_END = (() => { const d = new Date(EVENT_DATE); d.setMonth(d.get
 const SAMPLE_FREE_END = (() => { const d = new Date(EVENT_DATE); d.setDate(d.getDate() - 21); return d; })();
 const BULK_ORDER_END = (() => { const d = new Date(EVENT_DATE); d.setDate(d.getDate() - 14); return d; })();
 const COMPLETION_IMG_END = (() => { const d = new Date(EVENT_DATE); d.setDate(d.getDate() - 10); return d; })();
+const COMPLETION_IMG_PAID_END = (() => { const d = new Date(EVENT_DATE); d.setDate(d.getDate() - 5); return d; })();
+const COMPLETION_IMG_PRICE = 100;
 
 
 // XSS対策: HTMLエスケープ関数
@@ -1718,6 +1750,7 @@ async function sbInsert(order) {
     gallery_show_name: order.galleryShowName||false,
     gallery_show_circle: order.galleryShowCircle||false,
     gallery_show_x: order.galleryShowX||false,
+    completion_img_fee: order.completionImgFee||0,
     completion_photo: serializePhotos(order.completionPhotos),
     gallery_publish_at: order.galleryPublishAt||null,
     made_at: order.madeAt||null,
@@ -1753,6 +1786,7 @@ async function sbFetch() {
     adjustment: r.adjustment||0,
     sampleSent: r.sample_sent||false,
     completionImageSent: r.completion_image_sent||false,
+    completionImgFee: r.completion_img_fee||0,
     galleryOk: r.gallery_ok||false,
     galleryShowName: r.gallery_show_name||false,
     galleryShowCircle: r.gallery_show_circle||false,
@@ -1827,6 +1861,7 @@ async function sbPatch(ref, patch) {
   if (patch.total               !== undefined) dbPatch.total                 = patch.total;
   if (patch.sampleSent          !== undefined) dbPatch.sample_sent           = patch.sampleSent;
   if (patch.completionImageSent !== undefined) dbPatch.completion_image_sent = patch.completionImageSent;
+  if (patch.completionImgFee    !== undefined) dbPatch.completion_img_fee    = patch.completionImgFee||0;
   if (patch.completionPhotos    !== undefined) dbPatch.completion_photo      = serializePhotos(patch.completionPhotos);
   if (patch.galleryOk           !== undefined) dbPatch.gallery_ok            = patch.galleryOk;
   if (patch.galleryShowName     !== undefined) dbPatch.gallery_show_name     = patch.galleryShowName;
@@ -1898,6 +1933,16 @@ function calcSampleCost(freeEligible, sampleCount) {
   return sampleCount * SAMPLE_PRICE;
 }
 
+
+// 仕上がり確認画像の料金/受付状態を now() から判定
+//  戻り値: { available:bool, fee:number, phase:'free'|'paid'|'closed' }
+function completionImgState() {
+  const t = now();
+  if (t <= COMPLETION_IMG_END)      return { available: true,  fee: 0,                    phase: 'free' };
+  if (t <= COMPLETION_IMG_PAID_END) return { available: true,  fee: COMPLETION_IMG_PRICE, phase: 'paid' };
+  return { available: false, fee: 0, phase: 'closed' };
+}
+
 function calcCost(mode, qty, sampleRequested, sampleFreeEligible, sampleCount, earlyBirdOverride, freeOverride) {
   const p = PRICING_BASE[mode];
   const earlyBird = (earlyBirdOverride !== undefined ? earlyBirdOverride : isEarlyBird()) && mode === 'circle';
@@ -1945,16 +1990,22 @@ function renderCostBreakdown() {
   const sampleFreeBase = isSampleFreeEligible(currentMode, qty);
   // 同サークルの先行注文でサンプル使用済みの場合は有料
   const sampleFree = sampleFreeBase && !pendingSampleFreeOverride;
-  const { total, breakdown } = calcCost(currentMode, qty, sampleChecked, sampleFree, null, undefined, pendingFreeOverride);
+  let { total, breakdown } = calcCost(currentMode, qty, sampleChecked, sampleFree, null, undefined, pendingFreeOverride);
 
   // 2回目以降の注意書き(別divは非表示に統一、breakdown内で表示)
   const notice = document.getElementById('freeOverrideNotice');
   if (notice) notice.style.display = 'none';
 
-  // 仕上がり確認画像(常に無料・チェック時のみ表示)
+  // 仕上がり確認画像(チェック時のみ表示・10日前まで無料/以降¥100)
   const completionChecked = document.getElementById('f-completion-img')?.checked || false;
   if (completionChecked) {
-    breakdown.push({ label: '仕上がり確認画像', amount: 0, cls: 'free' });
+    const ciFee = completionImgState().fee;
+    if (ciFee > 0) {
+      breakdown.push({ label: `仕上がり確認画像(¥${ciFee})`, amount: ciFee, cls: 'paid' });
+      total += ciFee;
+    } else {
+      breakdown.push({ label: '仕上がり確認画像', amount: 0, cls: 'free' });
+    }
   }
 
   const freeOverrideRow = (pendingFreeOverride && currentMode === 'circle')
@@ -1987,8 +2038,10 @@ function initDatesUI() {
       tip: '端材サンプル試し刷りとは、本番と同じイラストを端材(はぎれ素材)に試し刷りし、仕上がりイメージを事前に確認できるオプションです。この期限内の申込者は初回1回が無料。' },
     { label: '大量注文締め切り', date: BULK_ORDER_END, note: 'サークル6点以上の申込期限', active: n < BULK_ORDER_END, circleOnly: true,
       tip: 'この期日までに申し込んだサークル参加者のみ、6点以上(最大20点)の注文が可能です。以降は最大5点に制限されます。' },
-    { label: '仕上がり確認画像 受付終了', date: COMPLETION_IMG_END, note: '開催10日前', active: n < COMPLETION_IMG_END,
-      tip: '1点目の刻印完了後に画像をお送りするオプションです。確認・OKをいただいてから残りを製作します。開催10日前を過ぎると、製作スケジュールの都合でこのオプションを受け付けられなくなります。' },
+    { label: '仕上がり確認画像 無料受付終了', date: COMPLETION_IMG_END, note: '開催10日前', active: n < COMPLETION_IMG_END,
+      tip: '1点目の刻印完了後に画像をお送りするオプションです。確認・OKをいただいてから残りを製作します。開催10日前まで無料。以降は¥100の有料オプションとして開催5日前まで受け付けます。' },
+    { label: '仕上がり確認画像 受付終了(有料分)', date: COMPLETION_IMG_PAID_END, note: '開催5日前', active: n < COMPLETION_IMG_PAID_END,
+      tip: '開催10日前を過ぎると¥100の有料オプションになります。開催5日前を過ぎると、製作スケジュールの都合でこのオプション自体を受け付けられなくなります。' },
     { label: '申し込み締め切り', date: DEADLINE, note: '開催2日前 朝4時', active: n < DEADLINE,
       tip: 'コースターの製作には時間が必要なため、開催2日前の朝4時を申し込み締め切りとしています。お早めにどうぞ。' },
   ];
@@ -2254,14 +2307,23 @@ function applyModeUI() {
   applyDeadlineUI();
   refreshRequiredMarks();
   onContactPrefChange(); // 初期状態(無選択)のラベルを設定
-  // 仕上がり確認画像は開催10日前まで
+  // 仕上がり確認画像：10日前まで無料 / 5日前まで¥100 / それ以降は受付終了
   const completionArea = document.getElementById('completionImgArea');
   if (completionArea) {
-    if (now() > COMPLETION_IMG_END) {
+    const ci = completionImgState();
+    if (!ci.available) {
       completionArea.style.display = 'none';
       document.getElementById('f-completion-img').checked = false;
     } else {
       completionArea.style.display = '';
+      // 価格表示を更新（無料 / ¥100）
+      const priceEl = document.getElementById('completionPriceTag');
+      if (priceEl) {
+        priceEl.textContent = ci.fee > 0 ? `¥${ci.fee}` : '無料';
+        priceEl.className = ci.fee > 0 ? 'sample-price-bad' : 'sample-price-good';
+      }
+      const noteEl = document.getElementById('completionPaidNote');
+      if (noteEl) noteEl.style.display = ci.fee > 0 ? 'block' : 'none';
     }
   }
 }
@@ -2292,7 +2354,10 @@ function renderCalendar(mode) {
       color: '#8ca8c8', label: '申し込み受付期間', opacity: .7 },
     { start: new Date(y, 1, 1),
       end:   COMPLETION_IMG_END,
-      color: '#d07080', label: '確認画像受付期間', opacity: .85 },
+      color: '#d07080', label: '確認画像 無料受付', opacity: .85 },
+    { start: COMPLETION_IMG_END,
+      end:   COMPLETION_IMG_PAID_END,
+      color: '#e0a0b0', label: '確認画像 有料(¥100)受付', opacity: .7 },
     { start: new Date(y, 1, 1),
       end:   BULK_ORDER_END,
       color: '#a070d0', label: '大量注文可能期間 🪑', opacity: .85, circleOnly: true },
@@ -3261,7 +3326,11 @@ document.getElementById('orderForm').addEventListener('submit', async e => {
   const qty = parseInt(document.getElementById('f-qty').value);
   const sampleRequested = document.getElementById('f-sample').checked;
   const sampleFreeEligible = isSampleFreeEligible(currentMode, qty) && !pendingSampleFreeOverride;
-  const { total } = calcCost(currentMode, qty, sampleRequested, sampleFreeEligible, null);
+  const { total: baseTotal } = calcCost(currentMode, qty, sampleRequested, sampleFreeEligible, null);
+  // 仕上がり確認画像：チェック時のみ、その時点の料金(0 or 100)を加算して確定
+  const _ciWanted = document.getElementById('f-completion-img').checked;
+  const completionImgFee = _ciWanted ? completionImgState().fee : 0;
+  const total = baseTotal + completionImgFee;
   const ref = 'BC-' + Date.now().toString(36).toUpperCase();
   const code = genCode();
 
@@ -3317,6 +3386,7 @@ document.getElementById('orderForm').addEventListener('submit', async e => {
     sampleRequested, sampleFreeEligible,
     sampleCount: sampleRequested ? 1 : 0,
     wantsCompletionImage: document.getElementById('f-completion-img').checked,
+    completionImgFee,
     adjustment: 0,
     sampleSent: false,
     completionImageSent: false,
@@ -3350,8 +3420,7 @@ document.getElementById('orderForm').addEventListener('submit', async e => {
     }
     if (dup) {
       order.freeOverride = true;
-      const { total } = calcCost(order.type, order.qty, order.sampleRequested, order.sampleFreeEligible, order.sampleCount, undefined, true);
-      order.total = total + (order.adjustment || 0);
+      order.total = calcOrderTotal(order);  // 合計計算は calcOrderTotal に一本化
       saveOrders();
       showToast('⚠ 同サークルの先行注文があるため無料枠は適用されません。');
     }
@@ -3383,7 +3452,7 @@ document.getElementById('orderForm').addEventListener('submit', async e => {
   if (sampleRequested)
     optionLines.push(sampleFreeEligible ? '🔬 端材サンプル試し刷り：初回無料' : `🔬 端材サンプル試し刷り：¥${SAMPLE_PRICE}`);
   if (order.wantsCompletionImage)
-    optionLines.push('🖼️ 仕上がり確認画像を受け取る：無料');
+    optionLines.push(`🖼️ 仕上がり確認画像を受け取る：${order.completionImgFee > 0 ? '¥'+order.completionImgFee : '無料'}`);
   if (order.circleSpace || order.circleName)
     optionLines.push(`🪑 ${[order.circleSpace, order.circleName].filter(Boolean).join('　')}`);
   const optEl = document.getElementById('successOptions');
@@ -3446,8 +3515,7 @@ async function retryCloudSave(btn) {
       const others = existing.filter(r => r.ref !== order.ref);
       if (others.length > 0 && !order.freeOverride) {
         order.freeOverride = true;
-        const { total } = calcCost(order.type, order.qty, order.sampleRequested, order.sampleFreeEligible, order.sampleCount, undefined, true);
-        order.total = total + (order.adjustment || 0);
+        order.total = calcOrderTotal(order);  // 合計計算は calcOrderTotal に一本化
         saveOrders();
         showToast('⚠ 同サークルの先行注文があるため無料枠を無効にしました');
       }
@@ -3605,8 +3673,9 @@ async function loadAndRenderOrders() {
 }
 
 function calcOrderTotal(o) {
-  const { total } = calcCost(o.type, o.qty, o.sampleRequested, o.sampleFreeEligible, o.sampleCount, undefined, o.freeOverride);
-  return total + (o.adjustment || 0);
+  // 早割は注文時に確定したフラグ(o.earlyBird)を使用。締切後に再計算しても価格が固定される。
+  const { total } = calcCost(o.type, o.qty, o.sampleRequested, o.sampleFreeEligible, o.sampleCount, o.earlyBird, o.freeOverride);
+  return total + (o.completionImgFee || 0) + (o.adjustment || 0);
 }
 
 function renderOrders() {
@@ -3845,10 +3914,9 @@ async function updateOrderQtyEarlyBird(ref, delta) {
   const newQty = Math.max(1, Math.min(maxQty, (o.qty || 1) + delta));
   if (newQty === o.qty) { showToast(`点数の上限は${maxQty}点です`); return; }
   // 早割価格を強制適用(earlyBirdOverride=true)
-  const { total } = calcCost(o.type, newQty, o.sampleRequested, o.sampleFreeEligible, o.sampleCount, true);
-  const adjTotal = total + (o.adjustment || 0);
   o.qty = newQty;
-  o.total = adjTotal;
+  o.earlyBird = true;
+  o.total = calcOrderTotal(o);  // 合計計算は calcOrderTotal に一本化
   saveOrders();
   if (sbReady()) {
     try { await sbPatch(ref, { qty: newQty, total: adjTotal }); }
@@ -3862,9 +3930,7 @@ async function toggleFreeOverride(ref) {
   const o = orders.find(o => o.ref === ref);
   if (!o) return;
   o.freeOverride = !o.freeOverride;
-  const { total } = calcCost(o.type, o.qty, o.sampleRequested, o.sampleFreeEligible, o.sampleCount, undefined, o.freeOverride);
-  const adjTotal = total + (o.adjustment || 0);
-  o.total = adjTotal;
+  o.total = calcOrderTotal(o);  // 合計計算は calcOrderTotal に一本化
   saveOrders();
   if (sbReady()) {
     try { await sbPatch(ref, { total: adjTotal, free_override: o.freeOverride }); }
@@ -3880,10 +3946,8 @@ async function updateOrderQty(ref, delta) {
   const maxQty = o.type === 'circle' ? 20 : 2;
   const newQty = Math.max(1, Math.min(maxQty, (o.qty || 1) + delta));
   if (newQty === o.qty) { showToast(`点数の上限は${maxQty}点です`); return; }
-  const { total } = calcCost(o.type, newQty, o.sampleRequested, o.sampleFreeEligible, o.sampleCount, o.earlyBird);
-  const adjTotal = total + (o.adjustment || 0);
   o.qty = newQty;
-  o.total = adjTotal;
+  o.total = calcOrderTotal(o);  // 合計計算は calcOrderTotal に一本化
   saveOrders();
   if (sbReady()) {
     try { await sbPatch(ref, { qty: newQty, total: adjTotal }); }
