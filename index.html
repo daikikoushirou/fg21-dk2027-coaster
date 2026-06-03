@@ -850,6 +850,9 @@ footer a{color:var(--potato-light);text-decoration:none;}
     前回のふたば★学園祭２０でも同じ内容で開催し、ご好評の声をいただいた一方、私の力不足から至らない点も多くありました。そこで今回は、土台となるこのサイトを構築し、どなたが見てもどういった企画かわかるよう説明を充実させ、イラストを入稿する際の補助もしていくことを目指しました。
   </p>
   <p style="color:var(--muted);font-size:.92rem;line-height:1.9;margin:14px 0 0;">
+    「なぜ無料なの?」と思うかもしれません。これは、一般参加とサークル参加のちょうど中間くらいの、ゆるい参加のかたちをつくってみたかったからです。コースターを受け取りに、会場へ遊びに来るきっかけになればうれしいです。いただいたイラストのコースターは、当スペースの一角で展示したり、1〜2点ほど頒布させてもらうことも考えています。コースターは、そのお礼のようなものだと思ってください。こうしてふたば★学園祭が少しでもにぎやかになったら、いいなと思っています。
+  </p>
+  <p style="color:var(--muted);font-size:.92rem;line-height:1.9;margin:14px 0 0;">
     下にスクロールすると、受け取れるもの・参加できる条件・製作の流れ・料金を順にご案内しています。ご不明な点があればお気軽にお問い合わせください。
   </p>
 </div></div>
@@ -5195,19 +5198,18 @@ function onParticipantClick(type) {
 
 // ══ 賑やかし名ジェネレーター（外部依存なし・多言語ミックス）══
 const SOUDANE_NAMES = {
-  // 日本語：修飾 × 名詞
-  jpMod: ['謎の','通りすがりの','三丁目の','無敵の','腹ぺこ','伝説の','迷子の','深夜の','野生の','元気な','物憂げな','光速の','こだわりの','駆け出しの','大物の','名もなき','ねぼすけ','ごきげんな','放浪の','ひとくち'],
-  jpNoun: ['芋侍','肉まん','哲学者','たぬき','枝豆','コースター職人','革命家','旅人','ねこ','こけし','団子','梅干し','妖精','社長','忍者','río','ぬし','店長','吟遊詩人','もぐら'],
-  // 英語：title × noun
-  enTitle: ['Captain','Lord','Sir','Madam','Doctor','Professor','Baron','Lady','Master','Agent','Chief','Mega','Super','Mighty','Lonely','Sleepy','Hungry','Cosmic'],
-  enNoun: ['Pickleton','Potato','Dumpling','Tanuki','Wizard','Edamame','Walrus','Pancake','Pigeon','Noodle','Mochi','Badger','Hedgehog','Turnip','Otter','Biscuit','Goblin','Wombat'],
-  // 他言語の称号
-  esTitle: ['Señor','Señora','Don','Doña'],
-  esNoun: ['Patata','Tomate','Churro','Gato','Pulpo','Sol','Luna','Mango'],
-  deTitle: ['Herr','Frau','Graf','König'],
-  deNoun: ['Kartoffel','Wurst','Brezel','Igel','Eule','Bär','Fuchs','Mond'],
-  frTitle: ['Monsieur','Madame','Capitaine','Comte'],
-  frNoun: ['Pomme','Baguette','Renard','Hibou','Escargot','Soleil','Lune','Canard'],
+  jpMod: ['謎の','通りすがりの','三丁目の','無敵の','腹ぺこ','伝説の','迷子の','深夜の','野生の','元気な','物憂げな','光速の','こだわりの','駆け出しの','大物の','名もなき','ねぼすけ','ごきげんな','放浪の','ひとくち','黄昏の','うたた寝中の','自称','永遠の','見習い','腹黒い','のんびり','一刀両断の','腹八分の','きまぐれな','歴戦の','箱入り','本日限定の','真夜中の','満腹の','ちょっと強い','涙もろい','日曜大工の','行きずりの','二度寝した'],
+  jpNoun: ['芋侍','肉まん','哲学者','たぬき','枝豆','コースター職人','革命家','旅人','ねこ','こけし','団子','梅干し','妖精','社長','忍者','ぬし','店長','吟遊詩人','もぐら','大福','こんにゃく','茶柱','河童','下駄','風来坊','宇宙人','ペンギン','住職','焼き芋','カピバラ','番頭','アザラシ','うどん職人','こたつ','金魚','たい焼き','石像','麦茶','提督','詩人'],
+  enTitle: ['Captain','Lord','Sir','Madam','Doctor','Professor','Baron','Lady','Master','Agent','Chief','Mega','Super','Mighty','Lonely','Sleepy','Hungry','Cosmic','General','Admiral','Sergeant','Duke','Count','Big','Tiny','Royal','Ancient','Wandering','Humble','Grumpy','Jolly','Midnight','Electric','Quantum','Velvet','Iron','Golden','Silent','Reckless','Noble'],
+  enNoun: ['Pickleton','Potato','Dumpling','Tanuki','Wizard','Edamame','Walrus','Pancake','Pigeon','Noodle','Mochi','Badger','Hedgehog','Turnip','Otter','Biscuit','Goblin','Wombat','Penguin','Cabbage','Muffin','Raccoon','Pumpkin','Waffle','Llama','Pickle','Toaster','Marmot','Croissant','Beetle','Lobster','Gnome','Radish','Capybara','Donut','Mantis','Squid','Acorn','Walnut','Hamster'],
+  esTitle: ['Señor','Señora','Don','Doña','El','La','Capitán','Maestro'],
+  esNoun: ['Patata','Tomate','Churro','Gato','Pulpo','Sol','Luna','Mango','Pollo','Fuego','Queso','Burrito','Tortuga','Ratón','Cangrejo','Aguacate'],
+  deTitle: ['Herr','Frau','Graf','König','Doktor','Meister','Kaiser','Ritter'],
+  deNoun: ['Kartoffel','Wurst','Brezel','Igel','Eule','Bär','Fuchs','Mond','Käse','Wolke','Biber','Pinguin','Knödel','Apfel','Drache','Specht'],
+  frTitle: ['Monsieur','Madame','Capitaine','Comte','Baron','Chevalier','Maître','Roi'],
+  frNoun: ['Pomme','Baguette','Renard','Hibou','Escargot','Soleil','Lune','Canard','Fromage','Tortue','Crêpe','Lapin','Châtaigne','Moineau','Hérisson','Nuage'],
+  itTitle: ['Signor','Signora','Capitano','Don','Maestro'],
+  itNoun: ['Patata','Gatto','Polpo','Luna','Sole','Tartaruga','Riccio','Gnocco','Funghi','Piccione'],
 };
 function genSoudaneName() {
   const R = a => a[Math.floor(Math.random()*a.length)];
@@ -5223,11 +5225,12 @@ function genSoudaneName() {
       if (mix===1) return '無敵の'+R(S.enNoun);                    // 無敵のWizard
       return R(S.jpMod)+R(S.esNoun);                               // 謎のPatata
     }
-    case 4: {                                                       // 他言語(西/独/仏)
-      const L = Math.floor(Math.random()*3);
+    case 4: {                                                       // 他言語(西/独/仏/伊)
+      const L = Math.floor(Math.random()*4);
       if (L===0) return R(S.esTitle)+' '+R(S.esNoun);
       if (L===1) return R(S.deTitle)+' '+R(S.deNoun);
-      return R(S.frTitle)+' '+R(S.frNoun);
+      if (L===2) return R(S.frTitle)+' '+R(S.frNoun);
+      return R(S.itTitle)+' '+R(S.itNoun);
     }
     default: return R(S.jpMod)+R(S.jpNoun);
   }
