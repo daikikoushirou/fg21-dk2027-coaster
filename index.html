@@ -850,10 +850,10 @@ footer a{color:var(--potato-light);text-decoration:none;}
     前回のふたば★学園祭２０でも同じ内容で開催し、ご好評の声をいただいた一方、私の力不足から至らない点も多くありました。そこで今回は、土台となるこのサイトを構築し、どなたが見てもどういった企画かわかるよう説明を充実させ、イラストを入稿する際の補助もしていくことを目指しました。
   </p>
   <p style="color:var(--muted);font-size:.92rem;line-height:1.9;margin:14px 0 0;">
-    「なぜ無料なの?」と思うかもしれません。これは、一般参加とサークル参加のちょうど中間くらいの、ゆるい参加のかたちをつくってみたかったからです。コースターを受け取りに、会場へ遊びに来るきっかけになればうれしいです。いただいたイラストのコースターは、当スペースの一角で展示したり、1〜2点ほど頒布させてもらうことも考えています。コースターは、そのお礼のようなものだと思ってください。こうしてふたば★学園祭が少しでもにぎやかになったら、いいなと思っています。
+    「なぜ無料なの?」と思うかもしれません。これは、一般参加とサークル参加のちょうど中間くらいの、ゆるい参加のかたちをつくってみたかったからです。コースターを受け取るために会場へ遊びに来るきっかけになればうれしいです。いただいたイラストのコースターは、当スペースの一角で展示したり、(当初は合同企画を名乗っていたこともあり、)1〜2点ほど頒布させてもらうことを考えています。コースターは、そのお礼のようなものだと思ってください。結果としてふたば★学園祭が少しでもにぎやかになったら最高だなと思っているわけです。
   </p>
   <p style="color:var(--muted);font-size:.92rem;line-height:1.9;margin:14px 0 0;">
-    下にスクロールすると、受け取れるもの・参加できる条件・製作の流れ・料金を順にご案内しています。ご不明な点があればお気軽にお問い合わせください。
+    下にスクロールすると、受け取れるもの・参加できる条件・製作の流れ・料金を順にご案内しています。ご不明な点があれば<a onclick="openContactModal()" style="color:var(--accent);font-weight:700;cursor:pointer;text-decoration:underline;">お気軽にお問い合わせください</a>。
   </p>
 </div></div>
 
@@ -1930,6 +1930,53 @@ async function notifyMake(order) {
       })
     });
   } catch(e) { console.warn('Make通知失敗:', e); }
+}
+
+// ══ お問い合わせモーダル ══
+function openContactModal() {
+  document.getElementById('contactModalBg').classList.add('show');
+  document.getElementById('contactError').style.display = 'none';
+}
+function closeContactModal(e) {
+  if (e && e.target !== document.getElementById('contactModalBg')) return;
+  document.getElementById('contactModalBg').classList.remove('show');
+}
+function toggleDmInfo() {
+  const d = document.getElementById('dmInfoDetail');
+  if (d) d.style.display = d.style.display === 'none' ? 'inline' : 'none';
+}
+async function submitContact() {
+  const name  = document.getElementById('contact-name').value.trim();
+  const email = document.getElementById('contact-email').value.trim();
+  const body  = document.getElementById('contact-body').value.trim();
+  const err   = document.getElementById('contactError');
+  if (!body) { err.style.display = 'block'; return; }
+  err.style.display = 'none';
+
+  // 既存のMake.com Webルックに「種別＝問い合わせ」で送信
+  try {
+    if (MAKE_WEBHOOK_URL) {
+      await fetch(MAKE_WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          kind: 'contact',         // 注文通知と区別するための種別
+          contact_name: name,
+          contact_email: email,
+          contact_body: body,
+          page_url: location.href,
+        })
+      });
+    }
+    document.getElementById('contactModalBg').classList.remove('show');
+    document.getElementById('contact-name').value = '';
+    document.getElementById('contact-email').value = '';
+    document.getElementById('contact-body').value = '';
+    showToast('お問い合わせを送信しました。ありがとうございます！');
+  } catch(e) {
+    err.textContent = '送信に失敗しました。お手数ですがXのDMからご連絡ください。';
+    err.style.display = 'block';
+  }
 }
 
 // ══ PRICING ══
@@ -5238,20 +5285,32 @@ function genSoudaneName() {
 
 // そうだねボタンのクールダウン（ミリ秒）
 const SOUDANE_COOLDOWN = 60 * 60 * 1000;  // 1時間
+const _soudaneLock = { circle: false, general: false };  // メモリ上の連打ロック(localStorage非依存)
 
 // そうだね＝賑やかしボタン：押すと多言語名＋アバターを自動付与してカウントアップ。
 // 入力モーダルは無し。1時間のクールダウン後に再度押せる（ピンクも白に戻る）。
 async function onHeartClick(type) {
+  // ★メモリ連打ロック：同一セッション内の高速連打を即座に弾く（localStorage非依存）
+  if (_soudaneLock[type]) { showToast('ちょっと待ってね♡'); return; }
+
   const untilKey = `bc_soudane_until_${type}`;
-  const until = parseInt(localStorage.getItem(untilKey) || '0', 10);
   const nowMs = Date.now();
+  const until = parseInt(localStorage.getItem(untilKey) || '0', 10);
+
+  // クールダウン中なら何もしない（残り時間を案内）
   if (nowMs < until) {
     const mins = Math.ceil((until - nowMs) / 60000);
     showToast(`また後でね♡（あと約${mins}分）`);
     return;
   }
 
-  // 多言語のふざけた名前を自動生成。アバターは名前シードで一意。
+  // ★ここで即ロック＆クールダウン確定保存（await前）。連打の抜けを防ぐ。
+  _soudaneLock[type] = true;
+  localStorage.setItem(untilKey, String(nowMs + SOUDANE_COOLDOWN));
+  applyHeartState(type, true);
+  scheduleSoudaneReset(type);
+
+  // 多言語のふざけた名前を自動生成
   const nickname = genSoudaneName();
   const data = { x_account: '', display_name: nickname, type, ip_address: '' };
 
@@ -5259,11 +5318,6 @@ async function onHeartClick(type) {
   const localList = JSON.parse(localStorage.getItem('bc_interests') || '[]');
   localList.push(data);
   localStorage.setItem('bc_interests', JSON.stringify(localList));
-
-  // クールダウン開始＆ピンク表示
-  localStorage.setItem(untilKey, String(nowMs + SOUDANE_COOLDOWN));
-  applyHeartState(type, true);
-  scheduleSoudaneReset(type);
 
   try { await sbInsertInterest(data); } catch(e) {}
   await loadInterests();
@@ -5275,10 +5329,11 @@ function scheduleSoudaneReset(type) {
   const untilKey = `bc_soudane_until_${type}`;
   const until = parseInt(localStorage.getItem(untilKey) || '0', 10);
   const remain = until - Date.now();
-  if (remain <= 0) { applyHeartState(type, false); return; }
+  if (remain <= 0) { _soudaneLock[type] = false; applyHeartState(type, false); return; }
   setTimeout(() => {
-    // 満了時、まだ期限が過ぎていれば白に戻す
+    // 満了時、まだ期限が過ぎていれば白に戻し、メモリロックも解除
     if (Date.now() >= parseInt(localStorage.getItem(untilKey) || '0', 10)) {
+      _soudaneLock[type] = false;
       applyHeartState(type, false);
     }
   }, Math.min(remain, 2147483647));
@@ -5288,8 +5343,8 @@ function scheduleSoudaneReset(type) {
 function restoreSoudaneState() {
   ['circle','general'].forEach(type => {
     const until = parseInt(localStorage.getItem(`bc_soudane_until_${type}`) || '0', 10);
-    if (Date.now() < until) { applyHeartState(type, true); scheduleSoudaneReset(type); }
-    else { applyHeartState(type, false); }
+    if (Date.now() < until) { _soudaneLock[type] = true; applyHeartState(type, true); scheduleSoudaneReset(type); }
+    else { _soudaneLock[type] = false; applyHeartState(type, false); }
   });
 }
 
@@ -6250,6 +6305,44 @@ initRequiredMarkListeners();
 })();
 
 </script>
+<!-- CONTACT MODAL -->
+<div class="interest-modal-bg" id="contactModalBg" onclick="closeContactModal(event)">
+  <div class="interest-modal" onclick="event.stopPropagation()">
+    <div class="interest-modal-title">✉️ お問い合わせ</div>
+    <div class="interest-modal-sub">ご質問・ご相談はこちらから。お返事はメールまたはXのDMでお送りします。</div>
+
+    <!-- フォーム送信 -->
+    <div class="interest-field">
+      <label>お名前・ハンドルネーム(任意)</label>
+      <input type="text" id="contact-name" placeholder="例：芋野たろう">
+    </div>
+    <div class="interest-field">
+      <label>ご連絡先メールアドレス(返信が必要な場合)</label>
+      <input type="email" id="contact-email" placeholder="example@mail.com">
+    </div>
+    <div class="interest-field">
+      <label>お問い合わせ内容</label>
+      <textarea id="contact-body" rows="4" placeholder="ご質問・ご相談の内容をご記入ください" style="width:100%;padding:9px 11px;border:1.5px solid var(--border);border-radius:7px;font-size:.9rem;box-sizing:border-box;font-family:inherit;resize:vertical;color:var(--ink);"></textarea>
+    </div>
+    <div id="contactError" style="color:#e05040;font-size:.78rem;margin-bottom:8px;display:none;">お問い合わせ内容をご記入ください</div>
+    <button class="interest-submit" onclick="submitContact()">この内容で送信する</button>
+
+    <!-- 区切り -->
+    <div style="display:flex;align-items:center;gap:10px;margin:18px 0 14px;color:var(--muted);font-size:.78rem;">
+      <div style="flex:1;height:1px;background:var(--border);"></div>または<div style="flex:1;height:1px;background:var(--border);"></div>
+    </div>
+
+    <!-- X DM 誘導 -->
+    <div style="text-align:center;">
+      <a href="https://x.com/daikikoushirou" target="_blank" rel="noopener" class="interest-submit" style="display:inline-block;text-decoration:none;background:#1a1a1a;">𝕏 @daikikoushirou にDMで聞く</a>
+      <div style="font-size:.74rem;color:var(--muted);line-height:1.6;margin-top:8px;display:flex;align-items:flex-start;gap:5px;justify-content:center;text-align:left;">
+        <span style="flex-shrink:0;cursor:pointer;" onclick="toggleDmInfo()" title="フォロー外でもDMできます">ℹ️</span>
+        <span>フォローしていなくてもDMを送れます。<span id="dmInfoDetail" style="display:none;">Xアプリでプロフィールを開き、メッセージ(封筒)アイコンをタップしてください。表示されない場合は、アカウントの「設定→プライバシーと安全→ダイレクトメッセージ」で「すべてのアカウントからのメッセージを許可」が必要なことがあります。それがしの方では誰からでも受け取れるようにしてあります。</span></span>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- INTEREST MODAL -->
 <div class="interest-modal-bg" id="interestModalBg" onclick="closeInterestModal(event)">
   <div class="interest-modal" onclick="event.stopPropagation()">
