@@ -20,8 +20,8 @@
   --sans: 'Noto Sans JP', sans-serif;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html{scroll-behavior:smooth;}
-body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.7;overflow-x:hidden;}
+html{scroll-behavior:smooth;overflow-x:hidden;width:100%;}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.7;overflow-x:hidden;width:100%;max-width:100%;position:relative;}
 
 /* GATE */
 #gate{position:fixed;inset:0;background:var(--potato-bg);display:flex;flex-direction:column;align-items:center;justify-content:safe center;overflow-y:auto;z-index:2000;padding:20px;transition:opacity .3s;}
@@ -1317,20 +1317,30 @@ footer a{color:var(--potato-light);text-decoration:none;}
           <div id="galleryOptions" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.15);">
             <div style="font-size:.82rem;color:rgba(255,255,255,.85);font-weight:700;margin-bottom:8px;">あわせて公開してよい情報を選んでください(任意・標準は非公開)</div>
             <div style="display:flex;flex-direction:column;gap:8px;">
+              <label for="f-gallery-all" style="display:flex;align-items:center;gap:8px;cursor:pointer;margin:0;font-size:.85rem;font-weight:700;color:rgba(255,255,255,.95);padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.12);">
+                <input type="checkbox" id="f-gallery-all" onchange="toggleGalleryAll()" style="width:16px;height:16px;cursor:pointer;"> すべてチェック
+              </label>
               <label for="f-gallery-name" style="display:flex;align-items:center;gap:8px;cursor:pointer;margin:0;font-size:.85rem;color:rgba(255,255,255,.9);">
-                <input type="checkbox" id="f-gallery-name" style="width:16px;height:16px;cursor:pointer;"> 執筆者(氏名)
+                <input type="checkbox" id="f-gallery-name" onchange="syncGalleryAll()" style="width:16px;height:16px;cursor:pointer;"> 執筆者(氏名)
               </label>
               <label for="f-gallery-circle" style="display:flex;align-items:center;gap:8px;cursor:pointer;margin:0;font-size:.85rem;color:rgba(255,255,255,.9);">
-                <input type="checkbox" id="f-gallery-circle" style="width:16px;height:16px;cursor:pointer;"> サークル名(入力がある場合)
+                <input type="checkbox" id="f-gallery-circle" onchange="syncGalleryAll()" style="width:16px;height:16px;cursor:pointer;"> サークル名(入力がある場合)
               </label>
               <label for="f-gallery-x" style="display:flex;align-items:center;gap:8px;cursor:pointer;margin:0;font-size:.85rem;color:rgba(255,255,255,.9);">
-                <input type="checkbox" id="f-gallery-x" style="width:16px;height:16px;cursor:pointer;"> X(旧Twitter)のURL
+                <input type="checkbox" id="f-gallery-x" onchange="syncGalleryAll()" style="width:16px;height:16px;cursor:pointer;"> X(旧Twitter)のURL
               </label>
               <div style="font-size:.74rem;color:rgba(255,255,255,.6);line-height:1.6;margin-top:2px;">選択された情報は、ギャラリー上でQRコードとしても表示されます(読み取るとXのプロフィール等にアクセスできます)。</div>
               <div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.12);">
                 <div style="font-size:.82rem;color:rgba(255,255,255,.85);font-weight:700;margin-bottom:6px;">オンライン公開希望日時(任意)</div>
                 <input type="datetime-local" id="f-gallery-publish-at" style="width:100%;max-width:260px;padding:8px 10px;border:1.5px solid rgba(255,255,255,.25);border-radius:7px;font-size:.85rem;box-sizing:border-box;font-family:inherit;background:rgba(255,255,255,.92);color:#1a1a2e;">
-                <div style="font-size:.74rem;color:rgba(255,255,255,.6);line-height:1.6;margin-top:4px;">公開は、当方で完成品の準備が整い次第となります。指定日時を過ぎている場合は、準備が整った時点で公開されます。指定がない場合は、準備完了から24時間後に自動公開されます。</div>
+                <div style="font-size:.72rem;color:rgba(255,255,255,.7);margin:8px 0 4px;">⚡ おすすめの時間にすばやくセット(Xで伸びやすい時間帯)</div>
+                <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                  <button type="button" onclick="setHotTime('next1830')" style="padding:5px 10px;border-radius:14px;border:1.5px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;font-size:.74rem;cursor:pointer;font-family:inherit;">直近の 18:30</button>
+                  <button type="button" onclick="setHotTime('next2200')" style="padding:5px 10px;border-radius:14px;border:1.5px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;font-size:.74rem;cursor:pointer;font-family:inherit;">直近の 22:00</button>
+                  <button type="button" onclick="setHotTime('fri1930')" style="padding:5px 10px;border-radius:14px;border:1.5px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;font-size:.74rem;cursor:pointer;font-family:inherit;">次の金曜 19:30</button>
+                  <button type="button" onclick="setHotTime('clear')" style="padding:5px 10px;border-radius:14px;border:1.5px solid rgba(255,255,255,.3);background:transparent;color:rgba(255,255,255,.75);font-size:.74rem;cursor:pointer;font-family:inherit;">準備でき次第すぐ</button>
+                </div>
+                <div style="font-size:.74rem;color:rgba(255,255,255,.6);line-height:1.6;margin-top:8px;">公開は、当方で完成品の準備が整い次第となります。指定日時を過ぎている場合は、準備が整った時点で公開されます。指定がない場合は、準備完了から24時間後に自動公開されます。</div>
               </div>
             </div>
           </div>
@@ -2859,6 +2869,49 @@ function flipV(){flipVState=!flipVState;updatePreview();}
 function toggleInvert(){invertState=!invertState;if(invertState)leatherPreviewUsed=true;const t=document.getElementById('invertToggle');t.classList.toggle('on',invertState);document.getElementById('invertDesc').textContent=invertState?'ON':'OFF';updatePreview();}
 
 
+
+// 「すべてチェック」→ 3項目を一括ON/OFF
+function toggleGalleryAll() {
+  const on = document.getElementById('f-gallery-all').checked;
+  document.getElementById('f-gallery-name').checked = on;
+  document.getElementById('f-gallery-circle').checked = on;
+  document.getElementById('f-gallery-x').checked = on;
+}
+// 個別チェックの変化に応じて「すべてチェック」の状態を同期
+function syncGalleryAll() {
+  const n = document.getElementById('f-gallery-name').checked;
+  const c = document.getElementById('f-gallery-circle').checked;
+  const x = document.getElementById('f-gallery-x').checked;
+  document.getElementById('f-gallery-all').checked = (n && c && x);
+}
+// ローカル日時を datetime-local の値(YYYY-MM-DDTHH:MM)に変換
+function _toDatetimeLocal(d) {
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+// おすすめ時間にワンタップでセット
+function setHotTime(kind) {
+  const el = document.getElementById('f-gallery-publish-at');
+  if (kind === 'clear') { el.value = ''; return; }
+  const now = new Date();
+  let d = new Date(now);
+  if (kind === 'next1830') {
+    d.setHours(18, 30, 0, 0);
+    if (d <= now) d.setDate(d.getDate() + 1);   // 過ぎていたら翌日
+  } else if (kind === 'next2200') {
+    d.setHours(22, 0, 0, 0);
+    if (d <= now) d.setDate(d.getDate() + 1);
+  } else if (kind === 'fri1930') {
+    d.setHours(19, 30, 0, 0);
+    // 次の金曜(5)。今日が金曜でまだ19:30前ならそのまま今日。
+    const day = d.getDay();
+    let add = (5 - day + 7) % 7;
+    if (add === 0 && d <= now) add = 7;          // 今日金曜だが過ぎていれば来週
+    d.setDate(d.getDate() + add);
+  }
+  el.value = _toDatetimeLocal(d);
+}
+
 function toggleGalleryOptions() {
   const on = document.getElementById('f-gallery-ok').checked;
   document.getElementById('galleryOptions').style.display = on ? 'block' : 'none';
@@ -2866,6 +2919,7 @@ function toggleGalleryOptions() {
     document.getElementById('f-gallery-name').checked = false;
     document.getElementById('f-gallery-circle').checked = false;
     document.getElementById('f-gallery-x').checked = false;
+    document.getElementById('f-gallery-all').checked = false;
     document.getElementById('f-gallery-publish-at').value = '';
   }
 }
@@ -2986,18 +3040,41 @@ function initCanvasDrag() {
   };
   const onStart = e => {
     if (!imgObj) return;
-    const p = getPos(e.touches ? e.touches[0] : e);
+    const isTouch = !!e.touches;
+    const p = getPos(isTouch ? e.touches[0] : e);
     _drag = {
-      active: true, startX: p.x, startY: p.y,
+      active: true, isTouch,
+      // タッチは方向が定まるまで保留(pending)。マウスは即ドラッグ確定。
+      pending: isTouch, locked: !isTouch,
+      startX: p.x, startY: p.y,
       startDX: parseInt(document.getElementById('ctrl-x').value) || 0,
       startDY: parseInt(document.getElementById('ctrl-y').value) || 0
     };
-    cv.style.cursor = 'grabbing';
+    if (!isTouch) cv.style.cursor = 'grabbing';
   };
   const onMove = e => {
     if (!_drag.active || !imgObj) return;
-    e.preventDefault();
     const p = getPos(e.touches ? e.touches[0] : e);
+
+    // タッチで方向未確定なら、最初の動きで縦横を判定
+    if (_drag.pending) {
+      const dx = Math.abs(p.x - _drag.startX);
+      const dy = Math.abs(p.y - _drag.startY);
+      // 一定距離動くまでは判定保留(誤反応防止)
+      if (dx < 8 && dy < 8) return;
+      if (dy > dx) {
+        // 縦が優勢 → ページスクロールに譲る(画像は動かさない)
+        _drag.active = false;
+        return;
+      }
+      // 横が優勢 → 画像ドラッグ確定
+      _drag.pending = false;
+      _drag.locked = true;
+      cv.style.cursor = 'grabbing';
+    }
+
+    // ドラッグ確定後のみスクロールを抑止して画像を動かす
+    e.preventDefault();
     const xEl = document.getElementById('ctrl-x'), yEl = document.getElementById('ctrl-y');
     const xMin = parseInt(xEl.min)||-80, xMax = parseInt(xEl.max)||80;
     const yMin = parseInt(yEl.min)||-80, yMax = parseInt(yEl.max)||80;
