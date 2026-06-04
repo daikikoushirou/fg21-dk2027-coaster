@@ -793,6 +793,12 @@ footer a{color:var(--potato-light);text-decoration:none;}
     <h1 class="site-title">イラスト入り<br>レザーコースター</h1>
     <div class="header-desc">イラストを送る → コースターができる<br><span id="headerDesc">頒布・挨拶用にもどうぞ</span></div>
     <div class="mode-ribbon" id="modeRibbon"></div>
+    <!-- サークル一次募集締め切りバナー(モード表示の下) -->
+    <div id="circleClosedBanner" style="display:none;max-width:520px;margin:20px auto 8px;padding:16px 18px;background:#fff;border:1.5px solid #e05040;border-radius:10px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.15);">
+      <div style="font-size:.9rem;font-weight:700;color:#d63d2c;margin-bottom:6px;">🙏 サークル参加者の一次募集を締め切りました</div>
+      <div style="font-size:.78rem;color:#6a5a48;line-height:1.6;margin-bottom:12px;">二次募集は<a href="https://x.com/daikikoushirou" target="_blank" rel="noopener" onclick="event.stopPropagation();" style="color:var(--circle-color);font-weight:700;">X(@daikikoushirou)</a>で告知します。</div>
+      <button class="code-action-btn" onclick="backToGate()" style="margin:0 auto;">← ゲートページへ戻る</button>
+    </div>
   </div>
   <div class="header-zigzag"></div>
 </header>
@@ -882,12 +888,6 @@ footer a{color:var(--potato-light);text-decoration:none;}
 
 <!-- 料金表 -->
 <div class="tone tone-4">
-  <!-- サークル一次募集締め切りバナー(製作の流れの上) -->
-  <div id="circleClosedBanner" style="display:none;max-width:520px;margin:24px auto 16px;padding:16px 18px;background:rgba(224,80,64,.12);border:1.5px solid rgba(224,80,64,.35);border-radius:10px;text-align:center;">
-    <div style="font-size:.9rem;font-weight:700;color:#e05040;margin-bottom:6px;">🙏 サークル参加者の一次募集を締め切りました</div>
-    <div style="font-size:.78rem;color:var(--muted);line-height:1.6;margin-bottom:12px;">二次募集は<a href="https://x.com/daikikoushirou" target="_blank" rel="noopener" onclick="event.stopPropagation();" style="color:var(--circle-color);font-weight:700;">X(@daikikoushirou)</a>で告知します。</div>
-    <button class="code-action-btn" onclick="backToGate()" style="margin:0 auto;">← ゲートページへ戻る</button>
-  </div>
 <!-- 製作の流れ -->
 <div class="flow-section">
   <div class="section">
@@ -2303,8 +2303,8 @@ function showOrderClosed(mode) {
     applyModeUI();
   } else {
     // 一般参加者は締め切りバナー＋フォーム非表示
-    banner.innerHTML = '<div style="font-size:.9rem;font-weight:700;color:#e05040;margin-bottom:4px;">🙏 一般参加者の一次募集を締め切りました</div>'
-      + '<div style="font-size:.78rem;color:var(--muted);line-height:1.6;">二次募集は<a href="https://x.com/daikikoushirou" target="_blank" rel="noopener" onclick="event.stopPropagation();" style="color:var(--circle-color);font-weight:700;">X(@daikikoushirou)</a>で告知します。</div>'
+    banner.innerHTML = '<div style="font-size:.9rem;font-weight:700;color:#d63d2c;margin-bottom:4px;">🙏 一般参加者の一次募集を締め切りました</div>'
+      + '<div style="font-size:.78rem;color:#6a5a48;line-height:1.6;">二次募集は<a href="https://x.com/daikikoushirou" target="_blank" rel="noopener" onclick="event.stopPropagation();" style="color:var(--circle-color);font-weight:700;">X(@daikikoushirou)</a>で告知します。</div>'
       + '<div style="margin-top:10px;"><button class="code-action-btn" onclick="backToGate()" style="margin:0 auto;">← ゲートページへ戻る</button></div>';
     banner.style.display = 'block';
     document.getElementById('order').style.display = 'none';
