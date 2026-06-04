@@ -1638,15 +1638,46 @@ const EVENT_DATE = new Date('2027-05-03T00:00:00+09:00');
 // ▲▲▲ ここだけ変更すればOK ▲▲▲
 // ══════════════════════════════════════════
 
-// 派生日付(自動計算)
+// ── JST(日本標準時)固定ヘルパー ──
+// 閲覧者のタイムゾーンに関わらず、常に日本時間で日付を扱う。
+const JST_OFFSET_MS = 9 * 60 * 60 * 1000;
+// 指定のJST年月日時から Date(絶対時刻) を作る
+function jstDate(y, mo, d, h = 0, mi = 0, s = 0, ms = 0) {
+  // UTCで組み立ててJSTオフセットを引く＝そのJST壁時計時刻の絶対時刻
+  return new Date(Date.UTC(y, mo, d, h, mi, s, ms) - JST_OFFSET_MS);
+}
+// Date から JST基準の {y,mo,d,h,mi,dow} を取り出す
+function jstParts(date) {
+  const t = new Date(date.getTime() + JST_OFFSET_MS);
+  return {
+    y:  t.getUTCFullYear(),
+    mo: t.getUTCMonth(),
+    d:  t.getUTCDate(),
+    h:  t.getUTCHours(),
+    mi: t.getUTCMinutes(),
+    dow: t.getUTCDay(),
+  };
+}
+// JST基準で「○日後/前」や「時刻セット」した Date を返す
+function jstShift(base, { days = 0, months = 0, h, mi, s, ms } = {}) {
+  const p = jstParts(base);
+  let y = p.y, mo = p.mo + months, d = p.d + days;
+  const hh = (h  !== undefined) ? h  : p.h;
+  const mm = (mi !== undefined) ? mi : p.mi;
+  const ss = (s  !== undefined) ? s  : 0;
+  const mss= (ms !== undefined) ? ms : 0;
+  return jstDate(y, mo, d, hh, mm, ss, mss);
+}
+
+// 派生日付(自動計算 / すべてJST基準)
 // DEADLINEのみ「開催2日前の朝4時」。それ以外の「○日まで」系は、
 // その日いっぱい(23:59:59)を境界にする＝表記通り「その日まで」有効。
-const DEADLINE = (() => { const d = new Date(EVENT_DATE); d.setDate(d.getDate() - 2); d.setHours(4,0,0,0); return d; })();
-const EARLY_BIRD_END = (() => { const d = new Date(EVENT_DATE); d.setMonth(d.getMonth() - 1); d.setHours(23,59,59,999); return d; })();
-const SAMPLE_FREE_END = (() => { const d = new Date(EVENT_DATE); d.setDate(d.getDate() - 21); d.setHours(23,59,59,999); return d; })();
-const BULK_ORDER_END = (() => { const d = new Date(EVENT_DATE); d.setDate(d.getDate() - 14); d.setHours(23,59,59,999); return d; })();
-const COMPLETION_IMG_END = (() => { const d = new Date(EVENT_DATE); d.setDate(d.getDate() - 10); d.setHours(23,59,59,999); return d; })();
-const COMPLETION_IMG_PAID_END = (() => { const d = new Date(EVENT_DATE); d.setDate(d.getDate() - 5); d.setHours(23,59,59,999); return d; })();
+const DEADLINE                = jstShift(EVENT_DATE, { days: -2,  h: 4,  mi: 0,  s: 0,  ms: 0 });
+const EARLY_BIRD_END          = jstShift(EVENT_DATE, { months: -1, h: 23, mi: 59, s: 59, ms: 999 });
+const SAMPLE_FREE_END         = jstShift(EVENT_DATE, { days: -21, h: 23, mi: 59, s: 59, ms: 999 });
+const BULK_ORDER_END          = jstShift(EVENT_DATE, { days: -14, h: 23, mi: 59, s: 59, ms: 999 });
+const COMPLETION_IMG_END      = jstShift(EVENT_DATE, { days: -10, h: 23, mi: 59, s: 59, ms: 999 });
+const COMPLETION_IMG_PAID_END = jstShift(EVENT_DATE, { days: -5,  h: 23, mi: 59, s: 59, ms: 999 });
 const COMPLETION_IMG_PRICE = 100;
 
 
@@ -1687,12 +1718,12 @@ function isSampleFreeEligible(mode, qty) {
 function isCircleBulkAllowed() { return now() < BULK_ORDER_END; }
 
 function fmtDate(d) {
-  const h = d.getHours(), mi = d.getMinutes();
+  const p = jstParts(d);
   // 23:59(日の終わりマーカー)は時刻を表示しない＝日付のみ
-  const isDayEnd = (h === 23 && mi === 59);
-  const showTime = (h || mi) && !isDayEnd;
-  return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日` +
-    (showTime ? ` ${h}時${mi ? mi+'分' : ''}` : '');
+  const isDayEnd = (p.h === 23 && p.mi === 59);
+  const showTime = (p.h || p.mi) && !isDayEnd;
+  return `${p.y}年${p.mo+1}月${p.d}日` +
+    (showTime ? ` ${p.h}時${p.mi ? p.mi+'分' : ''}` : '');
 }
 
 // ══════════════════════════════════════════════════
@@ -2410,19 +2441,23 @@ function renderCalendar(mode) {
   const wrap = document.getElementById('calWrap');
   if (!wrap) return;
 
-  const y = EVENT_DATE.getFullYear();
-  function toDay0(d) { const x = new Date(d); x.setHours(0,0,0,0); return x; }
-  const todayD = new Date(); todayD.setHours(0,0,0,0);
+  const y = jstParts(EVENT_DATE).y;
+  // JST基準で「その日の0時(JST)」の絶対時刻に丸める
+  function toDay0(d) { const p = jstParts(d); return jstDate(p.y, p.mo, p.d, 0, 0, 0, 0); }
+  // JST基準の「ある年月日0時(JST)」を作るショートカット（カレンダーのセル用）
+  function cell(yy, mm, dd) { return jstDate(yy, mm, dd, 0, 0, 0, 0); }
+  const todayD = toDay0(new Date());
 
   // ── 期間バー定義（上から順。開始が遅いものは下に配置）──
-  const _ciPaidStart = (() => { const d = new Date(COMPLETION_IMG_END); d.setDate(d.getDate()+1); return d; })();
+  const _ciPaidStart = jstShift(COMPLETION_IMG_END, { days: 1 });
+  const _origin = cell(y, 1, 1);  // 2月1日(JST)＝全期間共通の仮起点
   const ALL_PERIODS = [
-    { start: new Date(y, 1, 1), end: EARLY_BIRD_END,          color: '#d08020', label: '早割期間',            circleOnly: true },
-    { start: new Date(y, 1, 1), end: SAMPLE_FREE_END,         color: '#2090b8', label: 'サンプル無料期間' },
-    { start: new Date(y, 1, 1), end: BULK_ORDER_END,          color: '#7050b8', label: '大量注文可能期間',     circleOnly: true },
-    { start: new Date(y, 1, 1), end: COMPLETION_IMG_END,      color: '#c03870', label: '確認画像 無料受付' },
-    { start: new Date(y, 1, 1), end: DEADLINE,                color: '#6888a8', label: '申し込み受付期間' },
-    { start: _ciPaidStart,      end: COMPLETION_IMG_PAID_END, color: '#c06080', label: '確認画像 有料受付' },
+    { start: _origin, end: EARLY_BIRD_END,          color: '#d08020', label: '早割期間',            circleOnly: true },
+    { start: _origin, end: SAMPLE_FREE_END,         color: '#2090b8', label: 'サンプル無料期間' },
+    { start: _origin, end: BULK_ORDER_END,          color: '#7050b8', label: '大量注文可能期間',     circleOnly: true },
+    { start: _origin, end: COMPLETION_IMG_END,      color: '#c03870', label: '確認画像 無料受付' },
+    { start: _origin, end: DEADLINE,                color: '#6888a8', label: '申し込み受付期間' },
+    { start: _ciPaidStart, end: COMPLETION_IMG_PAID_END, color: '#c06080', label: '確認画像 有料受付' },
   ];
   const PERIODS = ALL_PERIODS.filter(p => !p.circleOnly || mode === 'circle');
 
@@ -2444,39 +2479,48 @@ function renderCalendar(mode) {
   const EVENTS = ALL_EVENTS.filter(e => !e.circleOnly || mode === 'circle');
 
   const SHOW_MONTHS = [
-    new Date(y, 3, 1),
-    new Date(y, 4, 1),
+    cell(y, 3, 1),
+    cell(y, 4, 1),
   ];
 
   const DOW      = ['日','月','火','水','木','金','土'];
   const MONTH_JP = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
 
   const monthsHtml = SHOW_MONTHS.map(monthStart => {
-    const y2 = monthStart.getFullYear();
-    const m  = monthStart.getMonth();
-    const firstDow    = monthStart.getDay();
-    const daysInMonth = new Date(y2, m+1, 0).getDate();
+    const mp = jstParts(monthStart);
+    const y2 = mp.y;
+    const m  = mp.mo;
+    const firstDow    = jstParts(cell(y2, m, 1)).dow;
+    const daysInMonth = jstParts(cell(y2, m+1, 0)).d;
     // 5月は開催日(3日)を含む週の土曜まで表示
-    const eventDayOfWeek = new Date(y2, m, EVENT_DATE.getDate()).getDay(); // 3日の曜日
+    const eventDay = jstParts(EVENT_DATE).d;
+    const eventDayOfWeek = jstParts(cell(y2, m, eventDay)).dow; // 3日の曜日
     const daysUntilSat = eventDayOfWeek === 6 ? 0 : 6 - eventDayOfWeek;
-    const displayDays = (m === 4) ? Math.min(EVENT_DATE.getDate() + daysUntilSat, daysInMonth) : daysInMonth;
-    const monthEnd    = new Date(y2, m, displayDays);
+    const displayDays = (m === 4) ? Math.min(eventDay + daysUntilSat, daysInMonth) : daysInMonth;
+    const monthEnd    = cell(y2, m, displayDays);
 
     // 各日に表示するバーのリスト（期間内かつ月内）
     const barsByDay = {};
     PERIODS.forEach((p, pi) => {
       const ps = toDay0(p.start);
       const pe = toDay0(p.end);
-      if (pe < new Date(y2, m, 1)) return; // この月より前に終了
-      if (ps > new Date(y2, m, displayDays)) return; // この月より後に開始
+      if (pe < cell(y2, m, 1)) return; // この月より前に終了
+      if (ps > cell(y2, m, displayDays)) return; // この月より後に開始
+      // 終了日の「その日のうち何割の時点で終わるか」(0〜1)。
+      // 23:59:59のような日の終わりは1.0(セル全幅)、朝4時など早い締切は途中まで。
+      const ep = jstParts(p.end);
+      const endFrac = (ep.h === 23 && ep.mi === 59)
+        ? 1
+        : Math.max(0.18, (ep.h * 60 + ep.mi) / (24 * 60));  // 最低18%は見せる
       for (let d = 1; d <= displayDays; d++) {
-        const dt = new Date(y2, m, d);
+        const dt = cell(y2, m, d);
         if (dt < ps) continue; // 開始前はスキップ
         if (dt > pe) break;
         if (!barsByDay[d]) barsByDay[d] = [];
         barsByDay[d].push({ ...p, pi,
           isFirst: dt.getTime() === ps.getTime(),
           isLast:  dt.getTime() === pe.getTime(),
+          endFrac,
         });
       }
     });
@@ -2496,8 +2540,8 @@ function renderCalendar(mode) {
 
     const dayCells = Array.from({length: displayDays}, (_, i) => {
       const day = i + 1;
-      const dt  = new Date(y2, m, day);
-      const dow = dt.getDay();
+      const dt  = cell(y2, m, day);
+      const dow = jstParts(dt).dow;
       const isToday    = dt.getTime() === todayD.getTime();
       const isPast     = dt < todayD;
       const isEventDay = dt.getTime() === toDay0(EVENT_DATE).getTime();
@@ -2526,11 +2570,16 @@ function renderCalendar(mode) {
         if (!b) {
           return `<div style="height:4px;flex-shrink:0;"></div>`;
         }
+        const isPartialLast = b.isLast && b.endFrac < 1;
         const brL = b.isFirst ? '3px' : '0';
-        const brR = b.isLast  ? '3px' : '0';
+        const brR = (b.isLast) ? '3px' : '0';
         const op  = isPast ? .35 : .85;
+        // 通常はセル全幅。早朝締切などで最終日が途中までの場合は幅を縮めて左寄せ。
+        const widthStyle = isPartialLast
+          ? `width:${Math.round(b.endFrac*100)}%;align-self:flex-start;`
+          : '';
         const tip = `${b.label}　〜 ${fmtDate(b.end)}まで`;
-        return `<div class="cal-bar-tip" data-tip="${tip}" style="height:4px;flex-shrink:0;background:${b.color};border-radius:${brL} ${brR} ${brR} ${brL};opacity:${op};cursor:default;"></div>`;
+        return `<div class="cal-bar-tip" data-tip="${tip}" style="height:4px;flex-shrink:0;${widthStyle}background:${b.color};border-radius:${brL} ${brR} ${brR} ${brL};opacity:${op};cursor:default;"></div>`;
       }).join('') : '';
 
       // 開催日テキスト：バーのない週は縦中央、ある週は下寄せ
@@ -2558,7 +2607,7 @@ function renderCalendar(mode) {
   const legendPeriods = [...PERIODS].sort((a, b) => a.end - b.end);
   const legendRows = legendPeriods.map(p => {
     // 開始日が2月1日（全期間共通の仮起点）以外の場合は開始日も表示
-    const showStart = p.start && p.start.getMonth() !== 1; // 2月=month1 以外
+    const showStart = p.start && jstParts(p.start).mo !== 1; // 2月=month1 以外
     const rangeText = showStart
       ? `${fmtDate(p.start)} 〜 ${fmtDate(p.end)}`
       : `〜 ${fmtDate(p.end)}`;
