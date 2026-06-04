@@ -218,7 +218,7 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:0;}
 @media(max-width:600px){.receive-grid{grid-template-columns:1fr !important;}}
 
 /* DATES INFO BOX */
-.dates-box{background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:18px 20px;margin-bottom:24px;}
+.dates-box{background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:18px 20px;margin-bottom:14px;}
 .dates-box-title{font-size:.85rem;font-weight:700;color:var(--potato-dark);margin-bottom:12px;display:flex;align-items:center;gap:6px;font-family:var(--head);letter-spacing:.03em;}
 .dates-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;}
 .date-item{display:flex;flex-direction:column;gap:2px;}
@@ -1083,17 +1083,8 @@ footer a{color:var(--potato-light);text-decoration:none;}
 <!-- 参加資格 -->
 <div class="tone tone-5"><div class="section">
   <div class="section-title">料金表</div>
-  <!-- 日程情報ボックス -->
-  <div class="dates-box" id="datesBox">
-    <div class="dates-box-title">📅 重要な日程(<span id="eventDateDisplay"></span> 開催)</div>
-    <div class="dates-grid" id="datesGrid"></div>
-    <div id="todayBannerWrap"></div>
-  </div>
-  <!-- カレンダー -->
-  <button class="cal-show-btn" id="calShowBtn" onclick="toggleCalendarVisibility()">📅 カレンダーで確認する</button>
-  <div class="cal-wrap" id="calWrap" style="display:none;"></div>
-<div id="calTooltip"></div>
 
+  <!-- ① 点数Tier表（モード別） -->
   <div class="pricing-panel" id="pricePanel-circle">
     <table class="price-tier-table" id="circlePriceTable">
       <thead><tr><th>点数</th><th>通常価格</th><th>早割価格(1か月前まで)</th><th>備考</th></tr></thead>
@@ -1105,20 +1096,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
         <tr class="upper-row"><td>17〜20点目</td><td><span class="price-big">¥250</span><span class="price-small">/点</span></td><td><span class="price-big">¥230</span><span class="price-small">/点</span></td><td><span class="tier-badge badge-max">MAX</span></td></tr>
       </tbody>
     </table>
-    <div class="shape-note">形状はスクエア(85×85mm)・サークル(φ90mm)から選択できます。どちらも同じ料金です。</div>
-    <div class="shape-note" style="margin-top:8px;background:#faf2e2;border-left:3px solid #d08020;border-radius:0 8px 8px 0;">
-      ⭐ <strong>早割(開催1か月前まで)</strong>：有料分が各段階で¥20割引されます(¥220→¥200・¥230→¥210・¥240→¥220・¥250→¥230)。開催2週間前を過ぎると最大5点に制限されます。
-    </div>
-    <div class="shape-note" style="margin-top:8px;background:#e8f3f8;border-left:3px solid #2090b8;border-radius:0 8px 8px 0;">
-      🔬 <strong>端材サンプル試し刷り</strong>：3週間前まで の申込者 または 11点以上 の申込者は初回無料。それ以外は¥300。端材を使用するため形状が不完全・非平坦な場合があります。
-    </div>
-    <div class="shape-note completion-img-note-box" id="ciNoteCircle" style="margin-top:8px;background:#fbeaf1;border-left:3px solid #c03870;border-radius:0 8px 8px 0;display:none;"></div>
-    <div class="shape-note" style="margin-top:8px;background:#fff0f0;border-left:3px solid #e08080;border-radius:0 8px 8px 0;">
-      ⚠️ <strong>無料枠(1〜3点目)は、同一サークルの最初の注文にのみ適用されます。</strong>複数デザインを分けて申し込む場合や複数回注文する場合、2回目以降の注文は全点数有料となります。
-    </div>
-    <div class="shape-note" style="margin-top:8px;background:#fff8f0;border-left:3px solid #e8b060;border-radius:0 8px 8px 0;font-size:.82rem;line-height:1.75;color:var(--ink);">
-      📝 <strong>価格変更の可能性について：</strong>1人で製作しているため、作業量が著しく増えた場合、各種オプションや単価が上がる可能性があります。前回の学園祭では開催10日前ごろに申し込みが集中し、現場がかなりバタバタしました。今回は早割も導入しましたので、<strong>早ければ早いほど安い</strong>と思っていただいて間違いありません。数を作ってみたいサークルの方も、まずは少部数で早めの申し込みをいただけると大変助かります。
-    </div>
+    <p style="font-size:.76rem;color:var(--muted);margin:4px 2px 18px;line-height:1.6;">※ 形状はスクエア(85×85mm)・サークル(φ90mm)から選択できます。どちらも同じ料金です。</p>
   </div>
   <div class="pricing-panel" id="pricePanel-general">
     <table class="price-tier-table">
@@ -1128,8 +1106,39 @@ footer a{color:var(--potato-light);text-decoration:none;}
         <tr class="extra-row"><td>2点目</td><td><span class="price-big">¥400</span><span class="price-small">/点</span></td><td><span class="tier-badge badge-extra">EXTRA</span> 最大2点</td></tr>
       </tbody>
     </table>
-    <div class="shape-note">形状はスクエア(85×85mm)・サークル(φ90mm)から選択できます。どちらも同じ料金です。</div>
-    <div class="shape-note" style="margin-top:8px;background:#fdf0e0;border-left:3px solid var(--accent-light);border-radius:0 8px 8px 0;">⚠️ <strong>2種類以上のイラストを製作できるのはサークル参加者に限られます。</strong></div>
+    <p style="font-size:.76rem;color:var(--muted);margin:4px 2px 18px;line-height:1.6;">※ 形状はスクエア(85×85mm)・サークル(φ90mm)から選択できます。どちらも同じ料金です。</p>
+  </div>
+
+  <!-- ② 重要な日程（共通） -->
+  <div class="dates-box" id="datesBox">
+    <div class="dates-box-title">📅 重要な日程(<span id="eventDateDisplay"></span> 開催)</div>
+    <div class="dates-grid" id="datesGrid"></div>
+    <div id="todayBannerWrap"></div>
+  </div>
+
+  <!-- ③ カレンダー（共通） -->
+  <button class="cal-show-btn" id="calShowBtn" onclick="toggleCalendarVisibility()">📅 カレンダーで確認する</button>
+  <div class="cal-wrap" id="calWrap" style="display:none;"></div>
+  <div id="calTooltip"></div>
+
+  <!-- ④ 注意書き（モード別） -->
+  <div class="pricing-panel" id="notesPanel-circle">
+    <div class="shape-note" style="background:#fff0f0;border-left:3px solid #e08080;border-radius:0 8px 8px 0;">
+      ⚠️ <strong>無料枠(1〜3点目)は、同一サークルの最初の注文にのみ適用されます。</strong>複数デザインを分けて申し込む場合や複数回注文する場合、2回目以降の注文は全点数有料となります。
+    </div>
+    <div class="shape-note" style="margin-top:8px;background:#faf2e2;border-left:3px solid #d08020;border-radius:0 8px 8px 0;">
+      ⭐ <strong>早割(開催1か月前まで)</strong>：有料分が各段階で¥20割引されます(¥220→¥200・¥230→¥210・¥240→¥220・¥250→¥230)。開催2週間前を過ぎると最大5点に制限されます。
+    </div>
+    <div class="shape-note" style="margin-top:8px;background:#e8f3f8;border-left:3px solid #2090b8;border-radius:0 8px 8px 0;">
+      🔬 <strong>端材サンプル試し刷り</strong>：3週間前まで の申込者 または 11点以上 の申込者は初回無料。それ以外は¥300。端材を使用するため形状が不完全・非平坦な場合があります。
+    </div>
+    <div class="shape-note completion-img-note-box" id="ciNoteCircle" style="margin-top:8px;background:#fbeaf1;border-left:3px solid #c03870;border-radius:0 8px 8px 0;display:none;"></div>
+    <div class="shape-note" style="margin-top:8px;background:#fff8f0;border-left:3px solid #e8b060;border-radius:0 8px 8px 0;font-size:.82rem;line-height:1.75;color:var(--ink);">
+      📝 <strong>価格変更の可能性について：</strong>1人で製作しているため、作業量が著しく増えた場合、各種オプションや単価が上がる可能性があります。前回の学園祭では開催10日前ごろに申し込みが集中し、現場がかなりバタバタしました。今回は早割も導入しましたので、<strong>早ければ早いほど安い</strong>と思っていただいて間違いありません。数を作ってみたいサークルの方も、まずは少部数で早めの申し込みをいただけると大変助かります。
+    </div>
+  </div>
+  <div class="pricing-panel" id="notesPanel-general">
+    <div class="shape-note" style="background:#fdf0e0;border-left:3px solid var(--accent-light);border-radius:0 8px 8px 0;">⚠️ <strong>2種類以上のイラストを製作できるのはサークル参加者に限られます。</strong></div>
     <div class="shape-note" style="margin-top:8px;background:#e8f3f8;border-left:3px solid #2090b8;border-radius:0 8px 8px 0;">
       🔬 <strong>端材サンプル試し刷り</strong>：3週間前まで の申込者は初回無料。それ以外は¥300。端材を使用するため形状が不完全・非平坦な場合があります。
     </div>
@@ -1640,7 +1649,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
 //   マイナー … 新機能の追加
 //   機能変更 … 既存機能の修正・調整・バグfix
 //   文言変更 … テキストや表記だけの修正
-const SITE_VERSION = 'v1.0.1.0';
+const SITE_VERSION = 'v1.0.2.2';
 // ▲▲▲ リロードして表示が変われば新版が反映済み ▲▲▲
 // ══════════════════════════════════════════
 // ▼▼▼ 開催日を変更するとすべての日付が連動します ▼▼▼
@@ -2755,8 +2764,10 @@ function switchPricingTab(tab) {
   document.querySelectorAll('.pricing-panel').forEach(p => p.classList.remove('active'));
   const te = document.querySelector(`.pricing-tab.${tab}-tab`);
   const pe = document.getElementById('pricePanel-'+tab);
+  const ne = document.getElementById('notesPanel-'+tab);
   if (te) te.classList.add('active');
   if (pe) pe.classList.add('active');
+  if (ne) ne.classList.add('active');
   // サークル専用の日程項目を一般タブでは非表示
   document.querySelectorAll('.circle-only-date').forEach(el => {
     el.style.display = tab === 'general' ? 'none' : '';
