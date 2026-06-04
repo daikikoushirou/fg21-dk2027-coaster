@@ -5202,7 +5202,7 @@ async function gateShareCopy() {
   setTimeout(() => { lbl.textContent = t.shareCopyLbl || 'コピー'; btn.classList.remove('copied'); }, 2500);
 }
 
-function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3500); }
+function showToast(msg, duration = 3500) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(t._hideTimer); t._hideTimer = setTimeout(() => t.classList.remove('show'), duration); }
 
 // ══ INTERESTS ══
 async function sbInsertInterest(data) {
@@ -5371,7 +5371,8 @@ async function onHeartClick(type) {
   localStorage.setItem('bc_interests', JSON.stringify(localList));
 
   // ★トーストは await の前に即出す（ネットワーク待ちでUIが固まらないように）
-  showToast(genSoudaneToast(nickname));
+  // 凝った命名メッセージは読み応えがあるので長め(6秒)に表示
+  showToast(genSoudaneToast(nickname), 6000);
 
   // DB保存と再描画はバックグラウンドで（UIをブロックしない）
   try { await sbInsertInterest(data); } catch(e) {}
