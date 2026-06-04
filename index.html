@@ -1295,6 +1295,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
             <div class="ctrl-group"><div class="ctrl-label">反転</div><div class="ctrl-row" style="gap:7px"><button type="button" class="ctrl-btn" onclick="flipH()">左右</button><button type="button" class="ctrl-btn" onclick="flipV()">上下</button></div></div>
             <div class="ctrl-group"><div class="ctrl-label">革色プレビュー</div><div class="toggle-row"><div class="toggle-track" id="invertToggle" onclick="toggleInvert()"><div class="toggle-thumb"></div></div><span class="toggle-desc" id="invertDesc">OFF</span></div></div>
           </div>
+          <button type="button" id="adjustModeBtn" onclick="toggleAdjustMode()" style="display:none;width:100%;margin-top:8px;padding:10px;border-radius:8px;border:1.5px solid var(--accent);background:transparent;color:var(--accent);font-weight:700;font-size:.85rem;cursor:pointer;">✋ 位置を調整する</button>
           <div id="previewHint" style="font-size:.72rem;color:rgba(255,255,255,.5);margin-top:6px;line-height:1.6;">
             💡 プレビュー上でドラッグして位置を調整できます。ホバーでルーペ表示 / クリックでルーペON・OFF切り替え
           </div>
@@ -1655,7 +1656,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
 //   マイナー … 新機能の追加
 //   機能変更 … 既存機能の修正・調整・バグfix
 //   文言変更 … テキストや表記だけの修正
-const SITE_VERSION = 'v1.0.4.9';
+const SITE_VERSION = 'v1.0.5.0';
 // ▲▲▲ リロードして表示が変われば新版が反映済み ▲▲▲
 // ══════════════════════════════════════════
 // ▼▼▼ 開催日を変更するとすべての日付が連動します ▼▼▼
@@ -3364,6 +3365,20 @@ function initRequiredMarkListeners() {
   document.getElementById('f-shape')?.addEventListener('change', refreshRequiredMarks);
 }
 
+function toggleAdjustMode() {
+  window._adjustMode = !window._adjustMode;
+  const cv = document.getElementById('previewCanvas');
+  const btn = document.getElementById('adjustModeBtn');
+  if (window._adjustMode) {
+    cv.style.touchAction = 'none';
+    cv.style.cursor = 'grab';
+    if (btn) { btn.textContent = '✓ 調整中（タップで終了）'; btn.style.background = 'var(--accent)'; btn.style.color = '#fff'; }
+  } else {
+    cv.style.touchAction = '';
+    if (btn) { btn.textContent = '✋ 位置を調整する'; btn.style.background = 'transparent'; btn.style.color = 'var(--accent)'; }
+  }
+}
+
 function initCanvasDrag() {
   const cv = document.getElementById('previewCanvas');
   const ov = document.getElementById('dragOverlay');
@@ -3394,49 +3409,27 @@ function initCanvasDrag() {
     updatePreview();
   };
 
-  // ── canvas上で完結する方式 ──
-  // touchmoveはpassive:falseで登録するが、preventDefaultは「長押し成立後」だけ呼ぶ。
-  //  - 長押し前：preventDefaultしない → ブラウザのネイティブスクロールがそのまま効く(高速・慣性つき)
-  //  - 長押し成立後：preventDefaultして画像移動 → スクロールしない
+  // ── モード切替方式 ──
+  // 通常時：プレビューに触れてもページが普通にスクロールする(ネイティブ・高速)。
+  // 「位置を調整」ボタンON時のみ：canvasをtouch-action:noneにして、ドラッグで画像移動。
+  // 時間的に分離するのでスクロールと移動が同時に起きない。
   const onTouchStart = e => {
-    if (!imgObj) return;
+    if (!imgObj || !window._adjustMode) return;  // 調整モードOFFなら何もしない＝ネイティブスクロール
     const t = e.touches[0];
     const p = getPos(t);
     _drag = {
-      startX: p.x, startY: p.y,
+      active: true, startX: p.x, startY: p.y,
       startDX: parseInt(document.getElementById('ctrl-x').value) || 0,
-      startDY: parseInt(document.getElementById('ctrl-y').value) || 0,
-      lpTimer: null, engaged: false
+      startDY: parseInt(document.getElementById('ctrl-y').value) || 0
     };
-    if (!isOnImage(p)) return;  // 余白は何もしない＝普通にスクロール
-    _drag.lpTimer = setTimeout(() => {
-      _drag.engaged = true;  // 画像移動モード成立
-      window.scrollTo(window.scrollX, window.scrollY);  // 慣性スクロールを打ち切る
-      cv.style.cursor = 'grabbing';
-      if (navigator.vibrate) navigator.vibrate(10);
-    }, 400);
   };
   const onTouchMove = e => {
-    if (!_drag) return;
-    const t = e.touches[0];
-    const p = getPos(t);
-    if (_drag.engaged) {
-      // 長押し成立後：画像を動かす(スクロールさせない)
-      e.preventDefault();
-      moveImage(p);
-      return;
-    }
-    // 成立前に動いた＝スクロール意図 → 長押しキャンセル(preventDefaultしない＝ネイティブスクロール)
-    if (_drag.lpTimer && (Math.abs(p.x - _drag.startX) > 6 || Math.abs(p.y - _drag.startY) > 6)) {
-      clearTimeout(_drag.lpTimer); _drag.lpTimer = null;
-    }
+    if (!window._adjustMode || !_drag || !_drag.active || !imgObj) return;
+    e.preventDefault();  // 調整モード中はスクロールさせず画像移動
+    moveImage(getPos(e.touches[0]));
   };
-  const endTouch = () => {
-    if (_drag && _drag.lpTimer) { clearTimeout(_drag.lpTimer); _drag.lpTimer = null; }
-    if (_drag) _drag.engaged = false;
-    if (imgObj) cv.style.cursor = 'grab';
-  };
-  cv.addEventListener('touchstart', onTouchStart, { passive: true });
+  const endTouch = () => { if (_drag) _drag.active = false; };
+  cv.addEventListener('touchstart', onTouchStart, { passive: false });
   cv.addEventListener('touchmove',  onTouchMove,  { passive: false });
   cv.addEventListener('touchend',   endTouch);
   cv.addEventListener('touchcancel', endTouch);
@@ -5871,7 +5864,9 @@ initRequiredMarkListeners();
       if (mag) mag.style.display = 'none';
       // ルーペ説明はモバイルでは出さない（ドラッグ説明のみに）
       const hint = document.getElementById('previewHint');
-      if (hint) hint.innerHTML = '💡 画像を<strong>0.4秒ほど押してから動かす</strong>と位置を調整できます。<br>軽くなぞるとページがスクロールします。';
+      if (hint) hint.innerHTML = '💡 「位置を調整する」ボタンを押している間だけ、ドラッグで画像を動かせます。';
+      const amb = document.getElementById('adjustModeBtn');
+      if (amb) amb.style.display = 'block';
       return;
     }
     new ResizeObserver(() => {
