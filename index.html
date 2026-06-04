@@ -2259,8 +2259,9 @@ function serializePhotos(arr) {
 async function checkOrderLimit(mode) {
   if (!sbReady()) return false;
   try {
+    // orders テーブルはRLSで匿名から直接読めないため、公開ビュー orders_public で件数を数える。
     const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/orders?type=eq.${mode}&select=ref`,
+      `${SUPABASE_URL}/rest/v1/orders_public?type=eq.${mode}&select=ref`,
       { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': authBearer() } }
     );
     const rows = res.ok ? await res.json() : [];
