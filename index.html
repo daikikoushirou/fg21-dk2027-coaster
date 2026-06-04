@@ -1740,7 +1740,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
 //   マイナー … 新機能の追加
 //   機能変更 … 既存機能の修正・調整・バグfix
 //   文言変更 … テキストや表記だけの修正
-const SITE_VERSION = 'v1.2.3.7';
+const SITE_VERSION = 'v1.2.3.8';
 // ▲▲▲ リロードして表示が変われば新版が反映済み ▲▲▲
 // ══════════════════════════════════════════
 // ▼▼▼ 開催日を変更するとすべての日付が連動します ▼▼▼
@@ -4429,7 +4429,7 @@ function verifyCode() {
     <div><div class="vf-label">注文番号</div><div class="vf-value" style="font-size:.8rem">${o.ref}</div></div>
     <div><div class="vf-label">連絡方法</div><div class="vf-value">${o.contactPref==='x' ? `𝕏 @${o.xAccount||'?'}` : `✉ ${escapeHTML(o.email)}`}</div></div>
     <div><div class="vf-label">区分</div><div class="vf-value">${tl[o.type] || o.type}</div></div>
-    ${o.sampleRequested ? `<div><div class="vf-label">端材サンプル</div><div class="vf-value">${sampleInfo}</div></div>` : ''}
+    ${o.sampleRequested ? `<div><div class="vf-label">端材試作</div><div class="vf-value">${sampleInfo}</div></div>` : ''}
     ${o.wantsCompletionImage ? `<div><div class="vf-label">仕上がり確認</div><div class="vf-value">${completionInfo}</div></div>` : ''}
   </div>
   ${!o.codeUsed ? `<button class="mark-used-btn" onclick="markCodeUsed('${o.ref}')">✓ 受け渡し完了にする</button>` : '<p style="margin-top:9px;font-size:.8rem;color:var(--red);font-weight:700">⚠ このコードは使用済みです</p>'}`;
