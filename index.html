@@ -361,7 +361,7 @@ input.invalid,select.invalid{border-color:#e05040 !important;}
 .preview-pane{margin-bottom:10px;}
 .preview-label{font-size:.78rem;font-weight:700;color:rgba(255,255,255,.9);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
 .preview-label .dot{width:6px;height:6px;background:var(--potato-light);border-radius:50%;}
-canvas{display:block;border-radius:4px;touch-action:none;}
+canvas{display:block;border-radius:4px;}
 canvas.draggable-img{cursor:grab;}
 canvas.draggable-img:active{cursor:grabbing;}
 canvas.ci{border-radius:4px;}
@@ -1279,6 +1279,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
             <div style="position:relative;display:inline-block;line-height:0;">
               <canvas id="previewCanvas" width="360" height="360" class="sq"></canvas>
               <canvas id="magnifierCanvas" width="360" height="360" style="position:absolute;top:0;left:0;pointer-events:none;"></canvas>
+              <div id="dragOverlay" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;touch-action:none;"></div>
             </div>
             <div id="previewWarnBox" style="display:none;margin-top:6px;background:rgba(255,160,0,.15);border:1px solid rgba(255,160,0,.5);border-radius:6px;padding:7px 10px;font-size:.76rem;color:rgba(255,220,100,1);line-height:1.5;"></div>
             <button type="button" class="remove-btn" onclick="removeImage()">✕ 画像を削除</button>
@@ -1654,7 +1655,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
 //   マイナー … 新機能の追加
 //   機能変更 … 既存機能の修正・調整・バグfix
 //   文言変更 … テキストや表記だけの修正
-const SITE_VERSION = 'v1.0.4.7';
+const SITE_VERSION = 'v1.0.4.8';
 // ▲▲▲ リロードして表示が変われば新版が反映済み ▲▲▲
 // ══════════════════════════════════════════
 // ▼▼▼ 開催日を変更するとすべての日付が連動します ▼▼▼
@@ -3365,91 +3366,23 @@ function initRequiredMarkListeners() {
 
 function initCanvasDrag() {
   const cv = document.getElementById('previewCanvas');
+  const ov = document.getElementById('dragOverlay');
   const getPos = e => {
     const r = cv.getBoundingClientRect();
     const sx = cv.width / r.width, sy = cv.height / r.height;
     return { x: (e.clientX - r.left) * sx, y: (e.clientY - r.top) * sy };
   };
-  // canvas上の座標(p)がカットライン領域(実際に刻印される範囲)の内側か判定。
-  // 外側＝余白なので、そこのタッチはページの縦スクロールに任せる。
+  // canvas上の座標(p)がカットライン領域(刻印範囲)の内側か判定。外側＝余白。
   const isOnImage = (p) => {
-    const C = 244, P = 58;  // updatePreviewと同じ定数(コースター領域C, 余白P)
+    const C = 244, P = 58;
     const inSquare = p.x >= P && p.x <= P + C && p.y >= P && p.y <= P + C;
     if (!inSquare) return false;
-    // 円形(ci)なら円の内側かも判定
     const shape = document.getElementById('f-shape')?.value;
     if (shape === 'ci') {
       const cx = P + C / 2, cy = P + C / 2, r = C / 2;
       return (p.x - cx) ** 2 + (p.y - cy) ** 2 <= r * r;
     }
     return true;
-  };
-  // 長押しフック方式(全ジェスチャーJS制御・ブラウザ依存なし)：
-  //  canvasは touch-action:none。スクロールも画像移動も全てJSが処理する。
-  //  - 普通になぞる → JSが手動スクロール(縦横とも指の動きに追従)
-  //  - 絵の上で0.4秒静止してから動かす → 画像移動
-  const SCROLL_GAIN = 8;  // 手動スクロールの速度係数(慣性が無いぶん増幅)
-  const onStart = e => {
-    if (!imgObj) return;
-    const isTouch = !!e.touches;
-    const p = getPos(isTouch ? e.touches[0] : e);
-    _drag = {
-      active: !isTouch,        // マウスは即ドラッグ。タッチは長押し成立まで非アクティブ。
-      isTouch, locked: !isTouch,
-      mode: isTouch ? 'wait' : 'image',  // wait=判定中, scroll=手動スクロール, image=画像移動
-      startX: p.x, startY: p.y,
-      rawX: isTouch ? e.touches[0].clientX : e.clientX,
-      rawY: isTouch ? e.touches[0].clientY : e.clientY,
-      startDX: parseInt(document.getElementById('ctrl-x').value) || 0,
-      startDY: parseInt(document.getElementById('ctrl-y').value) || 0,
-      onImg: isTouch ? isOnImage(p) : true,
-      lpTimer: null
-    };
-    if (!isTouch) { cv.style.cursor = 'grabbing'; return; }
-    // 絵の上のタッチのみ長押し判定(余白は最初からスクロール対象)
-    if (!isOnImage(p)) return;
-    _drag.lpTimer = setTimeout(() => {
-      if (_drag.mode === 'wait') {
-        _drag.active = true;
-        _drag.mode = 'image';
-        cv.style.cursor = 'grabbing';
-        if (navigator.vibrate) navigator.vibrate(10);
-      }
-    }, 400);
-  };
-  const onMove = e => {
-    if (!_drag.isTouch) {
-      // マウス：従来の即ドラッグ
-      if (!_drag.active || !imgObj) return;
-      const p = getPos(e);
-      moveImage(p);
-      return;
-    }
-    const t = e.touches[0];
-    const p = getPos(t);
-
-    // 判定中：指が動いたら長押しを諦めて手動スクロールに切り替え
-    if (_drag.mode === 'wait') {
-      const moved = Math.abs(p.x - _drag.startX) > 6 || Math.abs(p.y - _drag.startY) > 6;
-      if (!moved) return;
-      if (_drag.lpTimer) { clearTimeout(_drag.lpTimer); _drag.lpTimer = null; }
-      _drag.mode = 'scroll';
-      _drag.active = true;
-    }
-
-    if (_drag.mode === 'scroll') {
-      e.preventDefault();
-      const dy = t.clientY - _drag.rawY;
-      const dx = t.clientX - _drag.rawX;
-      window.scrollBy(-dx * SCROLL_GAIN, -dy * SCROLL_GAIN);
-      _drag.rawX = t.clientX; _drag.rawY = t.clientY;
-      return;
-    }
-
-    if (_drag.mode === 'image') {
-      e.preventDefault();
-      moveImage(p);
-    }
   };
   const moveImage = (p) => {
     const xEl = document.getElementById('ctrl-x'), yEl = document.getElementById('ctrl-y');
@@ -3460,19 +3393,77 @@ function initCanvasDrag() {
     xEl.value = newX; yEl.value = newY;
     updatePreview();
   };
-  const onEnd = () => {
-    if (_drag.lpTimer) { clearTimeout(_drag.lpTimer); _drag.lpTimer = null; }
-    _drag.active = false;
-    _drag.mode = 'wait';
-    if (imgObj) cv.style.cursor = 'grab';
+
+  // ── オーバーレイ方式 ──
+  // スクロールは常にブラウザのネイティブ処理(慣性つき・高速)に任せる。
+  // canvasのtouchはpassiveで監視するだけ(スクロールを一切妨げない)。
+  // 絵の上で0.4秒静止した時だけ、透明オーバーレイを起動して画像ドラッグを受ける。
+
+  // canvas: 長押し検知のみ(passive=スクロールを邪魔しない)
+  const onTouchStart = e => {
+    if (!imgObj) return;
+    const t = e.touches[0];
+    const p = getPos(t);
+    _drag = {
+      startX: p.x, startY: p.y,
+      startDX: parseInt(document.getElementById('ctrl-x').value) || 0,
+      startDY: parseInt(document.getElementById('ctrl-y').value) || 0,
+      lpTimer: null, engaged: false
+    };
+    if (!isOnImage(p)) return;  // 余白は何もしない＝普通にスクロール
+    _drag.lpTimer = setTimeout(() => {
+      // 長押し成立：オーバーレイを起動して画像移動モードへ
+      _drag.engaged = true;
+      ov.style.pointerEvents = 'auto';
+      window.scrollTo(window.scrollX, window.scrollY);  // 慣性スクロールを打ち切る
+      if (navigator.vibrate) navigator.vibrate(10);
+    }, 400);
   };
-  cv.addEventListener('mousedown',  onStart);
-  cv.addEventListener('mousemove',  onMove);
-  cv.addEventListener('mouseup',    onEnd);
-  cv.addEventListener('mouseleave', onEnd);
-  cv.addEventListener('touchstart', onStart, { passive: false });
-  cv.addEventListener('touchmove',  onMove,  { passive: false });
-  cv.addEventListener('touchend',   onEnd);
+  const onTouchMoveWatch = e => {
+    if (!_drag || _drag.engaged || !_drag.lpTimer) return;
+    const t = e.touches[0];
+    const p = getPos(t);
+    // 成立前に動いた＝スクロール意図 → 長押しキャンセル(ネイティブスクロールに任せる)
+    if (Math.abs(p.x - _drag.startX) > 6 || Math.abs(p.y - _drag.startY) > 6) {
+      clearTimeout(_drag.lpTimer); _drag.lpTimer = null;
+    }
+  };
+  const endTouch = () => {
+    if (_drag && _drag.lpTimer) { clearTimeout(_drag.lpTimer); _drag.lpTimer = null; }
+    if (_drag) _drag.engaged = false;
+    ov.style.pointerEvents = 'none';
+  };
+  cv.addEventListener('touchstart', onTouchStart, { passive: true });
+  cv.addEventListener('touchmove',  onTouchMoveWatch, { passive: true });
+  cv.addEventListener('touchend',   endTouch);
+  cv.addEventListener('touchcancel', endTouch);
+
+  // オーバーレイ: 長押し成立後だけ pointer-events:auto になり、ここで画像を動かす
+  ov.addEventListener('touchmove', e => {
+    if (!_drag || !_drag.engaged || !imgObj) return;
+    e.preventDefault();  // この層はtouch-action:noneなのでスクロールしない
+    moveImage(getPos(e.touches[0]));
+  }, { passive: false });
+  ov.addEventListener('touchend', endTouch);
+  ov.addEventListener('touchcancel', endTouch);
+
+  // マウス(PC): 従来通りcanvas上で即ドラッグ
+  const onMouseDown = e => {
+    if (!imgObj) return;
+    const p = getPos(e);
+    _drag = {
+      mouse: true, startX: p.x, startY: p.y,
+      startDX: parseInt(document.getElementById('ctrl-x').value) || 0,
+      startDY: parseInt(document.getElementById('ctrl-y').value) || 0
+    };
+    cv.style.cursor = 'grabbing';
+  };
+  const onMouseMove = e => { if (_drag && _drag.mouse && imgObj) moveImage(getPos(e)); };
+  const onMouseUp = () => { if (_drag) _drag.mouse = false; if (imgObj) cv.style.cursor = 'grab'; };
+  cv.addEventListener('mousedown',  onMouseDown);
+  cv.addEventListener('mousemove',  onMouseMove);
+  cv.addEventListener('mouseup',    onMouseUp);
+  cv.addEventListener('mouseleave', onMouseUp);
 }
 
 // ══ CONTACT PREF ══
@@ -5886,7 +5877,7 @@ initRequiredMarkListeners();
       if (mag) mag.style.display = 'none';
       // ルーペ説明はモバイルでは出さない（ドラッグ説明のみに）
       const hint = document.getElementById('previewHint');
-      if (hint) hint.innerHTML = '💡 画像を<strong>0.4秒ほど押してから動かす</strong>と位置を調整できます。<br>そのままなぞるとページがスクロールします。';
+      if (hint) hint.innerHTML = '💡 画像を<strong>0.4秒ほど押してから動かす</strong>と位置を調整できます。<br>軽くなぞるとページがスクロールします。';
       return;
     }
     new ResizeObserver(() => {
