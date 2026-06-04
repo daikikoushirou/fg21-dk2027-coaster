@@ -2842,6 +2842,7 @@ function loadImageFile(file) {
     const img = new Image();
     img.onload = () => {
       imgObj = img;
+      imgObj._file = file;  // 元ファイルを保持（送信時のアップロードで確実に使う）
       const cv = document.getElementById('previewCanvas');
       cv.classList.add('draggable-img');
       cv.style.cursor = 'grab';
