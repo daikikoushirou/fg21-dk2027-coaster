@@ -789,8 +789,8 @@ footer a{color:var(--potato-light);text-decoration:none;}
           <div class="gate-card-sub" id="gateCircleSub">頒布用途OK</div>
           <div class="gate-card-restrict" id="gateCircleRestrict">⚠️ ふたば★学園祭２１にサークル参加している方のみ</div>
           <ul class="gate-card-perks" id="gateCirclePerks">
-            <li>3点まで無料</li>
-            <li>4〜8点目：¥220/点〜</li>
+            <li id="gateCircleFreeQtyText">3点まで無料</li>
+            <li id="gateCircleTier1Text">4〜8点目：¥220/点〜</li>
             <li>9点目以降：¥230/点〜</li>
             <li>1か月前まで：早割あり</li>
             <li id="gateCircleMax">最大20点まで</li>
@@ -1182,11 +1182,11 @@ footer a{color:var(--potato-light);text-decoration:none;}
     <table class="price-tier-table" id="circlePriceTable">
       <thead><tr><th>点数</th><th>通常価格</th><th>早割価格(1か月前まで)</th><th>備考</th></tr></thead>
       <tbody>
-        <tr class="free-row"><td>1〜3点目</td><td><span class="price-big">無料</span></td><td><span class="price-big">無料</span></td><td><span class="tier-badge badge-free">FREE</span></td></tr>
-        <tr class="extra-row"><td>4〜8点目</td><td><span class="price-big">¥220</span><span class="price-small">/点</span></td><td><span class="price-big">¥200</span><span class="price-small">/点</span></td><td><span class="tier-badge badge-value">VALUE</span></td></tr>
-        <tr class="mid1-row"><td>9〜12点目</td><td><span class="price-big">¥230</span><span class="price-small">/点</span></td><td><span class="price-big">¥210</span><span class="price-small">/点</span></td><td><span class="tier-badge badge-plus">PLUS</span></td></tr>
-        <tr class="mid2-row"><td>13〜16点目</td><td><span class="price-big">¥240</span><span class="price-small">/点</span></td><td><span class="price-big">¥220</span><span class="price-small">/点</span></td><td><span class="tier-badge badge-pro">PRO</span></td></tr>
-        <tr class="upper-row"><td>17〜20点目</td><td><span class="price-big">¥250</span><span class="price-small">/点</span></td><td><span class="price-big">¥230</span><span class="price-small">/点</span></td><td><span class="tier-badge badge-max">MAX</span></td></tr>
+        <tr class="free-row"><td id="priceFreeRangeText">1〜3点目</td><td><span class="price-big">無料</span></td><td><span class="price-big">無料</span></td><td><span class="tier-badge badge-free">FREE</span></td></tr>
+        <tr class="extra-row"><td id="priceTier1RangeText">4〜8点目</td><td><span class="price-big">¥220</span><span class="price-small">/点</span></td><td><span class="price-big">¥200</span><span class="price-small">/点</span></td><td><span class="tier-badge badge-value">VALUE</span></td></tr>
+        <tr class="mid1-row"><td id="priceTier2RangeText">9〜12点目</td><td><span class="price-big">¥230</span><span class="price-small">/点</span></td><td><span class="price-big">¥210</span><span class="price-small">/点</span></td><td><span class="tier-badge badge-plus">PLUS</span></td></tr>
+        <tr class="mid2-row"><td id="priceTier3RangeText">13〜16点目</td><td><span class="price-big">¥240</span><span class="price-small">/点</span></td><td><span class="price-big">¥220</span><span class="price-small">/点</span></td><td><span class="tier-badge badge-pro">PRO</span></td></tr>
+        <tr class="upper-row"><td id="priceTier4RangeText">17〜20点目</td><td><span class="price-big">¥250</span><span class="price-small">/点</span></td><td><span class="price-big">¥230</span><span class="price-small">/点</span></td><td><span class="tier-badge badge-max">MAX</span></td></tr>
       </tbody>
     </table>
     <p style="font-size:.76rem;color:var(--muted);margin:4px 2px 18px;line-height:1.6;">※ 形状はスクエア(85×85mm)・サークル(φ90mm)から選択できます。どちらも同じ料金です。</p>
@@ -1217,27 +1217,20 @@ footer a{color:var(--potato-light);text-decoration:none;}
   <!-- ④ 注意書き（モード別） -->
   <div class="pricing-panel" id="notesPanel-circle">
     <div class="shape-note" style="background:#fff0f0;border-left:3px solid #e08080;border-radius:0 8px 8px 0;">
-      ⚠️ <strong>無料枠(1〜3点目)は、同一サークルの最初の注文にのみ適用されます。</strong>複数デザインを分けて申し込む場合や複数回注文する場合、2回目以降の注文は全点数有料となります。
+      ⚠️ <strong id="priceFreeNoteText">無料枠(1〜3点目)は、同一サークルの最初の注文にのみ適用されます。</strong>複数デザインを分けて申し込む場合や複数回注文する場合、2回目以降の注文は全点数有料となります。
     </div>
-    <div class="shape-note" style="margin-top:8px;background:#faf2e2;border-left:3px solid #d08020;border-radius:0 8px 8px 0;">
-      ⭐ <strong>早割(開催1か月前まで)</strong>：有料分が各段階で¥20割引されます(¥220→¥200・¥230→¥210・¥240→¥220・¥250→¥230)。開催2週間前を過ぎると最大5点に制限されます。
-    </div>
-    <div class="shape-note" style="margin-top:8px;background:#e8f3f8;border-left:3px solid #2090b8;border-radius:0 8px 8px 0;">
-      🔬 <strong>端材サンプル試し刷り</strong>：3週間前まで の申込者 または 11点以上 の申込者は初回無料。それ以外は¥300。端材を使用するため形状が不完全・非平坦な場合があります。
-    </div>
-    <div class="shape-note completion-img-note-box" id="ciNoteCircle" style="margin-top:8px;background:#fbeaf1;border-left:3px solid #c03870;border-radius:0 8px 8px 0;display:none;"></div>
-    <div class="shape-note" style="margin-top:8px;background:#fff8f0;border-left:3px solid #e8b060;border-radius:0 8px 8px 0;font-size:.82rem;line-height:1.75;color:var(--ink);">
-      📝 <strong>価格変更の可能性について：</strong>1人で製作しているため、作業量が著しく増えた場合、各種オプションや単価が上がる可能性があります。前回の学園祭では開催10日前ごろに申し込みが集中し、現場がかなりバタバタしました。今回は早割も導入しましたので、<strong>早ければ早いほど安い</strong>と思っていただいて間違いありません。数を作ってみたいサークルの方も、まずは少部数で早めの申し込みをいただけると大変助かります。
+    <div class="shape-note" id="priceNoteCircleWrap" style="margin-top:8px;background:#fff8f0;border-left:3px solid #e8b060;border-radius:0 8px 8px 0;font-size:.82rem;line-height:1.75;color:var(--ink);">
+      📝 <strong>価格変更の可能性について：</strong>1人で製作しているため、状況次第で料金が上がる可能性があります。
+      <span id="priceNoteCircleMore" style="display:none;">前回の学園祭では開催10日前ごろに申し込みが集中し、現場がかなりバタバタしました。今回は早割も導入しましたので、<strong>早ければ早いほど安い</strong>と思っていただいて間違いありません。数を作ってみたいサークルの方も、まずは少部数で早めの申し込みをいただけると大変助かります。それから、防水加工などをすべて手作業で行っているため量が多ければ多いほど高いです。ここはなにとぞご容赦ください。</span>
+      <button onclick="togglePriceNote('Circle')" id="priceNoteCircleBtn" style="background:none;border:none;color:var(--accent);font-weight:700;font-size:.8rem;cursor:pointer;padding:0;margin-left:4px;font-family:inherit;">続きを読む ▼</button>
     </div>
   </div>
   <div class="pricing-panel" id="notesPanel-general">
     <div class="shape-note" style="background:#fdf0e0;border-left:3px solid var(--accent-light);border-radius:0 8px 8px 0;">⚠️ <strong>2種類以上のイラストを製作できるのはサークル参加者に限られます。</strong></div>
-    <div class="shape-note" style="margin-top:8px;background:#e8f3f8;border-left:3px solid #2090b8;border-radius:0 8px 8px 0;">
-      🔬 <strong>端材サンプル試し刷り</strong>：3週間前まで の申込者は初回無料。それ以外は¥300。端材を使用するため形状が不完全・非平坦な場合があります。
-    </div>
-    <div class="shape-note completion-img-note-box" id="ciNoteGeneral" style="margin-top:8px;background:#fbeaf1;border-left:3px solid #c03870;border-radius:0 8px 8px 0;display:none;"></div>
-    <div class="shape-note" style="margin-top:8px;background:#fff8f0;border-left:3px solid #e8b060;border-radius:0 8px 8px 0;font-size:.82rem;line-height:1.75;color:var(--ink);">
-      📝 <strong>価格変更の可能性について：</strong>1人で製作しているため、作業量が著しく増えた場合、単価が上がる可能性があります。早めのお申し込みをお待ちしております。
+    <div class="shape-note" id="priceNoteGeneralWrap" style="margin-top:8px;background:#fff8f0;border-left:3px solid #e8b060;border-radius:0 8px 8px 0;font-size:.82rem;line-height:1.75;color:var(--ink);">
+      📝 <strong>価格変更の可能性について：</strong>1人で製作しているため、状況次第で料金が上がる可能性があります。
+      <span id="priceNoteGeneralMore" style="display:none;">前回の学園祭では開催直前に申し込みが集中し、製作がギリギリになってしまいました。早めにお申し込みいただくほど余裕を持って丁寧に仕上げられますので、早めのご依頼をお待ちしております。</span>
+      <button onclick="togglePriceNote('General')" id="priceNoteGeneralBtn" style="background:none;border:none;color:var(--accent);font-weight:700;font-size:.8rem;cursor:pointer;padding:0;margin-left:4px;font-family:inherit;">続きを読む ▼</button>
     </div>
   </div>
 </div></div>
@@ -1390,19 +1383,19 @@ footer a{color:var(--potato-light);text-decoration:none;}
         <span class="field-error" role="alert" aria-live="polite" id="e-qty"></span>
       </div>
 
-      <!-- 端材サンプル試し刷り -->
+      <!-- 端材試作 -->
       <div class="form-group full" id="sampleTrialGroup">
         <div class="sample-trial-area">
           <label class="sample-trial-head" for="f-sample">
             <input type="checkbox" id="f-sample" onchange="updateTotal()">
             <div class="sample-trial-head-text">
               <div class="sample-trial-title">
-                端材サンプル試し刷りを希望する
+                端材試作を希望する
                 <span class="sample-price-badge sample-price-free" id="samplePriceBadge">初回無料</span>
               </div>
               <div class="sample-trial-note" id="sampleTrialNote"></div>
               <div style="font-size:.8rem;color:rgba(255,255,255,.85);line-height:1.7;margin-top:5px;">
-                本番と同じイラストを端材に試し刷りし、仕上がりイメージを事前に確認できます。<br>
+                本番と同じイラストをはぎれ素材(端材)に試し刷りし、仕上がりイメージを事前に確認できます。<br>
                 <strong>こんな方にオススメ：</strong>レーザー刻印が初めての方・どんな仕上がりになるか不安な方・大量発注予定のサークル参加者
               </div>
             </div>
@@ -1411,22 +1404,25 @@ footer a{color:var(--potato-light);text-decoration:none;}
             ⚠️ 端材を使用するため、<strong>形状が不完全だったり、表面が平坦でなかったりする場合</strong>があります。あくまでおおよその仕上がり確認用です。
           </div>
         </div>
-        <!-- 仕上がり確認画像 -->
+        <!-- 仕上がり確認 -->
         <div class="completion-img-area" id="completionImgArea">
           <label class="completion-img-head" for="f-completion-img">
             <input type="checkbox" id="f-completion-img" onchange="toggleCompletionNote();renderCostBreakdown();">
-            <div>
-              <div class="completion-img-title">1点目が完成した時点で仕上がり確認画像を受け取る <span id="completionPriceTag" class="sample-price-badge sample-price-free">無料</span></div>
-              <div style="font-size:.75rem;color:rgba(255,235,160,1);margin-top:3px;">開催10日前までは無料。以降〜5日前までは¥100で受付。</div>
+            <div class="sample-trial-head-text">
+              <div class="sample-trial-title">
+                仕上がり確認を希望する
+                <span id="completionPriceTag" class="sample-price-badge sample-price-free">無料</span>
+              </div>
+              <div style="font-size:.75rem;color:rgba(255,235,160,1);margin-top:3px;" id="completionPriceNote">開催10日前までは無料。以降〜5日前までは¥100で受付。</div>
               <div id="completionPaidNote" style="display:none;font-size:.75rem;color:rgba(255,200,120,1);margin-top:3px;font-weight:700;">⚠️ 無料受付期間は終了しました。現在は¥100の有料オプションです（開催5日前まで）。</div>
-              <div class="completion-img-note">刻印が完了した段階で画像をお送りします。OKのご連絡をいただいたらそのままのデータで製作を進めます。</div>
               <div style="font-size:.8rem;color:rgba(255,255,255,.85);line-height:1.7;margin-top:5px;">
-                <strong>こんな方にオススメ：</strong>大体の仕上がりはイメージできていて、より丁寧に仕上がりを確認したい方。端材サンプルと組み合わせて使うこともできます。
+                1点目の刻印完了後に仕上がりの写真をお送りします。OKのご連絡をいただいてから残りの製作を進めます。<br>
+                <strong>こんな方にオススメ：</strong>仕上がりをより丁寧に確認したい方。端材試作と組み合わせることもできます。
               </div>
             </div>
           </label>
           <div id="completionImgNote" style="display:none;margin-top:8px;background:rgba(255,200,100,.12);border:1px solid rgba(255,200,100,.3);border-radius:6px;padding:8px 12px;font-size:.8rem;color:rgba(255,235,160,1);line-height:1.6;">
-            ⚠️ 修正希望のご連絡をいただくか、修正原稿をお送りいただいた場合は、上の「端材サンプル試し刷り」の2回目以降の扱いと同様に <strong>¥300</strong> が発生します。製作点数が1点増えることと、作業料ということでご理解いただければ幸いです。
+            ⚠️ 修正希望のご連絡をいただくか、修正原稿をお送りいただいた場合は、上の「端材試作」の2回目以降の扱いと同様に <strong>¥300</strong> が発生します。製作点数が1点増えることと、作業料ということでご理解いただければ幸いです。
           </div>
         </div>
       </div>
@@ -1744,7 +1740,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
 //   マイナー … 新機能の追加
 //   機能変更 … 既存機能の修正・調整・バグfix
 //   文言変更 … テキストや表記だけの修正
-const SITE_VERSION = 'v1.1.2.6';
+const SITE_VERSION = 'v1.2.3.6';
 // ▲▲▲ リロードして表示が変われば新版が反映済み ▲▲▲
 // ══════════════════════════════════════════
 // ▼▼▼ 開催日を変更するとすべての日付が連動します ▼▼▼
@@ -1792,6 +1788,7 @@ const SAMPLE_FREE_END         = jstShift(EVENT_DATE, { days: -21, h: 23, mi: 59,
 const BULK_ORDER_END          = jstShift(EVENT_DATE, { days: -14, h: 23, mi: 59, s: 59, ms: 999 });
 const COMPLETION_IMG_END      = jstShift(EVENT_DATE, { days: -10, h: 23, mi: 59, s: 59, ms: 999 });
 const COMPLETION_IMG_PAID_END = jstShift(EVENT_DATE, { days: -5,  h: 23, mi: 59, s: 59, ms: 999 });
+const FREE_QTY_REDUCE_DATE    = jstShift(EVENT_DATE, { days: -24, h: 23, mi: 59, s: 59, ms: 999 }); // 無料枠3→2点に切り替わる日
 const COMPLETION_IMG_PRICE = 100;
 
 
@@ -1828,6 +1825,7 @@ function isMobileDevice() {
 }
 function isPastDeadline()     { return now() >= DEADLINE; }
 function isEarlyBird()        { return now() < EARLY_BIRD_END; }
+function isFreeQtyReduced()   { return now() >= FREE_QTY_REDUCE_DATE; } // 無料枠が2点に削減済みか
 function isSampleFreeEligible(mode, qty) {
   const withinWindow = now() < SAMPLE_FREE_END;
   if (mode === 'circle') return withinWindow || parseInt(qty) >= 11;
@@ -1895,6 +1893,7 @@ async function sbInsert(order) {
     x_account: order.xAccount||'', contact_pref: order.contactPref||'email',
     shape: order.shape, qty: order.qty, total: order.total,
     early_bird: order.earlyBird||false,
+    free_qty: order.freeQty ?? null,
     sample_requested: order.sampleRequested||false,
     sample_free_eligible: order.sampleFreeEligible||false,
     sample_count: order.sampleCount||0,
@@ -1938,7 +1937,7 @@ async function sbFetch() {
     date: r.date, name: r.name, circleName: r.circle_name||'', circleSpace: r.circle_space||'', email: r.email,
     xAccount: r.x_account||'', contactPref: r.contact_pref||'email',
     shape: r.shape, qty: r.qty, total: r.total,
-    earlyBird: r.early_bird, sampleRequested: r.sample_requested,
+    earlyBird: r.early_bird, freeQty: r.free_qty ?? null, sampleRequested: r.sample_requested,
     sampleFreeEligible: r.sample_free_eligible,
     sampleCount: r.sample_count, note: (r.note || '').trim(),
     wantsCompletionImage: r.wants_completion_image||false,
@@ -2120,7 +2119,8 @@ async function submitContact() {
 
 // ══ PRICING ══
 const PRICING_BASE = {
-  circle:  { freeQty: 3, tiers: [{max: 8, price: 220}, {max: 12, price: 230}, {max: 16, price: 240}, {max: 20, price: 250}] },
+  circle:  { freeQty: 3, tiers: [{max: 8, price: 220}, {max: 12, price: 230}, {max: 16, price: 240}, {max: 20, price: 250}],
+             freeQtyNormal: 2, tiersNormal: [{max: 7, price: 220}, {max: 11, price: 230}, {max: 15, price: 240}, {max: 20, price: 250}] },
   general: { freeQty: 1, tiers: [{max: 2,  price: 400}] }
 };
 const SAMPLE_PRICE = 300;
@@ -2146,7 +2146,7 @@ function calcSampleCost(freeEligible, sampleCount) {
 }
 
 
-// 仕上がり確認画像の料金/受付状態を now() から判定
+// 仕上がり確認の料金/受付状態を now() から判定
 //  戻り値: { available:bool, fee:number, phase:'free'|'paid'|'closed' }
 function completionImgState() {
   const t = now();
@@ -2155,45 +2155,20 @@ function completionImgState() {
   return { available: false, fee: 0, phase: 'closed' };
 }
 
-// 価格表の「仕上がり確認画像」説明を現在のフェーズに応じて出し分け
-function renderCompletionImgNote() {
-  const ci = completionImgState();
-  let html = '', borderColor = '', bgColor = '';
-  if (ci.phase === 'free') {
-    // カレンダー「確認画像 無料受付」バーの色に対応
-    borderColor = '#c03870'; bgColor = '#fbeaf1';
-    html = `🖼️ <strong>仕上がり確認画像</strong>：1点目の刻印が完了した時点で、仕上がりの写真をお送りするオプションです。確認・OKのご連絡をいただいてから残りを製作します。<strong>開催10日前(${fmtDate(COMPLETION_IMG_END)})まで無料</strong>。以降は¥${COMPLETION_IMG_PRICE}の有料オプションになります。`;
-  } else if (ci.phase === 'paid') {
-    // カレンダー「確認画像 有料受付」バーの色に対応
-    borderColor = '#c06080'; bgColor = '#fbeef2';
-    html = `🖼️ <strong>仕上がり確認画像</strong>：1点目の刻印が完了した時点で、仕上がりの写真をお送りするオプションです。確認・OKのご連絡をいただいてから残りを製作します。無料受付は終了し、現在は<strong>¥${COMPLETION_IMG_PRICE}の有料オプション(開催5日前 ${fmtDate(COMPLETION_IMG_PAID_END)}まで)</strong>です。`;
-  } else {
-    // closed: 受付終了 → 表示しない
-    html = '';
-  }
-  ['ciNoteCircle', 'ciNoteGeneral'].forEach(id => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    if (html) {
-      el.innerHTML = html;
-      el.style.borderLeftColor = borderColor;
-      el.style.background = bgColor;
-      el.style.display = '';
-    } else {
-      el.style.display = 'none';
-    }
-  });
-}
-
-function calcCost(mode, qty, sampleRequested, sampleFreeEligible, sampleCount, earlyBirdOverride, freeOverride) {
+// 価格表の「仕上がり確認」説明を現在のフェーズに応じて出し分け
+function calcCost(mode, qty, sampleRequested, sampleFreeEligible, sampleCount, earlyBirdOverride, freeOverride, freeQtyOverride) {
   const p = PRICING_BASE[mode];
   const earlyBird = (earlyBirdOverride !== undefined ? earlyBirdOverride : isEarlyBird()) && mode === 'circle';
-  const freeQty = freeOverride ? 0 : p.freeQty;
+  // freeQtyの優先順位: freeOverride(無料枠なし) > freeQtyOverride(申込時確定値) > 現在時刻から計算
+  const freeQty = freeOverride ? 0
+    : (freeQtyOverride != null ? freeQtyOverride
+    : (mode === 'circle' ? (isFreeQtyReduced() ? 2 : 3) : p.freeQty));
+  const tiers = (mode === 'circle' && (freeQtyOverride != null ? freeQtyOverride < 3 : isFreeQtyReduced())) ? p.tiersNormal : p.tiers;
   let total = 0, breakdown = [];
   const free = Math.min(qty, freeQty);
   if (free > 0) breakdown.push({ label: `無料(${free}点)`, amount: 0, cls: 'free' });
   let alloc = free, rem = qty - free;
-  for (const tier of p.tiers) {
+  for (const tier of tiers) {
     if (rem <= 0) break;
     const take = Math.min(rem, tier.max - alloc);
     if (take > 0) {
@@ -2208,17 +2183,17 @@ function calcCost(mode, qty, sampleRequested, sampleFreeEligible, sampleCount, e
       alloc += take; rem -= take;
     }
   }
-  // サンプル試し刷り
+  // 端材試作
   const sc = (sampleCount != null) ? sampleCount : (sampleRequested ? 1 : 0);
   if (sc > 0) {
     const sampleCost = calcSampleCost(sampleFreeEligible, sc);
     if (sampleFreeEligible && sc === 1) {
-      breakdown.push({ label: '端材サンプル試し刷り(初回無料)', amount: 0, cls: 'sample-row free' });
+      breakdown.push({ label: '端材試作(初回無料)', amount: 0, cls: 'sample-row free' });
     } else if (sampleFreeEligible && sc > 1) {
-      breakdown.push({ label: '端材サンプル試し刷り(1回目：無料)', amount: 0, cls: 'sample-row free' });
-      breakdown.push({ label: `端材サンプル試し刷り(2〜${sc}回目 ¥${SAMPLE_PRICE}×${sc-1})`, amount: (sc-1)*SAMPLE_PRICE, cls: 'sample-row paid' });
+      breakdown.push({ label: '端材試作(1回目：無料)', amount: 0, cls: 'sample-row free' });
+      breakdown.push({ label: `端材試作(2〜${sc}回目 ¥${SAMPLE_PRICE}×${sc-1})`, amount: (sc-1)*SAMPLE_PRICE, cls: 'sample-row paid' });
     } else {
-      breakdown.push({ label: `端材サンプル試し刷り(¥${SAMPLE_PRICE}×${sc}回)`, amount: sc*SAMPLE_PRICE, cls: 'sample-row paid' });
+      breakdown.push({ label: `端材試作(¥${SAMPLE_PRICE}×${sc}回)`, amount: sc*SAMPLE_PRICE, cls: 'sample-row paid' });
     }
     total += sampleCost;
   }
@@ -2238,15 +2213,15 @@ function renderCostBreakdown() {
   const notice = document.getElementById('freeOverrideNotice');
   if (notice) notice.style.display = 'none';
 
-  // 仕上がり確認画像(チェック時のみ表示・10日前まで無料/以降¥100)
+  // 仕上がり確認(チェック時のみ表示・10日前まで無料/以降¥100)
   const completionChecked = document.getElementById('f-completion-img')?.checked || false;
   if (completionChecked) {
     const ciFee = completionImgState().fee;
     if (ciFee > 0) {
-      breakdown.push({ label: `仕上がり確認画像(¥${ciFee})`, amount: ciFee, cls: 'paid' });
+      breakdown.push({ label: `仕上がり確認(¥${ciFee})`, amount: ciFee, cls: 'paid' });
       total += ciFee;
     } else {
-      breakdown.push({ label: '仕上がり確認画像', amount: 0, cls: 'free' });
+      breakdown.push({ label: '仕上がり確認', amount: 0, cls: 'free' });
     }
   }
 
@@ -2257,7 +2232,7 @@ function renderCostBreakdown() {
     : '';
   const sampleOverrideRow = (pendingSampleFreeOverride && currentMode === 'circle' && sampleChecked)
     ? `<div class="cost-row" style="opacity:.7;font-size:.8em;">
-        <span>※ 同サークルの先行注文でサンプル試し刷りが使用済みのため有料です</span><span></span>
+        <span>※ 同サークルの先行注文で端材試作が使用済みのため有料です</span><span></span>
        </div>`
     : '';
 
@@ -2274,20 +2249,20 @@ function initDatesUI() {
   document.getElementById('eventDateDisplay').textContent = fmtDate(EVENT_DATE);
   const n = now();
   const items = [
-    { label: '早割締め切り', date: EARLY_BIRD_END, note: 'サークル 各段階¥20割引', active: n < EARLY_BIRD_END, circleOnly: true,
-      tip: '開催1か月前まで申し込むと、サークル参加者の有料分(4点目以降)が各段階で¥20割引されます。' },
-    { label: 'サンプル無料期限', date: SAMPLE_FREE_END, note: 'これ以降のサンプル試し刷りは¥300', active: n < SAMPLE_FREE_END,
-      tip: '端材サンプル試し刷りとは、本番と同じイラストを端材(はぎれ素材)に試し刷りし、仕上がりイメージを事前に確認できるオプションです。この期限内の申込者は初回1回が無料。' },
-    { label: '大量注文締め切り', date: BULK_ORDER_END, note: 'サークル6点以上の申込期限', active: n < BULK_ORDER_END, circleOnly: true,
-      tip: 'この期日までに申し込んだサークル参加者のみ、6点以上(最大20点)の注文が可能です。以降は最大5点に制限されます。' },
-    { label: '仕上がり確認画像 無料受付終了', date: COMPLETION_IMG_END, note: '開催10日前まで¥0', active: n < COMPLETION_IMG_END,
+    { label: '早割締め切り', date: EARLY_BIRD_END, note: '有料分の割引がなくなる', active: n < EARLY_BIRD_END, circleOnly: true,
+      tip: `サークル参加者の有料分(${isFreeQtyReduced() ? '3' : '4'}点目以降)が各段階¥20割引されるのが早割です。この日を過ぎると割引は適用されなくなります。` },
+    { label: '端材試作 無料期限', date: SAMPLE_FREE_END, note: '端材試作が¥300になる', active: n < SAMPLE_FREE_END,
+      tip: '端材試作は、本番と同じイラストをはぎれ素材(端材)に試し刷りして仕上がりイメージを確認できるオプションです。この日までに申し込んだ方は初回1回が無料。以降は¥300になります。' },
+    { label: '大量注文締め切り', date: BULK_ORDER_END, note: '6点以上の注文ができなくなる', active: n < BULK_ORDER_END, circleOnly: true,
+      tip: 'サークル参加者が6点以上(最大20点)注文できる期限です。この日を過ぎると最大5点に制限されます。' },
+    { label: '仕上がり確認 無料期限', date: COMPLETION_IMG_END, note: '仕上がり確認が¥100になる', active: n < COMPLETION_IMG_END,
       hideWhen: () => n >= COMPLETION_IMG_END,
-      tip: '1点目の刻印完了後に画像をお送りするオプションです。確認・OKをいただいてから残りを製作します。開催10日前まで無料。以降は¥100の有料オプションとして開催5日前まで受け付けます。' },
-    { label: '仕上がり確認画像 受付終了(有料分)', date: COMPLETION_IMG_PAID_END, note: '開催5日前まで¥100', active: n < COMPLETION_IMG_PAID_END,
+      tip: '仕上がり確認は、1点目の刻印完了後に写真をお送りして確認いただけるオプションです。この日までに申し込んだ方は無料。以降は¥100の有料オプションとして開催5日前まで受け付けます。' },
+    { label: '仕上がり確認 受付終了', date: COMPLETION_IMG_PAID_END, note: '仕上がり確認を申し込めなくなる', active: n < COMPLETION_IMG_PAID_END,
       hideWhen: () => n < COMPLETION_IMG_END,
-      tip: '開催10日前を過ぎると¥100の有料オプションになります。開催5日前を過ぎると、製作スケジュールの都合でこのオプション自体を受け付けられなくなります。' },
-    { label: '申し込み締め切り', date: DEADLINE, note: '開催2日前 朝4時', active: n < DEADLINE,
-      tip: 'コースターの製作には時間が必要なため、開催2日前の朝4時を申し込み締め切りとしています。お早めにどうぞ。' },
+      tip: '仕上がり確認(¥100)の受付期限です。製作スケジュールの都合上、この日を過ぎるとオプション自体を受け付けられなくなります。' },
+    { label: '申し込み締め切り', date: DEADLINE, note: '製作依頼を受け付けられなくなる', active: n < DEADLINE,
+      tip: '製作には一定の時間が必要なため、開催2日前の朝4時を申し込み締め切りとしています。お早めにどうぞ。' },
   ];
   document.getElementById('datesGrid').innerHTML = items.filter(it => !(it.hideWhen && it.hideWhen())).map(it => {
     const expired = !it.active;
@@ -2300,8 +2275,25 @@ function initDatesUI() {
   }).join('');
   // ゲート画面のサークル最大表示
   document.getElementById('gateCircleMax').textContent = isCircleBulkAllowed() ? '最大20点まで' : '最大5点まで(2週間前以降)';
+  // サークル無料枠・tier範囲の文言を早割状態に応じて更新
+  const circleFreeQty = isFreeQtyReduced() ? 2 : 3;
+  const freeRange = `1〜${circleFreeQty}点目`;
+  const tiers = isFreeQtyReduced()
+    ? [{from:3,to:7},{from:8,to:11},{from:12,to:15},{from:16,to:20}]
+    : [{from:4,to:8},{from:9,to:12},{from:13,to:16},{from:17,to:20}];
+  const el_gateText   = document.getElementById('gateCircleFreeQtyText');
+  const el_gateTier1  = document.getElementById('gateCircleTier1Text');
+  const el_priceRange = document.getElementById('priceFreeRangeText');
+  const el_priceNote  = document.getElementById('priceFreeNoteText');
+  if (el_gateText)   el_gateText.textContent   = `${circleFreeQty}点まで無料`;
+  if (el_gateTier1)  el_gateTier1.textContent  = `${tiers[0].from}〜${tiers[0].to}点目：¥220/点〜`;
+  if (el_priceRange) el_priceRange.textContent = freeRange;
+  if (el_priceNote)  el_priceNote.textContent  = `無料枠(${freeRange})は、同一サークルの最初の注文にのみ適用されます。`;
+  [1,2,3,4].forEach((n, i) => {
+    const el = document.getElementById(`priceTier${n}RangeText`);
+    if (el && tiers[i]) el.textContent = `${tiers[i].from}〜${tiers[i].to}点目`;
+  });
   renderCalendar();
-  renderCompletionImgNote();
 
   // イベントまでのカウントダウン(常時表示)
   const t = {};  // 多言語廃止：各所のフォールバック日本語が使われる
@@ -2361,7 +2353,7 @@ function updateSampleUI() {
   } else {
     badge.textContent = `¥${SAMPLE_PRICE}`;
     badge.className = 'sample-price-badge sample-price-paid';
-    note.textContent = `¥${SAMPLE_PRICE}でサンプル試し刷りできます。端材の在庫状況によりご対応できない場合があります。`;
+    note.textContent = `¥${SAMPLE_PRICE}で端材試作できます。端材の在庫状況によりご対応できない場合があります。`;
   }
   warnBox.classList.toggle('show', checked);
 }
@@ -2520,7 +2512,7 @@ function applyModeUI() {
   const qtyHint = document.getElementById('qtyHint');
   if (isC) {
     qtyHint.textContent = isCircleBulkAllowed()
-      ? `最大20点まで(3点まで無料)${isEarlyBird() ? ' ⭐早割適用中' : ''}`
+      ? `最大20点まで(${isFreeQtyReduced() ? '2' : '3'}点まで無料)${isEarlyBird() ? ' ⭐早割適用中' : ''}`
       : `最大5点まで(開催2週間前以降の制限)${isEarlyBird() ? ' ⭐早割適用中' : ''}`;
   } else {
     qtyHint.textContent = '最大2点まで(1点目無料)同じイラストで複数枚製作できます';
@@ -2545,7 +2537,7 @@ function applyModeUI() {
   applyDeadlineUI();
   refreshRequiredMarks();
   onContactPrefChange(); // 初期状態(無選択)のラベルを設定
-  // 仕上がり確認画像：10日前まで無料 / 5日前まで¥100 / それ以降は受付終了
+  // 仕上がり確認：10日前まで無料 / 5日前まで¥100 / それ以降は受付終了
   const completionArea = document.getElementById('completionImgArea');
   if (completionArea) {
     const ci = completionImgState();
@@ -2587,11 +2579,11 @@ function renderCalendar(mode) {
   const _origin = cell(y, 1, 1);  // 2月1日(JST)＝全期間共通の仮起点
   const ALL_PERIODS = [
     { start: _origin, end: EARLY_BIRD_END,          color: '#d08020', label: '早割期間',            circleOnly: true },
-    { start: _origin, end: SAMPLE_FREE_END,         color: '#2090b8', label: 'サンプル無料期間' },
+    { start: _origin, end: SAMPLE_FREE_END,         color: '#2090b8', label: '端材試作 無料期間' },
     { start: _origin, end: BULK_ORDER_END,          color: '#7050b8', label: '大量注文可能期間',     circleOnly: true },
-    { start: _origin, end: COMPLETION_IMG_END,      color: '#c03870', label: '確認画像 無料受付' },
+    { start: _origin, end: COMPLETION_IMG_END,      color: '#c03870', label: '仕上がり確認 無料期間' },
     { start: _origin, end: DEADLINE,                color: '#6888a8', label: '申し込み受付期間' },
-    { start: _ciPaidStart, end: COMPLETION_IMG_PAID_END, color: '#c06080', label: '確認画像 有料受付' },
+    { start: _ciPaidStart, end: COMPLETION_IMG_PAID_END, color: '#c06080', label: '仕上がり確認 有料期間' },
   ];
   const PERIODS = ALL_PERIODS.filter(p => !p.circleOnly || mode === 'circle');
 
@@ -2599,14 +2591,14 @@ function renderCalendar(mode) {
   const ALL_EVENTS = [
     { date: EARLY_BIRD_END,          color: '#d08020', label: '早割',
       benefit: '早割が適用される',         discount: 340, badge: '最大¥340引き', circleOnly: true },
-    { date: SAMPLE_FREE_END,         color: '#2090b8', label: 'サンプル無料',
-      benefit: 'サンプル試し刷りが無料になる', discount: 300, badge: '¥300引き' },
+    { date: SAMPLE_FREE_END,         color: '#2090b8', label: '端材試作',
+      benefit: '端材試作が無料になる', discount: 300, badge: '¥300引き' },
     { date: BULK_ORDER_END,          color: '#7050b8', label: '大量注文',
       benefit: '6〜20点の大量注文が可能',   discount: 0,   badge: null, circleOnly: true },
-    { date: COMPLETION_IMG_END,      color: '#c03870', label: '確認画像(無料)',
-      benefit: '仕上がり確認画像が無料でもらえる', discount: 100, badge: '¥100引き' },
-    { date: COMPLETION_IMG_PAID_END, color: '#c06080', label: '確認画像(有料)',
-      benefit: '仕上がり確認画像(¥100)を申し込める', discount: 0, badge: '¥100' },
+    { date: COMPLETION_IMG_END,      color: '#c03870', label: '仕上がり確認(無料)',
+      benefit: '仕上がり確認が無料でもらえる', discount: 100, badge: '¥100引き' },
+    { date: COMPLETION_IMG_PAID_END, color: '#c06080', label: '仕上がり確認(有料)',
+      benefit: '仕上がり確認(¥100)を申し込める', discount: 0, badge: '¥100' },
     { date: DEADLINE,                color: '#6888a8', label: '申し込み',
       benefit: null },
   ];
@@ -2757,64 +2749,82 @@ function renderCalendar(mode) {
   const applicable = EVENTS.filter(e => e.benefit && todayNow <= e.date);
   let bannerHtml = '';
   if (applicable.length > 0) {
-    // ── 表示項目を統合して組み立てる ──
     const hasEarlyBird  = applicable.some(e => e.date === EARLY_BIRD_END);
     const hasBulk       = applicable.some(e => e.date === BULK_ORDER_END);
     const hasSample     = applicable.some(e => e.date === SAMPLE_FREE_END);
     const hasCiFree     = applicable.some(e => e.date === COMPLETION_IMG_END);
     const hasCiPaid     = applicable.some(e => e.date === COMPLETION_IMG_PAID_END);
 
+    // ── 左：今日申し込むと ──
     const mergedItems = [];
-
-    // 無料枠は常に表示（日付に関係なく）
     if (mode === 'circle') {
-      mergedItems.push({ text: '1〜3点目のコースターが無料', badge: null });
+      mergedItems.push({ text: `1〜${isFreeQtyReduced() ? '2' : '3'}点目が無料`, badge: null });
     } else {
-      mergedItems.push({ text: '1点目のコースターが無料', badge: null });
+      mergedItems.push({ text: '1点目が無料', badge: null });
     }
-
-    // 早割＋大量注文はセットで1行に（両方ある場合）
     if (hasEarlyBird && hasBulk) {
-      mergedItems.push({ text: '6〜20点の大量注文が可能で、早割も適用される', badge: '最大¥340引き' });
+      mergedItems.push({ text: '〜20点の大量注文可能。早割適用', badge: '最大¥340引き' });
     } else if (hasEarlyBird) {
-      mergedItems.push({ text: '早割が適用される', badge: '最大¥340引き' });
+      mergedItems.push({ text: '早割適用', badge: '最大¥340引き' });
     } else if (hasBulk) {
-      mergedItems.push({ text: '6〜20点の大量注文が可能' });
+      mergedItems.push({ text: '〜20点の大量注文可能' });
     }
-
-    if (hasSample) {
-      mergedItems.push({ text: 'サンプル試し刷りオプションが無料', badge: '¥300引き' });
-    }
-
-    // 確認画像：無料期間中なら「無料」だけ言えばいい。有料のみなら費用を明示
-    if (hasCiFree) {
-      mergedItems.push({ text: '仕上がり確認画像送信オプションが無料', badge: '¥100引き' });
-    } else if (hasCiPaid) {
-      mergedItems.push({ text: '仕上がり確認画像送信オプションを申し込める', badge: '¥100' });
-    }
+    if (hasSample) mergedItems.push({ text: '端材試作が無料', badge: '¥300引き' });
+    if (hasCiFree) mergedItems.push({ text: '仕上がり確認が無料', badge: '¥100引き' });
+    else if (hasCiPaid) mergedItems.push({ text: '仕上がり確認を申し込める', badge: '¥100' });
 
     const discountTotal = mergedItems.reduce((s, e) => {
-      if (!e.badge) return s;
-      const m = e.badge.match(/¥(\d+)引き/);
+      const m = e.badge && e.badge.match(/¥(\d+)引き/);
       return s + (m ? parseInt(m[1]) : 0);
     }, 0);
+    const badge = b => b ? `<span style="font-size:.68rem;font-weight:700;background:#fff3cd;color:#856404;padding:1px 6px;border-radius:10px;margin-left:4px;white-space:nowrap;">${b}</span>` : '';
+    const leftItems = mergedItems.map(e => `<li>${e.text}${badge(e.badge)}</li>`).join('');
+    const leftSummary = discountTotal > 0
+      ? `<div style="font-size:.74rem;color:var(--muted);margin-top:4px;">値引き合計 最大 <strong style="color:var(--accent);">¥${discountTotal.toLocaleString()}</strong></div>` : '';
 
-    const items = mergedItems.map(e => {
-      const tag = e.badge
-        ? `<span style="font-size:.7rem;font-weight:700;background:#fff3cd;color:#856404;padding:1px 7px;border-radius:10px;margin-left:5px;">${e.badge}</span>`
-        : '';
-      return `<li style="margin-bottom:2px;">${e.text}${tag}</li>`;
+    // ── 右：○○日になると（直近3件まで） ──
+    // 「値引きが渋くなる」変化点を日付昇順で列挙
+    const lossEvents = [];
+    if (mode === 'circle' && !isFreeQtyReduced()) {
+      const d = Math.ceil((FREE_QTY_REDUCE_DATE - todayNow) / 86400000);
+      lossEvents.push({ days: d, date: FREE_QTY_REDUCE_DATE, lines: ['無料枠 3点→2点に', '有料開始が4点目→3点目に'] });
+    }
+    if (hasSample) {
+      const d = Math.ceil((SAMPLE_FREE_END - todayNow) / 86400000);
+      lossEvents.push({ days: d, date: SAMPLE_FREE_END, lines: ['端材試作が¥300に'] });
+    }
+    if (hasBulk && mode === 'circle') {
+      const d = Math.ceil((BULK_ORDER_END - todayNow) / 86400000);
+      lossEvents.push({ days: d, date: BULK_ORDER_END, lines: ['6点以上の注文が不可に'] });
+    }
+    if (hasCiFree) {
+      const d = Math.ceil((COMPLETION_IMG_END - todayNow) / 86400000);
+      lossEvents.push({ days: d, date: COMPLETION_IMG_END, lines: ['仕上がり確認が¥100に'] });
+    } else if (hasCiPaid) {
+      const d = Math.ceil((COMPLETION_IMG_PAID_END - todayNow) / 86400000);
+      lossEvents.push({ days: d, date: COMPLETION_IMG_PAID_END, lines: ['仕上がり確認の受付終了'] });
+    }
+    lossEvents.sort((a, b) => a.days - b.days);
+    const rightHtml = lossEvents.slice(0, 3).map(ev => {
+      const dateStr = fmtDate(ev.date);
+      const linesHtml = ev.lines.map(l => `<li>${l}</li>`).join('');
+      return `<div style="margin-bottom:6px;padding-bottom:6px;border-bottom:1px dashed rgba(176,128,0,.2);last-child:border-bottom:none;">
+        <div style="font-size:.72rem;font-weight:700;color:var(--gold);margin-bottom:1px;">📅 ${dateStr}になると…</div>
+        <ul style="font-size:.78rem;color:var(--ink);line-height:1.6;padding-left:1.1em;margin:0;">${linesHtml}</ul>
+      </div>`;
     }).join('');
 
-    const summary = discountTotal > 0
-      ? `値引き合計は最大 <strong style="color:var(--accent);">¥${discountTotal.toLocaleString()}</strong> になる可能性があります。`
-      : '';
-
+    const showRight = rightHtml && mode === 'circle';
     bannerHtml = `
       <div style="margin-top:12px;background:var(--gold-bg);border:1.5px solid var(--gold-border);border-radius:8px;padding:12px 14px;">
-        <div style="font-size:.78rem;font-weight:700;color:var(--gold);margin-bottom:5px;">⭐ 今日申し込むと…</div>
-        <ul style="font-size:.82rem;color:var(--ink);line-height:1.7;padding-left:1.2em;margin:0 0 5px;">${items}</ul>
-        ${summary ? `<div style="font-size:.78rem;color:var(--muted);line-height:1.6;">${summary}</div>` : ''}
+        <div style="display:grid;grid-template-columns:${showRight ? '1fr 1fr' : '1fr'};gap:12px;align-items:start;">
+          <div>
+            <div style="font-size:.76rem;font-weight:700;color:var(--gold);margin-bottom:4px;">⭐ 今日申し込むと…</div>
+            <ul style="font-size:.82rem;color:var(--ink);line-height:1.7;padding-left:1.2em;margin:0 0 2px;">${leftItems}</ul>
+            ${leftSummary}
+          </div>
+          ${showRight ? `<div style="border-left:1px dashed var(--gold-border);padding-left:12px;">${rightHtml}</div>` : ''}
+        </div>
       </div>`;
   }
 
@@ -3708,7 +3718,7 @@ document.getElementById('orderForm').addEventListener('submit', async e => {
   const sampleRequested = document.getElementById('f-sample').checked;
   const sampleFreeEligible = isSampleFreeEligible(currentMode, qty) && !pendingSampleFreeOverride;
   const { total: baseTotal } = calcCost(currentMode, qty, sampleRequested, sampleFreeEligible, null);
-  // 仕上がり確認画像：チェック時のみ、その時点の料金(0 or 100)を加算して確定
+  // 仕上がり確認：チェック時のみ、その時点の料金(0 or 100)を加算して確定
   const _ciWanted = document.getElementById('f-completion-img').checked;
   const completionImgFee = _ciWanted ? completionImgState().fee : 0;
   const total = baseTotal + completionImgFee;
@@ -3771,6 +3781,7 @@ document.getElementById('orderForm').addEventListener('submit', async e => {
     shape: document.getElementById('f-shape').value === 'sq' ? 'スクエア' : 'サークル',
     qty, total,
     earlyBird: isEarlyBird() && currentMode === 'circle',
+    freeQty: currentMode === 'circle' ? (isFreeQtyReduced() ? 2 : 3) : 1,
     sampleRequested, sampleFreeEligible,
     sampleCount: sampleRequested ? 1 : 0,
     wantsCompletionImage: document.getElementById('f-completion-img').checked,
@@ -3838,9 +3849,9 @@ document.getElementById('orderForm').addEventListener('submit', async e => {
   // オプション一覧を構築
   const optionLines = [];
   if (sampleRequested)
-    optionLines.push(sampleFreeEligible ? '🔬 端材サンプル試し刷り：初回無料' : `🔬 端材サンプル試し刷り：¥${SAMPLE_PRICE}`);
+    optionLines.push(sampleFreeEligible ? '🔬 端材試作：初回無料' : `🔬 端材試作：¥${SAMPLE_PRICE}`);
   if (order.wantsCompletionImage)
-    optionLines.push(`🖼️ 仕上がり確認画像を受け取る：${order.completionImgFee > 0 ? '¥'+order.completionImgFee : '無料'}`);
+    optionLines.push(`🖼️ 仕上がり確認を受け取る：${order.completionImgFee > 0 ? '¥'+order.completionImgFee : '無料'}`);
   if (order.circleSpace || order.circleName)
     optionLines.push(`🪑 ${[order.circleSpace, order.circleName].filter(Boolean).join('　')}`);
   const optEl = document.getElementById('successOptions');
@@ -4066,8 +4077,8 @@ async function loadAndRenderOrders() {
 }
 
 function calcOrderTotal(o) {
-  // 早割は注文時に確定したフラグ(o.earlyBird)を使用。締切後に再計算しても価格が固定される。
-  const { total } = calcCost(o.type, o.qty, o.sampleRequested, o.sampleFreeEligible, o.sampleCount, o.earlyBird, o.freeOverride);
+  // 早割・無料枠は注文時に確定したフラグ/値を使用。締切後に再計算しても価格が固定される。
+  const { total } = calcCost(o.type, o.qty, o.sampleRequested, o.sampleFreeEligible, o.sampleCount, o.earlyBird, o.freeOverride, o.freeQty ?? null);
   return total + (o.completionImgFee || 0) + (o.adjustment || 0);
 }
 
@@ -4166,12 +4177,12 @@ function renderOrders() {
         </div>
       </div>
 
-      <!-- 行4: オプション(端材サンプル | 仕上がり確認) -->
+      <!-- 行4: オプション(端材試作 | 仕上がり確認) -->
       ${(o.sampleRequested || o.wantsCompletionImage || o.earlyBird) ? `
       <div class="order-card-row" style="align-items:stretch;gap:0;padding:0;justify-content:flex-start;">
         ${o.sampleRequested ? `
         <div style="flex:0 0 auto;min-width:140px;max-width:200px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;align-items:center;text-align:center;">
-          <div class="oc-label">🔬 端材サンプル</div>
+          <div class="oc-label">🔬 端材試作</div>
           <div class="sample-ctrl">
             <button class="sample-ctrl-btn" onclick="updateSampleCount('${o.ref}',-1)">−</button>
             <span class="sample-ctrl-count">${sc}回</span>
@@ -4378,7 +4389,7 @@ async function updateSampleCount(ref, delta) {
     catch (err) { console.warn('サンプル回数更新失敗:', err); }
   }
   renderOrders();
-  showToast(`サンプル試し刷り: ${newCount}回 / 合計¥${o.total.toLocaleString()}`);
+  showToast(`端材試作: ${newCount}回 / 合計¥${o.total.toLocaleString()}`);
 }
 
 async function updateStatus(ref, st) {
@@ -4419,7 +4430,7 @@ function verifyCode() {
     <div><div class="vf-label">連絡方法</div><div class="vf-value">${o.contactPref==='x' ? `𝕏 @${o.xAccount||'?'}` : `✉ ${escapeHTML(o.email)}`}</div></div>
     <div><div class="vf-label">区分</div><div class="vf-value">${tl[o.type] || o.type}</div></div>
     ${o.sampleRequested ? `<div><div class="vf-label">端材サンプル</div><div class="vf-value">${sampleInfo}</div></div>` : ''}
-    ${o.wantsCompletionImage ? `<div><div class="vf-label">仕上がり確認画像</div><div class="vf-value">${completionInfo}</div></div>` : ''}
+    ${o.wantsCompletionImage ? `<div><div class="vf-label">仕上がり確認</div><div class="vf-value">${completionInfo}</div></div>` : ''}
   </div>
   ${!o.codeUsed ? `<button class="mark-used-btn" onclick="markCodeUsed('${o.ref}')">✓ 受け渡し完了にする</button>` : '<p style="margin-top:9px;font-size:.8rem;color:var(--red);font-weight:700">⚠ このコードは使用済みです</p>'}`;
 }
@@ -4507,7 +4518,7 @@ function printDayList() {
 }
 
 function exportCSV() {
-  const h = ['日時','注文番号','引換コード','使用済','区分','氏名','メール','Xアカウント','優先連絡方法','形状','点数','早割','サンプル申込','サンプル回数','サンプル料金','仕上がり確認画像','増減額','合計金額','ステータス','元画像URL','備考'];
+  const h = ['日時','注文番号','引換コード','使用済','区分','氏名','メール','Xアカウント','優先連絡方法','形状','点数','早割','サンプル申込','サンプル回数','サンプル料金','仕上がり確認','増減額','合計金額','ステータス','元画像URL','備考'];
   const rows = orders.map(o => {
     const tot = calcOrderTotal(o), sCost = calcSampleCost(o.sampleFreeEligible, o.sampleCount || 0);
     return [o.date,o.ref,o.code||'',o.codeUsed?'○':'—',o.type,o.name,o.email,
@@ -5167,14 +5178,14 @@ function showMsgModal(type, ref) {
   let title, hint, body;
 
   if (type === 'sample') {
-    title = '端材サンプル送付の文面';
+    title = '端材試作 送付の文面';
     hint  = isX ? 'X(DM)用' : 'メール用';
     body  = `${header}${header ? '\n\n' : ''}${greeting}
 
 サークル大喜幸四郎のルーニーと申します。
 ふたば★学園祭２１ レザーコースター企画へのご注文ありがとうございます。
 
-端材サンプルをお送りしましたので、ご確認をお願いいたします。
+端材試作をお送りしましたので、ご確認をお願いいたします。
 このまま進行して良い場合も、修正のご希望がある場合もお知らせください。
 修正原稿のご提出に関しては無料ですが、サンプルの再出力は¥300を頂戴しております。
 
@@ -5202,7 +5213,7 @@ ${photoLine}
 当日はこちらのコードをブースにてご提示ください。
 ${closing}`;
   } else {
-    title = '仕上がり確認画像の文面';
+    title = '仕上がり確認の文面';
     hint  = isX ? 'X(DM)用' : 'メール用';
     body  = `${header}${header ? '\n\n' : ''}${greeting}
 
@@ -6077,6 +6088,15 @@ function applyAboutFold() {
   more.style.display = 'none';
   btn.style.display  = 'inline-block';
 }
+function togglePriceNote(type) {
+  const more = document.getElementById(`priceNote${type}More`);
+  const btn  = document.getElementById(`priceNote${type}Btn`);
+  if (!more || !btn) return;
+  const open = more.style.display === 'none';
+  more.style.display = open ? '' : 'none';
+  btn.textContent = open ? '閉じる ▲' : '続きを読む ▼';
+}
+
 function expandAbout() {
   const more = document.getElementById('aboutMore');
   const btn  = document.getElementById('aboutMoreBtn');
