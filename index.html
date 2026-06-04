@@ -1655,7 +1655,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
 //   マイナー … 新機能の追加
 //   機能変更 … 既存機能の修正・調整・バグfix
 //   文言変更 … テキストや表記だけの修正
-const SITE_VERSION = 'v1.0.4.8';
+const SITE_VERSION = 'v1.0.4.9';
 // ▲▲▲ リロードして表示が変われば新版が反映済み ▲▲▲
 // ══════════════════════════════════════════
 // ▼▼▼ 開催日を変更するとすべての日付が連動します ▼▼▼
@@ -3394,12 +3394,10 @@ function initCanvasDrag() {
     updatePreview();
   };
 
-  // ── オーバーレイ方式 ──
-  // スクロールは常にブラウザのネイティブ処理(慣性つき・高速)に任せる。
-  // canvasのtouchはpassiveで監視するだけ(スクロールを一切妨げない)。
-  // 絵の上で0.4秒静止した時だけ、透明オーバーレイを起動して画像ドラッグを受ける。
-
-  // canvas: 長押し検知のみ(passive=スクロールを邪魔しない)
+  // ── canvas上で完結する方式 ──
+  // touchmoveはpassive:falseで登録するが、preventDefaultは「長押し成立後」だけ呼ぶ。
+  //  - 長押し前：preventDefaultしない → ブラウザのネイティブスクロールがそのまま効く(高速・慣性つき)
+  //  - 長押し成立後：preventDefaultして画像移動 → スクロールしない
   const onTouchStart = e => {
     if (!imgObj) return;
     const t = e.touches[0];
@@ -3412,40 +3410,36 @@ function initCanvasDrag() {
     };
     if (!isOnImage(p)) return;  // 余白は何もしない＝普通にスクロール
     _drag.lpTimer = setTimeout(() => {
-      // 長押し成立：オーバーレイを起動して画像移動モードへ
-      _drag.engaged = true;
-      ov.style.pointerEvents = 'auto';
+      _drag.engaged = true;  // 画像移動モード成立
       window.scrollTo(window.scrollX, window.scrollY);  // 慣性スクロールを打ち切る
+      cv.style.cursor = 'grabbing';
       if (navigator.vibrate) navigator.vibrate(10);
     }, 400);
   };
-  const onTouchMoveWatch = e => {
-    if (!_drag || _drag.engaged || !_drag.lpTimer) return;
+  const onTouchMove = e => {
+    if (!_drag) return;
     const t = e.touches[0];
     const p = getPos(t);
-    // 成立前に動いた＝スクロール意図 → 長押しキャンセル(ネイティブスクロールに任せる)
-    if (Math.abs(p.x - _drag.startX) > 6 || Math.abs(p.y - _drag.startY) > 6) {
+    if (_drag.engaged) {
+      // 長押し成立後：画像を動かす(スクロールさせない)
+      e.preventDefault();
+      moveImage(p);
+      return;
+    }
+    // 成立前に動いた＝スクロール意図 → 長押しキャンセル(preventDefaultしない＝ネイティブスクロール)
+    if (_drag.lpTimer && (Math.abs(p.x - _drag.startX) > 6 || Math.abs(p.y - _drag.startY) > 6)) {
       clearTimeout(_drag.lpTimer); _drag.lpTimer = null;
     }
   };
   const endTouch = () => {
     if (_drag && _drag.lpTimer) { clearTimeout(_drag.lpTimer); _drag.lpTimer = null; }
     if (_drag) _drag.engaged = false;
-    ov.style.pointerEvents = 'none';
+    if (imgObj) cv.style.cursor = 'grab';
   };
   cv.addEventListener('touchstart', onTouchStart, { passive: true });
-  cv.addEventListener('touchmove',  onTouchMoveWatch, { passive: true });
+  cv.addEventListener('touchmove',  onTouchMove,  { passive: false });
   cv.addEventListener('touchend',   endTouch);
   cv.addEventListener('touchcancel', endTouch);
-
-  // オーバーレイ: 長押し成立後だけ pointer-events:auto になり、ここで画像を動かす
-  ov.addEventListener('touchmove', e => {
-    if (!_drag || !_drag.engaged || !imgObj) return;
-    e.preventDefault();  // この層はtouch-action:noneなのでスクロールしない
-    moveImage(getPos(e.touches[0]));
-  }, { passive: false });
-  ov.addEventListener('touchend', endTouch);
-  ov.addEventListener('touchcancel', endTouch);
 
   // マウス(PC): 従来通りcanvas上で即ドラッグ
   const onMouseDown = e => {
