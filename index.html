@@ -74,11 +74,11 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15p
 .gate-participants-count{font-size:.82rem;font-weight:700;color:var(--muted);letter-spacing:.04em;}
 .gate-participants-count span{color:var(--potato-dark);font-size:1.1rem;}
 .gate-avatars{display:flex;flex-wrap:nowrap;justify-content:flex-start;gap:0;}
-.gate-avatar{width:28px;height:28px;border-radius:50%;border:2px solid var(--potato-bg);overflow:hidden;margin-left:-6px;background:var(--border);flex-shrink:0;transition:transform .15s;cursor:default;}
+.gate-avatar{width:28px;height:28px;border-radius:50%;border:2px solid var(--potato-bg);overflow:hidden;margin-left:-6px;background:var(--border);flex-shrink:0;transition:transform .15s;cursor:default;position:relative;}
 .gate-avatar:first-child{margin-left:0;}
-.gate-avatar:hover{transform:scale(1.15);z-index:10;position:relative;}
+.gate-avatar:hover{transform:scale(1.15);z-index:100;}
 .gate-avatar img{width:100%;height:100%;object-fit:cover;display:block;}
-.gate-avatar-more{width:28px;height:28px;border-radius:50%;border:2px solid var(--potato-bg);background:var(--potato-dark);color:var(--potato-light);display:flex;align-items:center;justify-content:center;font-size:.58rem;font-weight:700;margin-left:-6px;flex-shrink:0;}
+.gate-avatar-more{width:28px;height:28px;border-radius:50%;border:2px solid var(--potato-bg);background:var(--potato-dark);color:var(--potato-light);display:flex;align-items:center;justify-content:center;font-size:.58rem;font-weight:700;margin-left:-6px;flex-shrink:0;position:relative;}
 .gate-participants-loading{font-size:.78rem;color:rgba(92,74,30,.4);}font-size:.8rem;background:var(--gold-bg);border:1.5px solid var(--gold-border);border-radius:8px;padding:8px 14px;margin-bottom:20px;color:var(--gold);font-weight:700;}
 .gate-share-area{margin-bottom:20px;}
 .gate-share-btns{display:flex;flex-wrap:nowrap;justify-content:center;gap:5px;}
@@ -1739,7 +1739,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
 //   マイナー … 新機能の追加
 //   機能変更 … 既存機能の修正・調整・バグfix
 //   文言変更 … テキストや表記だけの修正
-const SITE_VERSION = 'v1.1.0.3';
+const SITE_VERSION = 'v1.1.2.0';
 // ▲▲▲ リロードして表示が変われば新版が反映済み ▲▲▲
 // ══════════════════════════════════════════
 // ▼▼▼ 開催日を変更するとすべての日付が連動します ▼▼▼
@@ -5701,15 +5701,53 @@ function renderInterests(list) {
   renderInterestAvatars('interestGeneralAvatars', generalList);
 }
 
+// コンテナ幅からアバターの表示可能枚数を計算
+// アバター: 1枚目28px、2枚目以降は重なりで+22px/枚
+// +Nバッジが出る場合はその28px分もあらかじめ確保する
+function calcAvatarMax(containerWidth, total) {
+  const AV_FIRST = 28, AV_STEP = 22, BADGE = 28;
+  if (total <= 0) return 0;
+  // +Nなし（全員表示）で収まるか試す
+  const widthForAll = AV_FIRST + AV_STEP * (total - 1);
+  if (widthForAll <= containerWidth) return total;
+  // +Nあり：バッジ分を先に確保して残り幅でアバター枚数を決める
+  const avail = containerWidth - BADGE;
+  if (avail < AV_FIRST) return 0; // 1枚も入らない
+  return Math.max(1, Math.floor((avail - AV_FIRST) / AV_STEP) + 1);
+}
+
+function buildAvatarHTML(shown, rest) {
+  return shown.map((av, i) => {
+    const z = shown.length - i + 1;
+    return `<div class="gate-avatar" style="z-index:${z}" title="${av.title}"><img src="${av.src}" alt="${av.title}" onerror="this.src='${FALLBACK_AVATAR}'"></div>`;
+  }).join('') + (rest > 0 ? `<div class="gate-avatar-more" style="z-index:${shown.length + 2}">+${rest}</div>` : '');
+}
+
 function renderInterestAvatars(elId, list) {
   const el = document.getElementById(elId);
   if (!el) return;
-  const MAX = 6, shown = list.slice(0, MAX), rest = list.length - MAX;
-  el.innerHTML = shown.map(p => {
-    const src   = avatarUrl(p.x_account, p.display_name);
-    const title = p.x_account ? `@${p.x_account}` : (p.display_name || '参加者');
-    return `<div class="gate-avatar" title="${title}"><img src="${src}" alt="${title}" onerror="this.src='${FALLBACK_AVATAR}'"></div>`;
-  }).join('') + (rest > 0 ? `<div class="gate-avatar-more">+${rest}</div>` : '');
+  const reversed = [...list].reverse();
+  const max    = calcAvatarMax(el.offsetWidth || 120, reversed.length);
+  const shown  = reversed.slice(0, max).map(p => ({
+    src:   avatarUrl(p.x_account, p.display_name),
+    title: p.x_account ? `@${p.x_account}` : (p.display_name || '参加者')
+  }));
+  el.innerHTML = buildAvatarHTML(shown, reversed.length - max);
+}
+
+function renderGroupAvatars(countId, avatarsId, participants) {
+  const countEl = document.getElementById(countId);
+  const avEl    = document.getElementById(avatarsId);
+  if (!countEl || !avEl) return;
+  countEl.textContent = '👥 参加中：' + participants.length + '人';
+  if (!participants.length) { avEl.innerHTML = ''; return; }
+  const reversed = [...participants].reverse();
+  const max   = calcAvatarMax(avEl.offsetWidth || 120, reversed.length);
+  const shown = reversed.slice(0, max).map(p => ({
+    src:   avatarUrl(p.xAccount, p.name),
+    title: p.xAccount ? `@${p.xAccount}` : maskName(p.name)
+  }));
+  avEl.innerHTML = buildAvatarHTML(shown, reversed.length - max);
 }
 
 
@@ -5876,30 +5914,35 @@ function renderGateParticipants(pool) {
   renderGroupAvatars('gateGeneralCount', 'gateGeneralAvatars', dedup(pool.filter(o => o.type === 'general')));
 }
 
-function renderGroupAvatars(countId, avatarsId, participants) {
-  const countEl = document.getElementById(countId);
-  const avEl    = document.getElementById(avatarsId);
-  if (!countEl || !avEl) return;
-  const t = {};  // 多言語廃止：各所のフォールバック日本語が使われる
-  countEl.textContent = (t.participantPre || '👥 参加中：') + participants.length + (t.participantSuf || '人');
-  if (!participants.length) { avEl.innerHTML = ''; return; }
-  const MAX = 6, shown = participants.slice(0, MAX), rest = participants.length - MAX;
-  avEl.innerHTML = shown.map(p => {
-    const src   = avatarUrl(p.xAccount, p.name);
-    const title = p.xAccount ? `@${p.xAccount}` : maskName(p.name);
-    return `<div class="gate-avatar" title="${title}"><img src="${src}" alt="${title}" onerror="this.src='${FALLBACK_AVATAR}'"></div>`;
-  }).join('') + (rest > 0 ? `<div class="gate-avatar-more">+${rest}</div>` : '');
-}
-
 // init
 initDatesUI();
 switchPricingTab('general');
 (async () => {
-  await loadOrderLimits();   // 受付上限を先に読み込む(ゲートカードの締切判定に反映)
+  await loadOrderLimits();
   await loadGateParticipants();
   loadGallery();
   await loadInterests();
 })();
+
+// アバターエリアのリサイズ監視：幅が変わったら再描画
+if (typeof ResizeObserver !== 'undefined') {
+  const avatarElIds = [
+    'gateGeneralAvatars','gateCircleAvatars',
+    'interestGeneralAvatars','interestCircleAvatars'
+  ];
+  let _resizeTimer = null;
+  const ro = new ResizeObserver(() => {
+    clearTimeout(_resizeTimer);
+    _resizeTimer = setTimeout(() => {
+      renderGateParticipants(orders);
+      if (_interestsList.length > 0) renderInterests(_interestsList);
+    }, 80);
+  });
+  avatarElIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) ro.observe(el);
+  });
+}
 restoreSoudaneState();  // そうだねのクールダウン状態を復元（ピンク維持 or 白に戻す）
 applyBubbleInterval();   // フキダシは3日間隔でのみ表示
 if (localStorage.getItem('bc_participant_circle'))  applyParticipantState('circle',  true);
