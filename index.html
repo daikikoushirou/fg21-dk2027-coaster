@@ -900,7 +900,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
 <div class="tone tone-1"><div class="section">
   <div class="section-title">📖 この企画について</div>
   <p style="color:var(--muted);font-size:.92rem;line-height:1.9;margin:14px 0 0;">
-    ふたば★学園祭２１で、いただいたイラストを革のコースターにして基本無料でお渡しする、参加型の企画です。一般参加者は自宅用や記念の品として、サークル参加者は頒布用・ノベルティとしてもお使いいただけます。
+    ふたば★学園祭２１において開催する参加型の企画です。一般参加者は自宅用や記念の品として、サークル参加者は頒布用・ノベルティとしてもお使いいただけるオリジナルコースターを作成でき、当日に基本無料で受け取れます。
   </p>
   <div id="aboutMore" style="display:none;">
   <p style="color:var(--muted);font-size:.92rem;line-height:1.9;margin:14px 0 0;">
@@ -932,7 +932,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
 <div class="tone tone-2"><div class="section">
   <div class="section-title">参加して受け取れるもの</div>
   <p style="color:var(--muted);font-size:.92rem;line-height:1.8;margin:14px 0 22px;">
-    お送りいただいたイラストを、豚革のレザーコースターに刻印してお渡しします。表面には防水コーティングを施しているので、飲み物のしずくがついても安心してお使いいただけます。あわせて、完成したコースターをきれいに撮影した宣材写真もお送りします。こちらの写真は、SNSへの投稿などにご自由にお使いいただけます。
+    お送りいただいたイラストを刻印したレザーコースターをお渡しします。あわせて、完成したコースターをきれいに撮影した宣材写真もお送りします。こちらの写真は、SNSへの投稿などにご自由にお使いいただけます。
   </p>
   <div class="receive-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
     <div style="background:var(--card);border:1.5px solid var(--border);border-radius:12px;overflow:hidden;">
@@ -1112,6 +1112,11 @@ footer a{color:var(--potato-light);text-decoration:none;}
             <li><strong>スクエア(85×85mm)</strong>：四角いイラストや余白が多いイラストに向いています。</li>
             <li><strong>サークル(φ90mm)</strong>：円形に収まるイラストやシンボルマーク系に向いています。</li>
           </ul>
+          <h4>🪵 仕様について</h4>
+          <ul>
+            <li><strong>材質</strong>：タンニン鞣しの豚革(豚ヌメ)</li>
+            <li><strong>表面</strong>：防水コーティング</li>
+          </ul>
           <h4>🖼️ プレビュー機能について</h4>
           <p>対応形式の画像をアップロードすると、リアルタイムでプレビューが表示され、以下の調整ができます。</p>
           <ul>
@@ -1265,19 +1270,19 @@ footer a{color:var(--potato-light);text-decoration:none;}
             <div id="previewWarnBox" style="display:none;margin-top:6px;background:rgba(255,160,0,.15);border:1px solid rgba(255,160,0,.5);border-radius:6px;padding:7px 10px;font-size:.76rem;color:rgba(255,220,100,1);line-height:1.5;"></div>
           </div>
           <div class="preview-controls" id="previewControls">
-            <div class="ctrl-group full" style="flex-basis:100%;"><button type="button" id="adjustModeBtn" onclick="toggleAdjustMode()" style="display:none;width:100%;padding:10px;border-radius:8px;border:1.5px solid var(--accent);background:transparent;color:var(--accent);font-weight:700;font-size:.85rem;cursor:pointer;">✋ 位置を調整する</button></div>
-            <div class="ctrl-group" id="ctrl-group-scale" style="display:none;"><div class="ctrl-label">サイズ</div><div class="ctrl-row"><input type="range" class="ctrl-slider" id="ctrl-scale" min="10" max="150" value="90" oninput="updatePreview()"><span class="ctrl-val" id="val-scale">90%</span></div></div>
             <div class="ctrl-group"><div class="ctrl-label">X位置</div><div class="ctrl-row"><input type="range" class="ctrl-slider" id="ctrl-x" min="-80" max="80" value="0" oninput="updatePreview()"><span class="ctrl-val" id="val-x">0</span></div></div>
             <div class="ctrl-group"><div class="ctrl-label">Y位置</div><div class="ctrl-row"><input type="range" class="ctrl-slider" id="ctrl-y" min="-80" max="80" value="0" oninput="updatePreview()"><span class="ctrl-val" id="val-y">0</span></div></div>
             <div class="ctrl-group"><div class="ctrl-label">回転</div><div class="ctrl-row"><input type="range" class="ctrl-slider" id="ctrl-rot" min="-180" max="180" value="0" oninput="updatePreview()"><span class="ctrl-val" id="val-rot">0°</span></div></div>
+            <div class="ctrl-group full" style="flex-basis:100%;"><button type="button" id="adjustModeBtn" onclick="toggleAdjustMode()" style="display:none;width:100%;padding:10px;border-radius:8px;border:1.5px solid var(--accent);background:transparent;color:var(--accent);font-weight:700;font-size:.85rem;cursor:pointer;">✋ 位置を調整する</button></div>
+            <div id="previewHint" style="flex-basis:100%;font-size:.72rem;color:rgba(255,255,255,.5);line-height:1.6;">
+              💡 プレビュー上でドラッグして位置を調整できます。ホバーでルーペ表示 / クリックでルーペON・OFF切り替え
+            </div>
+            <div class="ctrl-group" id="ctrl-group-scale" style="display:none;"><div class="ctrl-label">サイズ</div><div class="ctrl-row"><input type="range" class="ctrl-slider" id="ctrl-scale" min="10" max="150" value="90" oninput="updatePreview()"><span class="ctrl-val" id="val-scale">90%</span></div></div>
             <div class="ctrl-group" style="align-self:flex-end;"><button type="button" class="ctrl-btn" onclick="fitImageToPane()" title="画像全体をカットラインに収める">収める</button></div>
             <div class="ctrl-group" style="align-self:flex-end;" id="ctrl-snap-btn"><button type="button" class="ctrl-btn" onclick="autoSnapImage()" title="カットラインに揃える">スナップ</button></div>
             <div class="ctrl-group"><div class="ctrl-label">反転</div><div class="ctrl-row" style="gap:7px"><button type="button" class="ctrl-btn" onclick="flipH()">左右</button><button type="button" class="ctrl-btn" onclick="flipV()">上下</button></div></div>
             <div class="ctrl-group" style="align-self:flex-end"><button type="button" class="ctrl-btn" onclick="resetControls()">リセット</button></div>
             <div class="ctrl-group"><div class="ctrl-label">革色プレビュー</div><div class="toggle-row"><div class="toggle-track" id="invertToggle" onclick="toggleInvert()"><div class="toggle-thumb"></div></div><span class="toggle-desc" id="invertDesc">OFF</span></div></div>
-          </div>
-          <div id="previewHint" style="font-size:.72rem;color:rgba(255,255,255,.5);margin-top:6px;line-height:1.6;">
-            💡 プレビュー上でドラッグして位置を調整できます。ホバーでルーペ表示 / クリックでルーペON・OFF切り替え
           </div>
         </div>
       </div>
@@ -1740,7 +1745,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
 //   マイナー … 新機能の追加
 //   機能変更 … 既存機能の修正・調整・バグfix
 //   文言変更 … テキストや表記だけの修正
-const SITE_VERSION = 'v1.2.3.8';
+const SITE_VERSION = 'v1.2.4.0';
 // ▲▲▲ リロードして表示が変われば新版が反映済み ▲▲▲
 // ══════════════════════════════════════════
 // ▼▼▼ 開催日を変更するとすべての日付が連動します ▼▼▼
