@@ -594,6 +594,75 @@ footer a{color:var(--potato-light);text-decoration:none;}
 .sent-btn.done{background:var(--green-bg);border-color:var(--green);color:var(--green);}
 .sent-btn:hover{opacity:.85;}
 
+/* ── ADMIN CARD INTERNALS ── */
+/* 行ヘッダー */
+.oc-row-between{justify-content:space-between;}
+.oc-head-left{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.oc-head-right{display:flex;align-items:center;gap:8px;}
+.oc-date{font-size:.76rem;color:var(--muted);white-space:nowrap;}
+/* 削除ボタン */
+.oc-delete-btn{padding:3px 10px;border-radius:6px;border:1.5px solid #e05040;background:transparent;color:#e05040;font-size:.72rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:background .15s;font-family:var(--sans);}
+.oc-delete-btn:hover{background:rgba(224,80,64,.1);}
+/* 早割バッジ・革色バッジ */
+.oc-early-badge{color:var(--gold);font-size:.8rem;font-weight:700;}
+.oc-leather-badge{color:#a0784a;background:rgba(160,120,74,.15);border:1px solid rgba(160,120,74,.3);border-radius:4px;padding:2px 7px;font-size:.72rem;font-weight:700;}
+/* 未使用バッジ */
+.fresh-badge{background:#4a7c40;color:#fff;font-size:.68rem;font-weight:700;padding:1px 7px;border-radius:4px;vertical-align:middle;margin-left:5px;display:inline-block;}
+/* IPアドレス列 */
+.oc-ip-cell{font-size:.72rem;color:var(--muted);font-family:monospace;white-space:nowrap;}
+/* 小さい削除ボタン（興味あり管理） */
+.oc-delete-small{padding:4px 10px;font-size:.72rem;}
+/* 行2：引換コード */
+.oc-row2-left{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.oc-code-display{font-family:monospace;font-size:1.4rem;font-weight:700;letter-spacing:.2em;color:var(--potato-dark);}
+.oc-code-label{font-size:.8rem;color:var(--muted);}
+/* 行3：サムネイル＋氏名 */
+.oc-thumb-col{flex:0 0 50%;min-width:0;display:flex;gap:10px;align-items:flex-start;}
+.oc-thumb-wrap{flex:0 0 auto;}
+.oc-thumb-lg{width:72px;height:72px;object-fit:cover;cursor:pointer;border:2px solid var(--border);}
+.oc-thumb-lg.sq{border-radius:6px;}
+.oc-thumb-lg.ci{border-radius:50%;}
+.oc-thumb-empty{width:72px;height:72px;border-radius:6px;border:2px dashed var(--border);display:flex;align-items:center;justify-content:center;color:#bbb;font-size:.72rem;}
+.oc-name-bold{font-weight:700;}
+.oc-circle-label{font-size:.78rem;color:var(--circle-color);font-weight:400;}
+.oc-contact-x{color:#1d9bf0;font-weight:700;}
+.oc-contact-email{color:var(--muted);}
+.oc-contact-sub{color:var(--muted);font-size:.76rem;}
+/* 合計金額 */
+.oc-total-val{font-size:1rem;font-weight:700;color:var(--potato-dark);}
+.oc-total-free{color:var(--green);}
+/* freeOverrideボタン */
+.oc-free-btn{margin-top:4px;font-size:.68rem;padding:3px 8px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;white-space:nowrap;font-family:var(--sans);transition:all .15s;}
+.oc-free-btn.active{border-color:var(--accent);background:rgba(224,80,64,.1);color:var(--accent);}
+/* 注文照会結果 */
+.iqr-meta-date{font-size:.78rem;color:rgba(255,255,255,.78);text-align:center;}
+/* 管理グラフ */
+.chart-bar-row{display:flex;flex-direction:column;gap:3px;margin-bottom:8px;}
+.chart-bar-header{display:flex;justify-content:space-between;font-size:.75rem;}
+.chart-bar-label{color:rgba(255,255,255,.78);font-weight:700;}
+.chart-bar-value{font-weight:700;}
+.chart-bar-track{background:rgba(255,255,255,.15);border-radius:4px;height:10px;overflow:hidden;}
+.chart-bar-fill{height:100%;border-radius:4px;transition:width .4s;}
+.chart-summary-row{display:flex;justify-content:space-between;font-size:.8rem;padding:6px 0 0;border-top:1px solid var(--border);margin-top:4px;}
+.chart-summary-row+.chart-summary-row{border-top:none;padding-top:0;margin-top:0;}
+.chart-summary-label{color:rgba(255,255,255,.78);font-weight:700;}
+.chart-summary-orders{font-weight:900;color:#fff;}
+.chart-summary-revenue{font-weight:900;color:var(--gold);}
+.chart-empty{font-size:.8rem;color:rgba(255,255,255,.78);}
+/* Supabase未設定警告 */
+.oc-sb-warn{background:#fdf0e0;border:1.5px solid var(--accent-light);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:.84rem;}
+/* 成功オプション行 */
+.success-option-line{font-size:.72rem;color:rgba(255,255,255,.78);}
+/* ラベル印刷 */
+.label-no-x{font-size:.76rem;color:rgba(255,255,255,.78);}
+.label-no-data{font-size:.82rem;color:rgba(255,255,255,.78);font-style:italic;}
+/* gallerySectionのキャプション */
+.gallery-section-title{text-align:center;font-size:1.1rem;font-weight:700;color:var(--potato-dark);margin-bottom:4px;}
+.gallery-section-sub{text-align:center;font-size:.8rem;color:var(--muted);margin-bottom:18px;}
+/* IPアドレス列・削除ボタン小 */
+.oc-ip-cell{font-size:.72rem;color:var(--muted);font-family:monospace;white-space:nowrap;}
+.oc-delete-small{padding:4px 10px;font-size:.72rem;}
+
 /* ZOOM */
 .zoom-backdrop{position:fixed;inset:0;background:rgba(10,6,2,.9);display:flex;align-items:center;justify-content:center;z-index:1001;opacity:0;pointer-events:none;transition:opacity .2s;cursor:zoom-out;}
 .zoom-backdrop.show{opacity:1;pointer-events:all;}
@@ -642,8 +711,8 @@ footer a{color:var(--potato-light);text-decoration:none;}
 
     <!-- 完成品ギャラリー(実績が貯まると表示・新規ユーザーへのリーチ用) -->
     <div id="gallerySection" style="display:none;margin-bottom:8px;">
-      <div style="text-align:center;font-size:1.1rem;font-weight:700;color:var(--potato-dark);margin-bottom:4px;">🖼️ これまでの制作例</div>
-      <div style="text-align:center;font-size:.8rem;color:var(--muted);margin-bottom:18px;">参加者の許可をいただいた作品を紹介しています</div>
+      <div class="gallery-section-title">🖼️ これまでの制作例</div>
+      <div class="gallery-section-sub">参加者の許可をいただいた作品を紹介しています</div>
       <div id="galleryGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;"></div>
     </div>
 
@@ -1656,7 +1725,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
 //   マイナー … 新機能の追加
 //   機能変更 … 既存機能の修正・調整・バグfix
 //   文言変更 … テキストや表記だけの修正
-const SITE_VERSION = 'v1.0.6.2';
+const SITE_VERSION = 'v1.0.7.0';
 // ▲▲▲ リロードして表示が変われば新版が反映済み ▲▲▲
 // ══════════════════════════════════════════
 // ▼▼▼ 開催日を変更するとすべての日付が連動します ▼▼▼
@@ -3673,7 +3742,7 @@ document.getElementById('orderForm').addEventListener('submit', async e => {
 
   const order = {
     ref, code, type: currentMode,
-    date: new Date().toLocaleString('ja-JP'),
+    date: new Date().toISOString(),
     name: document.getElementById('f-name').value.trim(),
     circleName: currentMode === 'circle' ? document.getElementById('f-circle-name').value.trim() : (document.getElementById('f-general-circle-name').value.trim() || ''),
     circleSpace: currentMode === 'circle' ? document.getElementById('f-circle-space').value.trim() : (document.getElementById('f-general-circle-space').value.trim() || ''),
@@ -3757,7 +3826,7 @@ document.getElementById('orderForm').addEventListener('submit', async e => {
     optionLines.push(`🪑 ${[order.circleSpace, order.circleName].filter(Boolean).join('　')}`);
   const optEl = document.getElementById('successOptions');
   optEl.innerHTML = optionLines.map(l =>
-    `<div style="font-size:.72rem;color:rgba(255,255,255,.78);">${l}</div>`
+    `<div class="success-option-line">${l}</div>`
   ).join('');
 
   document.getElementById('successModal').classList.add('show');
@@ -3993,7 +4062,7 @@ function renderOrders() {
 
   const tl = { circle: 'サークル', general: '一般' }, tc = { circle: 'type-circle', general: 'type-general' };
   const sbWarn = !sbReady()
-    ? `<div style="background:#fdf0e0;border:1.5px solid var(--accent-light);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:.84rem;">
+    ? `<div class="oc-sb-warn">
         ⚠️ <strong>Supabase未設定</strong> — データはこのブラウザのみに保存されています。
        </div>` : '';
 
@@ -4003,29 +4072,32 @@ function renderOrders() {
     const sCostNow = calcSampleCost(o.sampleFreeEligible, sc);
     const adj = o.adjustment || 0;
     const contactInfo = o.contactPref === 'x'
-      ? `<span style="color:#1d9bf0;font-weight:700">𝕏 @${o.xAccount||'?'}</span>`
-      : `<span style="color:var(--muted)">✉ ${escapeHTML(o.email)}</span>`;
+      ? `<span class="oc-contact-x">𝕏 @${o.xAccount||'?'}</span>`
+      : `<span class="oc-contact-email">✉ ${escapeHTML(o.email)}</span>`;
     const xExtra = o.xAccount && o.contactPref !== 'x'
-      ? `<span style="color:var(--muted);font-size:.76rem">𝕏 @${escapeHTML(o.xAccount)}</span>` : '';
+      ? `<span class="oc-contact-sub">𝕏 @${escapeHTML(o.xAccount)}</span>` : '';
 
     return `<div class="order-card">
       <!-- 行1: ヘッダー -->
-      <div class="order-card-row head" style="justify-content:space-between">
-        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <div class="order-card-row head oc-row-between">
+        <div class="oc-head-left">
           <span class="oc-ref">${o.ref}</span>
           <span class="type-badge ${tc[o.type]||''}">${tl[o.type]||o.type}</span>
-          ${o.earlyBird ? '<span style="color:var(--gold);font-size:.8rem;font-weight:700">⭐早割</span>' : ''}
+          ${o.earlyBird ? '<span class="oc-early-badge">⭐早割</span>' : ''}
           ${o.codeUsed ? '<span class="used-badge">使用済</span>' : ''}
-          ${o.leatherPreview ? '<span style="color:#a0784a;background:rgba(160,120,74,.15);border:1px solid rgba(160,120,74,.3);border-radius:4px;padding:2px 7px;font-size:.72rem;font-weight:700;">🪵 革色確認済</span>' : ''}
+          ${o.leatherPreview ? '<span class="oc-leather-badge">🪵 革色確認済</span>' : ''}
         </div>
-        <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:.76rem;color:var(--muted);white-space:nowrap">${o.date}</span><button onclick="deleteOrder('${o.ref}')" style="padding:3px 10px;border-radius:6px;border:1.5px solid #e05040;background:transparent;color:#e05040;font-size:.72rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:background .15s;" onmouseover="this.style.background='rgba(224,80,64,.1)'" onmouseout="this.style.background='transparent'">🗑 削除</button></div>
+        <div class="oc-head-right">
+          <span class="oc-date">${fmtDateTime(o.date)}</span>
+          <button class="oc-delete-btn" onclick="deleteOrder('${o.ref}')">🗑 削除</button>
+        </div>
       </div>
 
       <!-- 行2: 引換コード・ステータス -->
-      <div class="order-card-row" style="justify-content:space-between">
-        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-          <span style="font-family:monospace;font-size:1.4rem;font-weight:700;letter-spacing:.2em;color:var(--potato-dark)">${o.code||'—'}</span>
-          <span style="font-size:.8rem;color:var(--muted)">引換コード</span>
+      <div class="order-card-row oc-row-between">
+        <div class="oc-row2-left">
+          <span class="oc-code-display">${o.code||'—'}</span>
+          <span class="oc-code-label">引換コード</span>
         </div>
         <select class="status-select" onchange="updateStatus('${o.ref}',this.value)">
           <option value="new" ${o.status==='new'?'selected':''}>新規</option>
@@ -4038,26 +4110,25 @@ function renderOrders() {
       <!-- 行3: サムネイル・氏名・合計金額・形状点数・リンク -->
       <div class="order-card-row" style="align-items:flex-start;">
         <!-- サムネイル＋氏名(左50%) -->
-        <div style="flex:0 0 50%;min-width:0;display:flex;gap:10px;align-items:flex-start;">
-          <div style="flex:0 0 auto;">
+        <div class="oc-thumb-col">
+          <div class="oc-thumb-wrap">
             ${(o.thumb || o.image_url)
-              ? `<img class="thumb-mini ${o.shape==='サークル'?'ci':'sq'}" src="${o.thumb || o.image_url}" alt=""
-                  style="width:72px;height:72px;object-fit:cover;cursor:pointer;border-radius:${o.shape==='サークル'?'50%':'6px'};border:2px solid var(--border);"
+              ? `<img class="oc-thumb-lg ${o.shape==='サークル'?'ci':'sq'}" src="${o.thumb || o.image_url}" alt=""
                   onclick="zoomImg('${o.thumb || o.image_url}')">`
-              : `<div style="width:72px;height:72px;border-radius:6px;border:2px dashed var(--border);display:flex;align-items:center;justify-content:center;color:#bbb;font-size:.72rem;">なし</div>`
+              : `<div class="oc-thumb-empty">なし</div>`
             }
           </div>
           <div class="oc-group" style="flex:1;min-width:0;">
             <div class="oc-label">氏名・連絡先</div>
-            <div class="oc-val" style="font-weight:700">${escapeHTML(o.name)}${o.circleName ? ` <span style="font-size:.78rem;color:var(--circle-color);font-weight:400;">(${o.circleSpace ? o.circleSpace+'・' : ''}${escapeHTML(o.circleName)})</span>` : ''}</div>
+            <div class="oc-val oc-name-bold">${escapeHTML(o.name)}${o.circleName ? ` <span class="oc-circle-label">(${o.circleSpace ? o.circleSpace+'・' : ''}${escapeHTML(o.circleName)})</span>` : ''}</div>
             <div style="font-size:.8rem">${contactInfo}</div>
-            ${xExtra ? `<div style="font-size:.76rem">${xExtra}</div>` : ''}
+            ${xExtra ? `<div class="oc-contact-sub">${xExtra}</div>` : ''}
           </div>
         </div>
         <div class="oc-group" style="flex:1;min-width:0;">
           <div class="oc-label">合計金額</div>
-          <div class="oc-val" style="font-size:1rem;font-weight:700;color:var(--potato-dark)">${tot===0?'<span style="color:var(--green)">無料</span>':'¥'+tot.toLocaleString()}</div>
-          ${o.type==='circle' ? `<button onclick="toggleFreeOverride('${o.ref}')" style="margin-top:4px;font-size:.68rem;padding:3px 8px;border-radius:6px;border:1px solid ${o.freeOverride?'var(--accent)':'var(--border)'};background:${o.freeOverride?'rgba(224,80,64,.1)':'transparent'};color:${o.freeOverride?'var(--accent)':'var(--muted)'};cursor:pointer;white-space:nowrap;">${o.freeOverride?'🚫 無料なし':'🎁 無料あり'}</button>` : ''}
+          <div class="oc-val oc-total-val">${tot===0?'<span class="oc-total-free">無料</span>':'¥'+tot.toLocaleString()}</div>
+          ${o.type==='circle' ? `<button class="oc-free-btn ${o.freeOverride?'active':''}" onclick="toggleFreeOverride('${o.ref}')">${o.freeOverride?'🚫 無料なし':'🎁 無料あり'}</button>` : ''}
         </div>
         <div class="oc-group" style="flex:1;min-width:0;">
           <div class="oc-label">形状・点数</div>
@@ -4314,7 +4385,7 @@ function verifyCode() {
   const o = orders.find(o => o.code === code);
   if (!o) { res.className = 'verify-result show'; res.innerHTML = `<div class="verify-card ng"><div><div class="vf-label">結果</div><div class="vf-value" style="color:var(--red)">コードが見つかりません</div></div></div>`; return; }
   const tl = { circle: '🪑 サークル', general: '🎫 一般' };
-  const used = o.codeUsed ? '<span class="used-badge">使用済</span>' : '<span style="background:#4a7c40;color:#fff;font-size:.68rem;font-weight:700;padding:1px 7px;border-radius:4px;vertical-align:middle;margin-left:5px">未使用</span>';
+  const used = o.codeUsed ? '<span class="used-badge">使用済</span>' : '<span class="fresh-badge">未使用</span>';
   const currentTotal = calcOrderTotal(o);
   const amtHtml = currentTotal === 0 ? '<span style="color:var(--green);font-weight:700">無料</span>' : '¥' + currentTotal.toLocaleString();
   const sampleInfo = o.sampleRequested ? `${o.sampleCount || 0}回(${o.sampleFreeEligible ? '初回無料' : '有料'} ¥${calcSampleCost(o.sampleFreeEligible, o.sampleCount || 0).toLocaleString()})` : 'なし';
@@ -4688,11 +4759,11 @@ async function searchOrder() {
   result.innerHTML = matches.map(o => {
     const total = calcOrderTotal(o);
     return `<div class="inquiry-result-card">
-      <div style="font-size:.78rem;color:rgba(255,255,255,.78);text-align:center;">${o.ref} — ${o.date}</div>
+      <div class="iqr-meta-date">${o.ref} — ${fmtDateTime(o.date)}</div>
       <div class="inquiry-result-code">${o.code}</div>
       <div class="inquiry-result-meta">
         ${o.shape} × ${o.qty}点　${total === 0 ? '無料' : '¥' + total.toLocaleString()}
-        ${o.codeUsed ? '　<span style="color:var(--red);font-weight:700">使用済</span>' : ''}
+      ${o.codeUsed ? `　<span class="used-badge">使用済</span>` : ''}
       </div>
       <div class="inquiry-result-actions">
         <button class="code-action-btn" onclick="copyCodeVal('${o.code}', this)">📋 コピー</button>
@@ -4794,13 +4865,13 @@ function renderInterestsAdmin() {
       const date = i.created_at ? new Date(i.created_at).toLocaleString('ja-JP') : '—';
       const ip = i.ip_address || '—';
       return `<tr>
-        <td style="font-size:.76rem;color:var(--muted);white-space:nowrap">${date}</td>
+        <td class="oc-date">${date}</td>
         <td><span class="type-badge ${typeBadgeClass(i.type)}">${typeLabel[i.type || 'general'] || i.type}</span></td>
         <td style="font-size:.85rem">${i.x_account ? `@${escapeHTML(i.x_account)}` : '—'}</td>
         <td style="font-size:.85rem">${i.display_name || '—'}</td>
-        <td style="font-size:.72rem;color:var(--muted);font-family:monospace;white-space:nowrap">${ip}</td>
+        <td class="oc-ip-cell">${ip}</td>
         <td><img class="thumb-mini" src="${src}" alt="" onerror="this.src='${FALLBACK_AVATAR}'" style="border-radius:50%"></td>
-        <td>${i.id ? `<button class="admin-btn danger" style="padding:4px 10px;font-size:.72rem" onclick="deleteInterest(${i.id})">削除</button>` : '—'}</td>
+        <td>${i.id ? `<button class="admin-btn danger oc-delete-small" onclick="deleteInterest(${i.id})">削除</button>` : '—'}</td>
       </tr>`;
     }).join('')}</tbody>
   </table>`;
@@ -4848,7 +4919,7 @@ function renderLabelEntries() {
   if (!list) return;
   const contributors = getLabelContributors();
   if (!contributors.length) {
-    list.innerHTML = '<div style="font-size:.82rem;color:rgba(255,255,255,.78);font-style:italic;">注文データがありません</div>';
+    list.innerHTML = '<div class="label-no-data">注文データがありません</div>';
     return;
   }
   list.innerHTML = contributors.map((c, i) => `
@@ -4863,7 +4934,7 @@ function renderLabelEntries() {
       ${c.circleName ? `<span style="font-size:.75rem;color:var(--circle-color);flex-shrink:0;">${escapeHTML(c.circleName)}</span>` : ''}
       ${c.xAccount
         ? `<span class="label-entry-x">𝕏 @${escapeHTML(c.xAccount)}</span>`
-        : `<span style="font-size:.76rem;color:rgba(255,255,255,.78)">Xなし</span>`}
+        : `<span class="label-no-x">Xなし</span>`}
     </div>
   `).join('');
   updateLabelHint();
@@ -5172,7 +5243,7 @@ function showCodeQR(code) {
 // 管理パネル 簡易グラフ
 function renderAdminChart() {
   const el = document.getElementById('adminChartArea');
-  if (!el || !orders.length) { if(el) el.innerHTML = '<div style="font-size:.8rem;color:rgba(255,255,255,.78);">注文なし</div>'; return; }
+  if (!el || !orders.length) { if(el) el.innerHTML = '<div class="chart-empty">注文なし</div>'; return; }
 
   const total     = orders.length;
   const circle    = orders.filter(o => o.type === 'circle').length;
@@ -5184,13 +5255,13 @@ function renderAdminChart() {
 
   const bar = (label, val, max, color, suffix='') => {
     const pct = max > 0 ? Math.round(val / max * 100) : 0;
-    return `<div>
-      <div style="display:flex;justify-content:space-between;font-size:.75rem;margin-bottom:3px;">
-        <span style="color:rgba(255,255,255,.78);font-weight:700;">${label}</span>
-        <span style="font-weight:700;">${val.toLocaleString()}${suffix}</span>
+    return `<div class="chart-bar-row">
+      <div class="chart-bar-header">
+        <span class="chart-bar-label">${label}</span>
+        <span class="chart-bar-value">${val.toLocaleString()}${suffix}</span>
       </div>
-      <div style="background:rgba(255,255,255,.15);border-radius:4px;height:10px;overflow:hidden;">
-        <div style="background:${color};width:${pct}%;height:100%;border-radius:4px;transition:width .4s;"></div>
+      <div class="chart-bar-track">
+        <div class="chart-bar-fill" style="background:${color};width:${pct}%;"></div>
       </div>
     </div>`;
   };
@@ -5200,11 +5271,11 @@ function renderAdminChart() {
     bar('一般参加者', general, total, 'var(--general-color)'),
     bar('製作中', making, total, '#f0a040'),
     bar('受け渡し済み', delivered, total, 'var(--green)'),
-    `<div style="display:flex;justify-content:space-between;font-size:.8rem;padding:6px 0 0;border-top:1px solid var(--border);margin-top:4px;">
-      <span style="color:rgba(255,255,255,.78);font-weight:700;">総注文数</span><span style="font-weight:900;color:#fff;">${total} 件 / ${maxQty} 点</span>
+    `<div class="chart-summary-row">
+      <span class="chart-summary-label">総注文数</span><span class="chart-summary-orders">${total} 件 / ${maxQty} 点</span>
     </div>`,
-    `<div style="display:flex;justify-content:space-between;font-size:.8rem;">
-      <span style="color:rgba(255,255,255,.78);font-weight:700;">売上合計</span><span style="font-weight:900;color:var(--gold);">¥${revenue.toLocaleString()}</span>
+    `<div class="chart-summary-row">
+      <span class="chart-summary-label">売上合計</span><span class="chart-summary-revenue">¥${revenue.toLocaleString()}</span>
     </div>`,
   ].join('');
 }
@@ -5270,6 +5341,14 @@ async function gateShareCopy() {
   lbl.textContent = t.shareCopiedLbl || '✓ コピー';
   btn.classList.add('copied');
   setTimeout(() => { lbl.textContent = t.shareCopyLbl || 'コピー'; btn.classList.remove('copied'); }, 2500);
+}
+
+// ISO文字列またはロケール文字列を日本語日時表示に変換（注文日時用）
+function fmtDateTime(dateStr) {
+  if (!dateStr) return '—';
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return String(dateStr);
+  return d.toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' });
 }
 
 function showToast(msg, duration = 3500) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(t._hideTimer); t._hideTimer = setTimeout(() => t.classList.remove('show'), duration); }
