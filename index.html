@@ -101,7 +101,10 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15p
 .gate-divider{border:none;border-top:2px dashed var(--border);margin:0 0 20px;}
 .gate-prompt{font-size:.9rem;font-weight:700;color:var(--potato-dark);margin-bottom:16px;}
 .gate-cards{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto;column-gap:14px;row-gap:0;align-items:stretch;}
-@media(max-width:440px){.gate-cards{grid-template-columns:1fr;}}
+@media(max-width:440px){
+  .gate-cards{grid-template-columns:1fr;grid-template-rows:none;row-gap:14px;}
+  .gate-card-stack{grid-row:span 1;display:flex;flex-direction:column;}
+}
 /* カード＋アバターパネルをひとまとめにするラッパー */
 .gate-card-stack{display:grid;grid-template-rows:subgrid;grid-row:span 2;transition:transform .1s,box-shadow .15s;border-radius:12px 12px 10px 10px;}
 .gate-card-stack:hover{transform:translateY(-3px);box-shadow:0 6px 18px rgba(0,0,0,.12);}
@@ -1739,7 +1742,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
 //   マイナー … 新機能の追加
 //   機能変更 … 既存機能の修正・調整・バグfix
 //   文言変更 … テキストや表記だけの修正
-const SITE_VERSION = 'v1.1.2.0';
+const SITE_VERSION = 'v1.1.2.1';
 // ▲▲▲ リロードして表示が変われば新版が反映済み ▲▲▲
 // ══════════════════════════════════════════
 // ▼▼▼ 開催日を変更するとすべての日付が連動します ▼▼▼
