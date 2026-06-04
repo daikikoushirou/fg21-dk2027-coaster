@@ -1162,6 +1162,46 @@ footer a{color:var(--potato-light);text-decoration:none;}
     <div class="form-deadline-note" id="formDeadlineNote">🚫 申し込みは締め切りました。ありがとうございました！</div>
     <form class="order-form" id="orderForm" novalidate>
       <div class="form-group full">
+        <label>デザイン画像<span class="required-mark" id="req-image">*</span></label>
+        <div class="upload-area" id="uploadArea">
+          <input type="file" id="f-image" accept="image/*,.psd,.ai" onchange="onImageSelect(event)">
+          <svg class="upload-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="6" y="14" width="28" height="20" rx="3"/>
+            <path d="M14 14V10a6 6 0 1112 0v4"/><path d="M20 20v8M16 24l4-4 4 4"/>
+          </svg>
+          <div class="upload-text-main">クリックまたはドラッグ＆ドロップ</div>
+          <div class="upload-text-sub">PNG・JPG・SVG・WEBP・BMP(最大10MB)/ PSD・AI(要圧縮・プレビュー非対応)</div>
+        </div>
+        <span class="field-error" role="alert" aria-live="polite" id="e-image">画像をアップロードしてください</span>
+        <div class="preview-wrapper" id="previewWrapper">
+          <div class="preview-pane">
+            <div class="preview-label"><span class="dot"></span>プレビュー(<span id="previewShapeLabel">スクエア</span>)</div>
+            <div style="position:relative;display:inline-block;line-height:0;">
+              <canvas id="previewCanvas" width="360" height="360" class="sq"></canvas>
+              <canvas id="magnifierCanvas" width="360" height="360" style="position:absolute;top:0;left:0;pointer-events:none;"></canvas>
+              <div id="dragOverlay" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;touch-action:none;"></div>
+            </div>
+            <div id="previewWarnBox" style="display:none;margin-top:6px;background:rgba(255,160,0,.15);border:1px solid rgba(255,160,0,.5);border-radius:6px;padding:7px 10px;font-size:.76rem;color:rgba(255,220,100,1);line-height:1.5;"></div>
+          </div>
+          <div class="preview-controls" id="previewControls">
+            <div class="ctrl-group full" style="flex-basis:100%;"><button type="button" id="adjustModeBtn" onclick="toggleAdjustMode()" style="display:none;width:100%;padding:10px;border-radius:8px;border:1.5px solid var(--accent);background:transparent;color:var(--accent);font-weight:700;font-size:.85rem;cursor:pointer;">✋ 位置を調整する</button></div>
+            <div class="ctrl-group" id="ctrl-group-scale" style="display:none;"><div class="ctrl-label">サイズ</div><div class="ctrl-row"><input type="range" class="ctrl-slider" id="ctrl-scale" min="10" max="150" value="90" oninput="updatePreview()"><span class="ctrl-val" id="val-scale">90%</span></div></div>
+            <div class="ctrl-group"><div class="ctrl-label">X位置</div><div class="ctrl-row"><input type="range" class="ctrl-slider" id="ctrl-x" min="-80" max="80" value="0" oninput="updatePreview()"><span class="ctrl-val" id="val-x">0</span></div></div>
+            <div class="ctrl-group"><div class="ctrl-label">Y位置</div><div class="ctrl-row"><input type="range" class="ctrl-slider" id="ctrl-y" min="-80" max="80" value="0" oninput="updatePreview()"><span class="ctrl-val" id="val-y">0</span></div></div>
+            <div class="ctrl-group"><div class="ctrl-label">回転</div><div class="ctrl-row"><input type="range" class="ctrl-slider" id="ctrl-rot" min="-180" max="180" value="0" oninput="updatePreview()"><span class="ctrl-val" id="val-rot">0°</span></div></div>
+            <div class="ctrl-group" style="align-self:flex-end;"><button type="button" class="ctrl-btn" onclick="fitImageToPane()" title="画像全体をカットラインに収める">収める</button></div>
+            <div class="ctrl-group" style="align-self:flex-end;" id="ctrl-snap-btn"><button type="button" class="ctrl-btn" onclick="autoSnapImage()" title="カットラインに揃える">スナップ</button></div>
+            <div class="ctrl-group"><div class="ctrl-label">反転</div><div class="ctrl-row" style="gap:7px"><button type="button" class="ctrl-btn" onclick="flipH()">左右</button><button type="button" class="ctrl-btn" onclick="flipV()">上下</button></div></div>
+            <div class="ctrl-group" style="align-self:flex-end"><button type="button" class="ctrl-btn" onclick="resetControls()">リセット</button></div>
+            <div class="ctrl-group"><div class="ctrl-label">革色プレビュー</div><div class="toggle-row"><div class="toggle-track" id="invertToggle" onclick="toggleInvert()"><div class="toggle-thumb"></div></div><span class="toggle-desc" id="invertDesc">OFF</span></div></div>
+          </div>
+          <div id="previewHint" style="font-size:.72rem;color:rgba(255,255,255,.5);margin-top:6px;line-height:1.6;">
+            💡 プレビュー上でドラッグして位置を調整できます。ホバーでルーペ表示 / クリックでルーペON・OFF切り替え
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group full">
         <label>おなまえ<span class="required-mark" id="req-name">*</span></label>
         <input type="text" id="f-name" placeholder="ポコ太郎" required onkeydown="if(event.key==='Enter')event.preventDefault();">
         <span class="field-error" role="alert" aria-live="polite" id="e-name">お名前を入力してください</span>
@@ -1260,46 +1300,6 @@ footer a{color:var(--potato-light);text-decoration:none;}
         </div>
         <div class="qty-hint" id="qtyHint"></div>
         <span class="field-error" role="alert" aria-live="polite" id="e-qty"></span>
-      </div>
-      <div class="form-group full">
-        <label>デザイン画像<span class="required-mark" id="req-image">*</span></label>
-        <div class="upload-area" id="uploadArea">
-          <input type="file" id="f-image" accept="image/*,.psd,.ai" onchange="onImageSelect(event)">
-          <svg class="upload-icon" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.5">
-            <rect x="6" y="14" width="28" height="20" rx="3"/>
-            <path d="M14 14V10a6 6 0 1112 0v4"/><path d="M20 20v8M16 24l4-4 4 4"/>
-          </svg>
-          <div class="upload-text-main">クリックまたはドラッグ＆ドロップ</div>
-          <div class="upload-text-sub">PNG・JPG・SVG・WEBP・BMP(最大10MB)/ PSD・AI(要圧縮・プレビュー非対応)</div>
-        </div>
-        <span class="field-error" role="alert" aria-live="polite" id="e-image">画像をアップロードしてください</span>
-        <div class="preview-wrapper" id="previewWrapper">
-          <div class="preview-pane">
-            <div class="preview-label"><span class="dot"></span>プレビュー(<span id="previewShapeLabel">スクエア</span>)</div>
-            <div style="position:relative;display:inline-block;line-height:0;">
-              <canvas id="previewCanvas" width="360" height="360" class="sq"></canvas>
-              <canvas id="magnifierCanvas" width="360" height="360" style="position:absolute;top:0;left:0;pointer-events:none;"></canvas>
-              <div id="dragOverlay" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;touch-action:none;"></div>
-            </div>
-            <div id="previewWarnBox" style="display:none;margin-top:6px;background:rgba(255,160,0,.15);border:1px solid rgba(255,160,0,.5);border-radius:6px;padding:7px 10px;font-size:.76rem;color:rgba(255,220,100,1);line-height:1.5;"></div>
-            <button type="button" class="remove-btn" onclick="removeImage()">✕ 画像を削除</button>
-            <button type="button" id="adjustModeBtn" onclick="toggleAdjustMode()" style="display:none;width:100%;margin-top:8px;padding:10px;border-radius:8px;border:1.5px solid var(--accent);background:transparent;color:var(--accent);font-weight:700;font-size:.85rem;cursor:pointer;">✋ 位置を調整する</button>
-          </div>
-          <div class="preview-controls" id="previewControls">
-            <div class="ctrl-group" id="ctrl-group-scale" style="display:none;"><div class="ctrl-label">サイズ</div><div class="ctrl-row"><input type="range" class="ctrl-slider" id="ctrl-scale" min="10" max="150" value="90" oninput="updatePreview()"><span class="ctrl-val" id="val-scale">90%</span></div></div>
-            <div class="ctrl-group"><div class="ctrl-label">X位置</div><div class="ctrl-row"><input type="range" class="ctrl-slider" id="ctrl-x" min="-80" max="80" value="0" oninput="updatePreview()"><span class="ctrl-val" id="val-x">0</span></div></div>
-            <div class="ctrl-group"><div class="ctrl-label">Y位置</div><div class="ctrl-row"><input type="range" class="ctrl-slider" id="ctrl-y" min="-80" max="80" value="0" oninput="updatePreview()"><span class="ctrl-val" id="val-y">0</span></div></div>
-            <div class="ctrl-group"><div class="ctrl-label">回転</div><div class="ctrl-row"><input type="range" class="ctrl-slider" id="ctrl-rot" min="-180" max="180" value="0" oninput="updatePreview()"><span class="ctrl-val" id="val-rot">0°</span></div></div>
-            <div class="ctrl-group" style="align-self:flex-end"><button type="button" class="ctrl-btn" onclick="resetControls()">リセット</button></div>
-            <div class="ctrl-group" style="align-self:flex-end;" id="ctrl-snap-btn"><button type="button" class="ctrl-btn" onclick="autoSnapImage()" title="カットラインに揃える">スナップ</button></div>
-            <div class="ctrl-group" style="align-self:flex-end;"><button type="button" class="ctrl-btn" onclick="fitImageToPane()" title="画像全体をカットラインに収める">収める</button></div>
-            <div class="ctrl-group"><div class="ctrl-label">反転</div><div class="ctrl-row" style="gap:7px"><button type="button" class="ctrl-btn" onclick="flipH()">左右</button><button type="button" class="ctrl-btn" onclick="flipV()">上下</button></div></div>
-            <div class="ctrl-group"><div class="ctrl-label">革色プレビュー</div><div class="toggle-row"><div class="toggle-track" id="invertToggle" onclick="toggleInvert()"><div class="toggle-thumb"></div></div><span class="toggle-desc" id="invertDesc">OFF</span></div></div>
-          </div>
-          <div id="previewHint" style="font-size:.72rem;color:rgba(255,255,255,.5);margin-top:6px;line-height:1.6;">
-            💡 プレビュー上でドラッグして位置を調整できます。ホバーでルーペ表示 / クリックでルーペON・OFF切り替え
-          </div>
-        </div>
       </div>
 
       <!-- 端材サンプル試し刷り -->
@@ -1656,7 +1656,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
 //   マイナー … 新機能の追加
 //   機能変更 … 既存機能の修正・調整・バグfix
 //   文言変更 … テキストや表記だけの修正
-const SITE_VERSION = 'v1.0.5.1';
+const SITE_VERSION = 'v1.0.6.2';
 // ▲▲▲ リロードして表示が変われば新版が反映済み ▲▲▲
 // ══════════════════════════════════════════
 // ▼▼▼ 開催日を変更するとすべての日付が連動します ▼▼▼
@@ -2915,6 +2915,7 @@ function loadImageFile(file) {
         <span style="flex:1;font-size:.82rem;font-weight:700;color:rgba(255,255,255,.85);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${file.name}</span>
         <span style="font-size:.72rem;color:rgba(255,255,255,.4);">${(file.size/1024).toFixed(0)} KB</span>
         <span style="background:rgba(255,255,255,.12);border-radius:4px;padding:1px 7px;font-size:.7rem;font-weight:700;color:rgba(255,255,255,.6);flex-shrink:0;">${ext}</span>
+        <button type="button" onclick="removeImage()" title="画像を削除" style="flex-shrink:0;background:none;border:none;color:rgba(255,255,255,.45);font-size:1rem;line-height:1;cursor:pointer;padding:2px 4px;border-radius:4px;">✕</button>
       `;
 
       updatePreview();
