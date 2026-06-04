@@ -1553,7 +1553,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
   </div>
   <hr class="share-footer-divider">
   <p>ふたば★学園祭２１ 参加型企画 — イラスト入りレザーコースター</p>
-  <p style="margin-top:6px">大喜幸四郎 🥔 &nbsp;|&nbsp; <a href="#" onclick="toggleAdmin(event)">管理者ログイン</a></p>
+  <p style="margin-top:6px">大喜幸四郎 🥔 &nbsp;|&nbsp; <span id="siteVersion" style="font-size:.72rem;color:var(--muted);opacity:.7;"></span> &nbsp;|&nbsp; <a href="#" onclick="toggleAdmin(event)">管理者ログイン</a></p>
 </footer>
 </div><!-- /mainContent -->
 
@@ -1633,6 +1633,15 @@ footer a{color:var(--potato-light);text-decoration:none;}
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
+// ══════════════════════════════════════════
+// ▼▼▼ デプロイのたびにこのバージョンを上げると、反映確認に使えます ▼▼▼
+// 形式: メジャー.マイナー.機能変更.文言変更
+//   メジャー … 大きな作り直し・仕様変更
+//   マイナー … 新機能の追加
+//   機能変更 … 既存機能の修正・調整・バグfix
+//   文言変更 … テキストや表記だけの修正
+const SITE_VERSION = 'v1.0.0.0';
+// ▲▲▲ リロードして表示が変われば新版が反映済み ▲▲▲
 // ══════════════════════════════════════════
 // ▼▼▼ 開催日を変更するとすべての日付が連動します ▼▼▼
 const EVENT_DATE = new Date('2027-05-03T00:00:00+09:00');
@@ -5749,6 +5758,8 @@ if (localStorage.getItem('bc_participant_circle'))  applyParticipantState('circl
 if (localStorage.getItem('bc_participant_general')) applyParticipantState('general', true);
 initCanvasDrag();
 initVisitorCount();
+// バージョン表示（デプロイ反映確認用）
+(() => { const v = document.getElementById('siteVersion'); if (v) v.textContent = SITE_VERSION; })();
 applyAboutFold();
 initRequiredMarkListeners();
 // ゲートページのサークルカード上限確認
