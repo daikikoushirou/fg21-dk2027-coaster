@@ -361,7 +361,7 @@ input.invalid,select.invalid{border-color:#e05040 !important;}
 .preview-pane{margin-bottom:10px;}
 .preview-label{font-size:.78rem;font-weight:700;color:rgba(255,255,255,.9);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
 .preview-label .dot{width:6px;height:6px;background:var(--potato-light);border-radius:50%;}
-canvas{display:block;border-radius:4px;touch-action:none;}
+canvas{display:block;border-radius:4px;touch-action:pan-y;}
 canvas.draggable-img{cursor:grab;}
 canvas.draggable-img:active{cursor:grabbing;}
 canvas.ci{border-radius:4px;}
@@ -1654,7 +1654,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
 //   マイナー … 新機能の追加
 //   機能変更 … 既存機能の修正・調整・バグfix
 //   文言変更 … テキストや表記だけの修正
-const SITE_VERSION = 'v1.0.3.0';
+const SITE_VERSION = 'v1.0.3.1';
 // ▲▲▲ リロードして表示が変われば新版が反映済み ▲▲▲
 // ══════════════════════════════════════════
 // ▼▼▼ 開催日を変更するとすべての日付が連動します ▼▼▼
@@ -1732,6 +1732,10 @@ function escapeHTML(s) {
 }
 // 現在時刻判定
 function now() { return new Date(); }
+// モバイル(タッチ主体)端末の判定。プレビューのルーペ無効化・スクロール優先に使う。
+function isMobileDevice() {
+  return window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+}
 function isPastDeadline()     { return now() >= DEADLINE; }
 function isEarlyBird()        { return now() < EARLY_BIRD_END; }
 function isSampleFreeEligible(mode, qty) {
@@ -3398,6 +3402,8 @@ function initCanvasDrag() {
       // 横が優勢 → 画像ドラッグ確定
       _drag.pending = false;
       _drag.locked = true;
+      // 確定後はこの操作中だけ縦スクロールの巻き込みを止める
+      cv.style.touchAction = 'none';
       cv.style.cursor = 'grabbing';
     }
 
@@ -3414,6 +3420,8 @@ function initCanvasDrag() {
   };
   const onEnd = () => {
     _drag.active = false;
+    // 縦スクロール優先に戻す
+    cv.style.touchAction = 'pan-y';
     if (imgObj) cv.style.cursor = 'grab';
   };
   cv.addEventListener('mousedown',  onStart);
@@ -5830,6 +5838,12 @@ initRequiredMarkListeners();
   window.addEventListener('load', () => {
     const src = document.getElementById('previewCanvas');
     if (!src) return;
+    // モバイル(タッチ端末)ではルーペを無効化（タップ誤作動・cursor:none不具合を防ぐ）
+    if (isMobileDevice()) {
+      const mag = document.getElementById('magnifierCanvas');
+      if (mag) mag.style.display = 'none';
+      return;
+    }
     new ResizeObserver(() => {
       const mag = document.getElementById('magnifierCanvas');
       const r = src.getBoundingClientRect();
