@@ -3525,22 +3525,23 @@ document.getElementById('orderForm').addEventListener('submit', async e => {
   if (isPastDeadline()) { showToast('申し込みは締め切りました'); return; }
   if (!validateForm()) return;
 
-  // 一般参加者の重複注文チェック
+  // 一般参加者の重複注文チェック（RPC経由：orders はRLSで直接読めないため）
   if (currentMode === 'general' && sbReady()) {
     const email   = document.getElementById('f-email').value.trim();
     const xaccount = (document.getElementById('f-xaccount')?.value || '').trim();
     try {
-      let query = `${SUPABASE_URL}/rest/v1/orders?mode=eq.general&select=id,email,x_account&limit=1`;
-      const orParts = [];
-      if (email)    orParts.push(`email.eq.${encodeURIComponent(email)}`);
-      if (xaccount) orParts.push(`x_account.eq.${encodeURIComponent(xaccount)}`);
-      if (orParts.length) {
-        query += `&or=(${orParts.join(',')})`;
-        const res = await fetch(query, { headers: SB_H() });
-        const rows = await res.json();
-        if (Array.isArray(rows) && rows.length > 0) {
-          showDuplicateWarning();
-          return;
+      if (email || xaccount) {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/check_general_duplicate`, {
+          method: 'POST',
+          headers: { ...SB_H(), 'Content-Type': 'application/json' },
+          body: JSON.stringify({ p_email: email || null, p_xaccount: xaccount || null })
+        });
+        if (res.ok) {
+          const isDup = await res.json();  // true / false
+          if (isDup === true) {
+            showDuplicateWarning();
+            return;
+          }
         }
       }
     } catch (err) {
@@ -3724,12 +3725,17 @@ document.getElementById('orderForm').addEventListener('submit', async e => {
 });
 async function sbFetchByCircleName(circleName) {
   if (!sbReady() || !circleName) return [];
-  const encoded = encodeURIComponent(circleName.trim());
-  const res = await fetch(
-    `${SUPABASE_URL}/rest/v1/orders?circle_name=ilike.${encoded}&select=ref,circle_name,sample_requested&limit=20`,
-    { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': authBearer() } }
-  );
-  return res.ok ? await res.json() : [];
+  // orders はRLSで直接読めないため RPC 経由（ref, circle_name, sample_requested のみ返る）
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/fetch_circle_orders`, {
+      method: 'POST',
+      headers: { ...SB_H(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ p_circle_name: circleName.trim() })
+    });
+    return res.ok ? await res.json() : [];
+  } catch (e) {
+    return [];
+  }
 }
 
 async function retryCloudSave(btn) {
