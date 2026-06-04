@@ -361,7 +361,7 @@ input.invalid,select.invalid{border-color:#e05040 !important;}
 .preview-pane{margin-bottom:10px;}
 .preview-label{font-size:.78rem;font-weight:700;color:rgba(255,255,255,.9);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
 .preview-label .dot{width:6px;height:6px;background:var(--potato-light);border-radius:50%;}
-canvas{display:block;border-radius:4px;touch-action:none;}
+canvas{display:block;border-radius:4px;touch-action:pan-y;}
 canvas.draggable-img{cursor:grab;}
 canvas.draggable-img:active{cursor:grabbing;}
 canvas.ci{border-radius:4px;}
@@ -1654,7 +1654,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
 //   マイナー … 新機能の追加
 //   機能変更 … 既存機能の修正・調整・バグfix
 //   文言変更 … テキストや表記だけの修正
-const SITE_VERSION = 'v1.0.4.1';
+const SITE_VERSION = 'v1.0.4.2';
 // ▲▲▲ リロードして表示が変われば新版が反映済み ▲▲▲
 // ══════════════════════════════════════════
 // ▼▼▼ 開催日を変更するとすべての日付が連動します ▼▼▼
@@ -3388,31 +3388,31 @@ function initCanvasDrag() {
     if (!imgObj) return;
     const isTouch = !!e.touches;
     const p = getPos(isTouch ? e.touches[0] : e);
-    // タッチ位置に絵が無い（余白）なら、その操作は縦スクロール優先にする
-    const onEmptyArea = isTouch && !isOnImage(p);
+    // タッチ位置に絵が無い（余白）なら、JSは一切関与せずブラウザのネイティブ縦スクロールに任せる
+    if (isTouch && !isOnImage(p)) {
+      _drag = { active: false };
+      return;
+    }
     _drag = {
       active: true, isTouch,
-      // 余白タッチは最初からスクロールモード。絵の上はpending(方向判定待ち)。
-      pending: isTouch && !onEmptyArea, locked: !isTouch,
-      longPress: false, scrolling: onEmptyArea,
-      emptyArea: onEmptyArea,
+      pending: isTouch, locked: !isTouch,
+      longPress: false,
       startX: p.x, startY: p.y,
-      rawX: isTouch ? e.touches[0].clientX : e.clientX,
-      rawY: isTouch ? e.touches[0].clientY : e.clientY,
       startDX: parseInt(document.getElementById('ctrl-x').value) || 0,
       startDY: parseInt(document.getElementById('ctrl-y').value) || 0,
       lpTimer: null
     };
     if (!isTouch) cv.style.cursor = 'grabbing';
-    // 余白タッチでは長押し画像移動は不要なのでタイマーを張らない
-    if (isTouch && !onEmptyArea) {
+    // 絵の上で一定時間(400ms)指を置いたままなら「長押し」→縦横どちらでも画像移動
+    if (isTouch) {
       _drag.lpTimer = setTimeout(() => {
         if (_drag.active && _drag.pending) {
           _drag.longPress = true;
           _drag.pending = false;
           _drag.locked = true;
+          cv.style.touchAction = 'none';  // 長押し中は縦も画像移動に使う
           cv.style.cursor = 'grabbing';
-          if (navigator.vibrate) navigator.vibrate(10);  // 軽い触覚フィードバック(対応端末のみ)
+          if (navigator.vibrate) navigator.vibrate(10);
         }
       }, 400);
     }
@@ -3432,25 +3432,15 @@ function initCanvasDrag() {
       // 長押し成立前に動いた → 長押しタイマーを解除して通常判定へ
       if (_drag.lpTimer) { clearTimeout(_drag.lpTimer); _drag.lpTimer = null; }
       if (dy > dx) {
-        // 縦が優勢 → ページスクロールに譲る。touch-action:noneのため手動でスクロール。
-        _drag.scrolling = true;
-      } else {
-        // 横が優勢 → 画像ドラッグ確定
-        _drag.pending = false;
-        _drag.locked = true;
-        cv.style.cursor = 'grabbing';
+        // 縦が優勢 → ブラウザのネイティブ縦スクロール(touch-action:pan-y)に完全に委ねる。
+        // JSは手を引く＝慣性つきの快適なスクロールがそのまま効く。
+        _drag.active = false;
+        return;
       }
-    }
-
-    // 縦スクロールモード：指の縦移動ぶんページを動かす(画像は動かさない)
-    if (_drag.scrolling) {
-      e.preventDefault();
-      const dyRaw = rawY - _drag.rawY;
-      // 手動スクロールはネイティブより鈍く感じるため少し増幅(慣性が無い分を補う)
-      window.scrollBy(0, -dyRaw * 1.8);
-      _drag.rawY = rawY;
-      _drag.rawX = rawX;
-      return;
+      // 横が優勢 → 画像ドラッグ確定
+      _drag.pending = false;
+      _drag.locked = true;
+      cv.style.cursor = 'grabbing';
     }
 
     // ドラッグ確定後(横ドラッグ or 長押し)のみ画像を動かす
@@ -3467,7 +3457,7 @@ function initCanvasDrag() {
   const onEnd = () => {
     if (_drag.lpTimer) { clearTimeout(_drag.lpTimer); _drag.lpTimer = null; }
     _drag.active = false;
-    _drag.scrolling = false;
+    cv.style.touchAction = 'pan-y';  // 次の操作のため縦スクロール優先に戻す
     if (imgObj) cv.style.cursor = 'grab';
   };
   cv.addEventListener('mousedown',  onStart);
