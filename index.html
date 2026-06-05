@@ -278,6 +278,7 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:0;}
 }
 .flow-body-inner ul{padding-left:18px;}
 .flow-body-inner li{margin-bottom:4px;}
+.flow-body-inner li.warn-marker::marker{content:'⚠️ ';font-size:.85rem;}
 .flow-body-inner .tip-box{background:var(--potato-bg);border-left:3px solid var(--potato-light);border-radius:0 6px 6px 0;padding:10px 14px;margin:12px 0;font-size:.85rem;}
 .flow-body-inner .warn-box{background:#fdf0e0;border-left:3px solid var(--accent-light);border-radius:0 6px 6px 0;padding:10px 14px;margin:12px 0;font-size:.85rem;}
 
@@ -1089,7 +1090,6 @@ footer a{color:var(--potato-light);text-decoration:none;}
             </div>
           </div>
           <div class="warn-box">⚠️ <strong>デザインの修正・色調整はこちらではお受けできません。</strong>受領した画像をそのまま出力するのが基本となります。誤ってイラストがカットされてしまうことのないよう、送信前に必ずプレビューでご確認ください。</div>
-          <div class="tip-box" style="margin-top:8px;">💡 プレビューの調整機能はあくまで補助的なものです。ご自身の環境で調整・縮小を行ったデータをお送りいただくのが、最も齟齬のないやり取りになります。</div>
         </div></div>
       </div>
       <div class="flow-item" id="flow-1">
@@ -1111,6 +1111,12 @@ footer a{color:var(--potato-light);text-decoration:none;}
           <ul>
             <li><strong>材質</strong>：タンニン鞣しの豚革(豚ヌメ)</li>
             <li><strong>表面</strong>：防水コーティング</li>
+            <li class="warn-marker">
+              <button onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none';this.textContent=this.textContent.includes('▼')?'閉じる ▲':'注意：豚革の取り扱いについて ▼';" style="background:none;border:none;color:var(--accent);font-size:.85rem;font-weight:700;cursor:pointer;padding:0;margin:0;font-family:inherit;text-align:left;">注意：豚革の取り扱いについて ▼</button>
+              <div style="display:none;margin-top:8px;">
+                <div class="warn-box">豚革は多孔質で吸水性が高く、水分を含みやすい革です。濡れたまま放置するとカビが発生しやすいため、防水コーティングを施していますが、100%完全に防ぐことは難しく、曲げ伸ばしや時間経過によるコート剥がれ、コーナー部分などからの浸水が起こることがあります。もしコースターを使っていて水滴が染みているのに気づきましたら、風通しのよい日陰に立てて乾かしていただくと、カビずに長くお使いいただけます。</div>
+              </div>
+            </li>
           </ul>
           <h4>🖼️ プレビュー機能について</h4>
           <p>対応形式の画像をアップロードすると、リアルタイムでプレビューが表示され、以下の調整ができます。</p>
@@ -1123,6 +1129,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
             <li><strong>革色確認</strong>：トグルをONにすると、実際のレーザー刻印で革に焼き付いた仕上がりに近い色味で確認できます。</li>
           </ul>
           <div class="tip-box">💡 カットラインの外側(点線の外)はカットされて刻印されません。イラストが切れていないか、送信前に必ずご確認ください。</div>
+          <div class="tip-box" style="margin-top:8px;">💡 プレビューの調整機能はあくまで補助的なものです。ご自身の環境で調整・縮小を行ったデータをお送りいただくのが、最も齟齬のないやり取りになります。</div>
         </div></div>
       </div>
       <div class="flow-item" id="flow-2">
@@ -1139,19 +1146,19 @@ footer a{color:var(--potato-light);text-decoration:none;}
             <div>
               <h4>👤 あなた</h4>
               <h5>🔑 引換コードを保存する</h5>
-              <p>注文完了後、5文字の英数字コード(例：<strong>K7MN3</strong>)が発行されます。当日の受け渡し時に使います。</p>
+              <p>注文完了後、5文字の英数字コード(例：<strong>K7MN3</strong>)が発行されます。当日の受け渡しに使います。</p>
               <ul>
                 <li>「コピー」「画像保存」「メール送信」のいずれかで保存してください。</li>
-                <li>コードを紛失した場合、お名前・メールアドレスでの照合になります(時間がかかります)。</li>
+                <li>紛失した場合は、お名前・メールアドレスで照合します(お時間がかかります)。</li>
               </ul>
             </div>
             <div class="flow-maker">
               <h4>🔨 製作者</h4>
-              <h5>📋 イラストを確認して製作を開始する</h5>
+              <h5>📋 確認して製作を開始する</h5>
               <ul>
                 <li>お送りいただいたイラストデータを確認します。</li>
-                <li>端材試作をご希望の場合は、端材に試し刷りした写真をお送りします。OKのご連絡をいただいてから本番製作に入ります。</li>
-                <li>端材試作なしの場合は、そのまま製作を開始します。</li>
+                <li>端材試作をご希望の場合は、試し刷りした写真をお送りします。OKをいただいてから本番製作に進みます。</li>
+                <li>端材試作なしの場合は、そのまま製作に入ります。</li>
               </ul>
             </div>
           </div>
@@ -1168,23 +1175,23 @@ footer a{color:var(--potato-light);text-decoration:none;}
           <div class="flow-toggle">▼</div>
         </div>
         <div class="flow-body"><div class="flow-body-inner">
-          <div class="flow-col-2-3">
+          <div class="flow-col-2">
             <div>
               <h4>👤 あなた</h4>
               <h5>⏳ 完成をお待ちください</h5>
               <ul>
-                <li>完成のご連絡をお待ちください。</li>
-                <li>端材試作・仕上がり確認をご希望の場合は、確認のご連絡が届きます。お早めに返信をお願いします。</li>
+                <li>製作には少しお時間をいただきます。完成のご連絡をお待ちください。</li>
+                <li>端材試作・仕上がり確認をご希望の場合は確認のご連絡が届きます。お早めにご返信ください。</li>
               </ul>
             </div>
             <div class="flow-maker">
               <h4>🔨 製作者</h4>
               <h5>🛠️ 製作・仕上げ</h5>
               <ul>
-                <li>コースターの出力・切り出し。</li>
-                <li>防水コーティング加工。</li>
-                <li>梱包して当日お渡しできる状態に整えます。</li>
-                <li>仕上がり確認をご希望の場合は、1点目完成後に写真をお送りします。OKのご連絡をいただいてから残りを製作します。</li>
+                <li>コースターの出力・切り出しを行います。</li>
+                <li>防水コーティングを施します。</li>
+                <li>梱包して、当日お渡しできる状態に整えます。</li>
+                <li>仕上がり確認をご希望の場合は、1点目の完成後に写真をお送りします。OKをいただいてから残りを製作します。</li>
               </ul>
             </div>
           </div>
@@ -1201,21 +1208,24 @@ footer a{color:var(--potato-light);text-decoration:none;}
           <div class="flow-toggle">▼</div>
         </div>
         <div class="flow-body"><div class="flow-body-inner">
-          <div class="flow-col-auto">
+          <div class="flow-col-2">
             <div>
               <h4>👤 あなた</h4>
               <h5>💴 お支払いについて</h5>
               <ul>
-                <li>当日、コードを確認した後にお支払いください。</li>
-                <li>お支払い方法は現金です。</li>
-                <li>おつりの出ないようにご準備いただけると大変助かります。</li>
+                <li>引換コードをご提示ください。確認後にお支払いいただきます。</li>
+                <li>お支払いは現金のみです。</li>
+                <li>おつりの出ないようご準備いただけると助かります。</li>
               </ul>
             </div>
-            <div class="flow-maker" style="min-width:130px;">
+            <div class="flow-maker">
               <h4>🔨 製作者</h4>
               <h5>📍 受付場所</h5>
-              <p style="font-weight:700;color:var(--potato-dark);">A-01<br>大喜幸四郎</p>
-              <p style="font-size:.82rem;color:var(--muted);">ブースにてお待ちしています。コードを提示してください。</p>
+              <p style="font-weight:700;color:var(--potato-dark);font-size:1.05rem;margin-bottom:4px;">A-01　大喜幸四郎</p>
+              <ul>
+                <li>上記ブースでお待ちしています。</li>
+                <li>コードを確認して、コースターをお渡しします。</li>
+              </ul>
             </div>
           </div>
           <div class="tip-box">💡 無料範囲内の注文は0円です。その場合も必ずコードをご提示ください。</div>
@@ -1799,7 +1809,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
 //   マイナー … 新機能の追加
 //   機能変更 … 既存機能の修正・調整・バグfix
 //   文言変更 … テキストや表記だけの修正
-const SITE_VERSION = 'v1.3.3.2';
+const SITE_VERSION = 'v1.3.5.2';
 // ▲▲▲ リロードして表示が変われば新版が反映済み ▲▲▲
 // ══════════════════════════════════════════
 // ▼▼▼ 開催日を変更するとすべての日付が連動します ▼▼▼
@@ -2873,7 +2883,7 @@ function renderCalendar(mode) {
     const lossEvents = [];
     if (mode === 'circle' && !isFreeQtyReduced()) {
       const d = Math.ceil((FREE_QTY_REDUCE_DATE - todayNow) / 86400000);
-      lossEvents.push({ days: d, date: FREE_QTY_REDUCE_DATE, lines: ['無料枠 3点→2点に', '有料開始が4点目→3点目に'] });
+      lossEvents.push({ days: d, date: FREE_QTY_REDUCE_DATE, lines: ['無料枠が3点→2点に減る'] });
     }
     if (hasSample) {
       const d = Math.ceil((SAMPLE_FREE_END - todayNow) / 86400000);
