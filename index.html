@@ -413,6 +413,13 @@ canvas.ci{border-radius:4px;}
 .modal-backdrop.show{opacity:1;pointer-events:all;}
 .modal{background:var(--card);max-width:460px;width:100%;padding:36px 30px;border-radius:14px;text-align:center;transform:translateY(20px);transition:transform .3s;margin:auto;}
 .modal-backdrop.show .modal{transform:translateY(0);}
+/* モーダル内フォーム（ライト背景に合わせたinputスタイル） */
+.modal input[type="text"],.modal input[type="email"],.modal input[type="number"],.modal select,.modal textarea{background:#fff;border:1.5px solid var(--border);border-radius:7px;padding:10px 12px;color:var(--ink);font-family:var(--sans);font-size:.93rem;transition:border-color .15s;outline:none;-webkit-appearance:none;width:100%;box-sizing:border-box;}
+.modal input[type="text"]:focus,.modal input[type="email"]:focus,.modal input[type="number"]:focus,.modal select:focus,.modal textarea:focus{border-color:var(--accent);}
+.modal input::placeholder,.modal textarea::placeholder{color:var(--muted);}
+.modal select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a6e5a' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;}
+.modal select option{background:#fff;color:var(--ink);}
+.modal label{color:var(--ink);font-size:.85rem;font-weight:400;}
 .modal-icon{font-size:2.5rem;margin-bottom:14px;}
 .modal-title{font-size:1.3rem;font-weight:700;margin-bottom:8px;}
 .modal-body{font-size:.88rem;color:var(--muted);line-height:1.7;}
@@ -1126,37 +1133,93 @@ footer a{color:var(--potato-light);text-decoration:none;}
           <div class="flow-num">3</div>
           <div class="flow-head-text">
             <div class="flow-head-title">引換コードが発行される</div>
-            <div class="flow-head-brief">コピー・画像保存・メール送信のいずれかで手元に残す</div>
+            <div class="flow-head-brief">コードを保存 → 製作者がイラストを確認して製作開始</div>
           </div>
           <div class="flow-toggle">▼</div>
         </div>
         <div class="flow-body"><div class="flow-body-inner">
-          <h4>🔑 引換コードとは？</h4>
-          <p>注文完了後、5文字の英数字コード(例：<strong>K7MN3</strong>)が発行されます。当日の受け渡し時に使います。</p>
-          <ul>
-            <li>コードは「コピー」「画像保存」「メール送信」のいずれかで保存しておいてください。</li>
-            <li>コードを紛失した場合、お名前・メールアドレスでの照合になります(時間がかかります)。</li>
-          </ul>
-          <div class="warn-box">⚠️ 1注文につき1コードが発行されます。同じコードで複数回の受け取りはできません。</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+            <div>
+              <h4>👤 あなた</h4>
+              <h5>🔑 引換コードを保存する</h5>
+              <p>注文完了後、5文字の英数字コード(例：<strong>K7MN3</strong>)が発行されます。当日の受け渡し時に使います。</p>
+              <ul>
+                <li>「コピー」「画像保存」「メール送信」のいずれかで保存してください。</li>
+                <li>コードを紛失した場合、お名前・メールアドレスでの照合になります(時間がかかります)。</li>
+              </ul>
+              <div class="warn-box">⚠️ 1注文につき1コードが発行されます。同じコードで複数回の受け取りはできません。</div>
+            </div>
+            <div style="background:rgba(160,120,74,.1);border-radius:8px;padding:12px;">
+              <h4>🔨 製作者</h4>
+              <h5>📋 イラストを確認して製作を開始する</h5>
+              <ul>
+                <li>お送りいただいたイラストデータを確認します。</li>
+                <li>端材試作をご希望の場合は、本番前に試し刷りを行います。</li>
+                <li>問題がなければそのまま製作に入ります。</li>
+              </ul>
+            </div>
+          </div>
         </div></div>
       </div>
       <div class="flow-item" id="flow-3">
         <div class="flow-head" onclick="toggleFlow(3)">
           <div class="flow-num">4</div>
           <div class="flow-head-text">
-            <div class="flow-head-title">当日コードを提示して受け取る</div>
-            <div class="flow-head-brief">料金はその場でお支払い</div>
+            <div class="flow-head-title">刻印・加工・梱包</div>
+            <div class="flow-head-brief">完成後、画像をお送りします</div>
           </div>
           <div class="flow-toggle">▼</div>
         </div>
         <div class="flow-body"><div class="flow-body-inner">
-          <h4>💴 お支払いについて</h4>
-          <ul>
-            <li>当日、コードを確認した後にお支払いください。</li>
-            <li>お支払い方法は現金です。</li>
-            <li>おつりの出ないようにご準備いただけると大変助かります。</li>
-          </ul>
-          <div class="tip-box">💡 無料範囲内の注文は0円です。その場合も必ずコードをご提示ください。</div>
+          <div style="display:grid;grid-template-columns:2fr 3fr;gap:14px;">
+            <div>
+              <h4>👤 あなた</h4>
+              <ul>
+                <li>完成のご連絡をお待ちください。</li>
+                <li>端材試作・仕上がり確認をご希望の場合は、確認のご連絡が届きます。お早めに返信をお願いします。</li>
+              </ul>
+            </div>
+            <div style="background:rgba(160,120,74,.1);border-radius:8px;padding:12px;">
+              <h4>🔨 製作者</h4>
+              <ul>
+                <li>コースターの出力・切り出し。</li>
+                <li>防水コーティング加工。</li>
+                <li>梱包して当日お渡しできる状態に整えます。</li>
+                <li>仕上がり確認をご希望の場合は、1点目完成後に写真をお送りします。OKのご連絡をいただいてから残りを製作します。</li>
+              </ul>
+              <div class="tip-box">💡 完成画像は、申し込みから<strong>おおむね4日後まで</strong>にお送りします（点数・混雑状況によって前後します）。</div>
+            </div>
+          </div>
+        </div></div>
+      </div>
+      <div class="flow-item" id="flow-4">
+        <div class="flow-head" onclick="toggleFlow(4)">
+          <div class="flow-num">5</div>
+          <div class="flow-head-text">
+            <div class="flow-head-title">当日コードを提示して受け取る</div>
+            <div class="flow-head-brief">料金はその場でお支払い・A-01 大喜幸四郎ブースへ</div>
+          </div>
+          <div class="flow-toggle">▼</div>
+        </div>
+        <div class="flow-body"><div class="flow-body-inner">
+          <div style="display:grid;grid-template-columns:3fr 1fr;gap:14px;">
+            <div>
+              <h4>👤 あなた</h4>
+              <h5>💴 お支払いについて</h5>
+              <ul>
+                <li>当日、コードを確認した後にお支払いください。</li>
+                <li>お支払い方法は現金です。</li>
+                <li>おつりの出ないようにご準備いただけると大変助かります。</li>
+              </ul>
+              <div class="tip-box">💡 無料範囲内の注文は0円です。その場合も必ずコードをご提示ください。</div>
+            </div>
+            <div style="background:rgba(160,120,74,.1);border-radius:8px;padding:12px;">
+              <h4>🔨 製作者</h4>
+              <h5>📍 受付場所</h5>
+              <p style="font-weight:700;color:var(--potato-dark);">A-01<br>大喜幸四郎</p>
+              <p style="font-size:.82rem;color:var(--muted);">ブースにてお待ちしています。コードを提示してください。</p>
+            </div>
+          </div>
         </div></div>
       </div>
     </div>
@@ -1572,6 +1635,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
     <div class="admin-controls">
       <button class="admin-btn" onclick="exportCSV()">CSVエクスポート</button>
       <button class="admin-btn" onclick="printDayList()">🖨 当日用リスト印刷</button>
+      <button class="admin-btn" onclick="openManualOrderModal()" style="background:#4a7c40;">➕ 手動注文追加</button>
       <select class="filter-select" id="statusFilter" onchange="renderOrders()">
         <option value="all">すべて</option>
         <option value="new">新規</option>
@@ -1687,6 +1751,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
     <div class="modal-icon">🎉</div>
     <h3 class="modal-title">製作依頼を受け付けました！</h3>
     <p class="modal-body">引換コードを保存して、当日ブースでご提示ください。</p>
+    <p style="font-size:.76rem;color:rgba(255,255,255,.6);margin:-6px 0 10px;line-height:1.6;">コードはこのページ下の「注文照会」からいつでも確認できます。</p>
     <div class="modal-ref" id="orderRef">ORDER #000000</div>
     <div class="code-box" id="codeBox">
       <div class="code-label">引換コード</div>
@@ -1737,7 +1802,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
 //   マイナー … 新機能の追加
 //   機能変更 … 既存機能の修正・調整・バグfix
 //   文言変更 … テキストや表記だけの修正
-const SITE_VERSION = 'v1.2.5.2';
+const SITE_VERSION = 'v1.3.2.2';
 // ▲▲▲ リロードして表示が変われば新版が反映済み ▲▲▲
 // ══════════════════════════════════════════
 // ▼▼▼ 開催日を変更するとすべての日付が連動します ▼▼▼
@@ -1891,6 +1956,7 @@ async function sbInsert(order) {
     shape: order.shape, qty: order.qty, total: order.total,
     early_bird: order.earlyBird||false,
     free_qty: order.freeQty ?? null,
+    ip_address: order.ipAddress || '',
     sample_requested: order.sampleRequested||false,
     sample_free_eligible: order.sampleFreeEligible||false,
     sample_count: order.sampleCount||0,
@@ -1921,6 +1987,23 @@ async function sbInsert(order) {
   if (!res.ok) throw new Error('DB保存失敗 ' + res.status);
 }
 
+// リトライ付きDB保存（最大3回、1秒・2秒・4秒のバックオフ）
+async function sbInsertWithRetry(order, maxRetries = 3) {
+  let lastErr;
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      await sbInsert(order);
+      return true; // 成功
+    } catch (err) {
+      lastErr = err;
+      if (i < maxRetries - 1) {
+        await new Promise(r => setTimeout(r, 1000 * Math.pow(2, i)));
+      }
+    }
+  }
+  throw lastErr; // 全部失敗
+}
+
 // 全注文をDBから取得
 async function sbFetch() {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/orders?order=created_at.desc&limit=2000`, {
@@ -1934,7 +2017,8 @@ async function sbFetch() {
     date: r.date, name: r.name, circleName: r.circle_name||'', circleSpace: r.circle_space||'', email: r.email,
     xAccount: r.x_account||'', contactPref: r.contact_pref||'email',
     shape: r.shape, qty: r.qty, total: r.total,
-    earlyBird: r.early_bird, freeQty: r.free_qty ?? null, sampleRequested: r.sample_requested,
+    earlyBird: r.early_bird, freeQty: r.free_qty ?? null, ipAddress: r.ip_address || '',
+    sampleRequested: r.sample_requested,
     sampleFreeEligible: r.sample_free_eligible,
     sampleCount: r.sample_count, note: (r.note || '').trim(),
     wantsCompletionImage: r.wants_completion_image||false,
@@ -3775,6 +3859,7 @@ document.getElementById('orderForm').addEventListener('submit', async e => {
   const order = {
     ref, code, type: currentMode,
     date: new Date().toISOString(),
+    ipAddress: await fetchClientIP(),
     name: document.getElementById('f-name').value.trim(),
     circleName: currentMode === 'circle' ? document.getElementById('f-circle-name').value.trim() : (document.getElementById('f-general-circle-name').value.trim() || ''),
     circleSpace: currentMode === 'circle' ? document.getElementById('f-circle-space').value.trim() : (document.getElementById('f-general-circle-space').value.trim() || ''),
@@ -3830,19 +3915,32 @@ document.getElementById('orderForm').addEventListener('submit', async e => {
 
   let cloudSaveFailed = false;
   if (sbReady()) {
+    // 送信中表示
+    const submitBtn = document.getElementById('submitBtn');
+    const origText = submitBtn ? submitBtn.textContent : '';
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = '送信中…'; }
     try {
-      await sbInsert(order);
+      await sbInsertWithRetry(order);
     } catch (err) {
-      console.warn('DB保存失敗(ローカルに保存):', err);
+      console.warn('DB保存失敗(全リトライ失敗):', err);
       cloudSaveFailed = true;
+    } finally {
+      if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = origText; }
     }
   }
+
   // Make.com に注文情報を通知
   notifyMake(order);
 
   // 常にlocalStorageにも保存(バックアップ)
   orders.unshift(order);
   saveOrders();
+
+  // 全リトライ失敗時はエラーモーダルを表示
+  if (cloudSaveFailed) {
+    showSubmitErrorModal(order);
+    return;
+  }
 
   document.getElementById('orderRef').textContent = 'ORDER ' + ref;
   document.getElementById('exchangeCodeDisplay').textContent = code;
@@ -3928,7 +4026,7 @@ async function retryCloudSave(btn) {
       }
     }
     btn.textContent = '送信中…';
-    await sbInsert(order);
+    await sbInsertWithRetry(order);
     retryDiv.style.display = 'none';
     showToast('✅ クラウド保存に成功しました！');
   } catch (err) {
@@ -4122,6 +4220,7 @@ function renderOrders() {
         </div>
         <div class="oc-head-right">
           <span class="oc-date">${fmtDateTime(o.date)}</span>
+          ${o.ipAddress ? `<span class="oc-ip-cell">${o.ipAddress}</span>` : ''}
           <button class="oc-delete-btn" onclick="deleteOrder('${o.ref}')">🗑 削除</button>
         </div>
       </div>
@@ -5120,7 +5219,7 @@ async function uploadCompletionPhoto(ref, file) {
     showToast(`完成写真を追加しました（${o.completionPhotos.length}枚）`);
   } catch (err) {
     console.error(err);
-    showToast('アップロードに失敗しました');
+    showToast('写真のアップロードに失敗しました。もう一度お試しください');
   }
 }
 
@@ -5609,19 +5708,18 @@ function closeInterestModal(e) {
 }
 
 async function fetchClientIP() {
-  const services = [
-    'https://api.ipify.org?format=json',
-    'https://api4.my-ip.io/v2/ip.json',
-  ];
-  for (const url of services) {
-    try {
-      const res = await fetch(url);
-      const d = await res.json();
-      const ip = d.ip || d.ip4 || '';
-      if (ip) return ip;
-    } catch { /* 次のサービスへ */ }
+  try {
+    const res = await Promise.race([
+      fetch('https://bzjwhtemobtrfaghsdwt.supabase.co/functions/v1/get-client-ip', {
+        headers: { 'apikey': SUPABASE_ANON_KEY }
+      }),
+      new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 4000))
+    ]);
+    const d = await res.json();
+    return d.ip || '';
+  } catch {
+    return '';
   }
-  return '';
 }
 
 async function submitInterest() {
@@ -6091,6 +6189,129 @@ function applyAboutFold() {
   more.style.display = 'none';
   btn.style.display  = 'inline-block';
 }
+function showSubmitErrorModal(order) {
+  const lines = [
+    `注文番号：${order.ref}`,
+    `お名前：${order.name}`,
+    order.circleName ? `サークル名：${order.circleName}` : '',
+    order.circleSpace ? `スペース：${order.circleSpace}` : '',
+    `連絡方法：${order.contactPref === 'x' ? 'X @'+order.xAccount : 'メール '+order.email}`,
+    `形状：${order.shape}　点数：${order.qty}点`,
+    `合計：¥${order.total.toLocaleString()}`,
+    order.sampleRequested ? '端材試作：希望' : '',
+    order.wantsCompletionImage ? '仕上がり確認：希望' : '',
+    order.note ? `備考：${order.note}` : '',
+  ].filter(Boolean).join('\n');
+
+  document.getElementById('submitErrorContent').textContent = lines;
+
+  const xUrl = order.xAccount
+    ? `https://x.com/${order.xAccount}`
+    : 'https://x.com/daikikoushirou';
+  const mailBody = encodeURIComponent('【送信失敗・注文内容】\n\n' + lines);
+  document.getElementById('submitErrorXLink').href = `https://x.com/messages/compose?recipient_id=daikikoushirou`;
+  document.getElementById('submitErrorMailLink').href = `mailto:ルーニー@ふたば学園祭?subject=${encodeURIComponent('【送信失敗】注文内容')}&body=${mailBody}`;
+
+  document.getElementById('submitErrorModal').classList.add('show');
+}
+
+function copySubmitError() {
+  const text = document.getElementById('submitErrorContent').textContent;
+  navigator.clipboard.writeText(text).then(() => showToast('📋 コピーしました'));
+}
+
+// ══ 手動注文追加 ══
+let _manualOrderType = 'circle';
+
+function openManualOrderModal() {
+  _manualOrderType = 'circle';
+  document.getElementById('mo-name').value = '';
+  document.getElementById('mo-space').value = '';
+  document.getElementById('mo-circle').value = '';
+  document.getElementById('mo-x').value = '';
+  document.getElementById('mo-email').value = '';
+  document.getElementById('mo-qty').value = '1';
+  document.getElementById('mo-code').value = '';
+  document.getElementById('mo-note').value = '';
+  document.getElementById('mo-earlybird').checked = isEarlyBird();
+  setManualType('circle');
+  updateManualTotal();
+  document.getElementById('manualOrderModal').classList.add('show');
+}
+
+function closeManualOrderModal() {
+  document.getElementById('manualOrderModal').classList.remove('show');
+}
+
+function setManualType(type) {
+  _manualOrderType = type;
+  document.getElementById('moTypeCircle').style.background = type === 'circle' ? 'var(--potato-dark)' : 'var(--muted)';
+  document.getElementById('moTypeGeneral').style.background = type === 'general' ? 'var(--potato-dark)' : 'var(--muted)';
+  document.getElementById('mo-circle-fields').style.display = type === 'circle' ? '' : 'none';
+  updateManualTotal();
+}
+
+function updateManualTotal() {
+  const qty = parseInt(document.getElementById('mo-qty').value) || 1;
+  const earlyBird = document.getElementById('mo-earlybird').checked;
+  const { total } = calcCost(_manualOrderType, qty, false, false, 0, earlyBird, false, isFreeQtyReduced() ? 2 : 3);
+  document.getElementById('mo-total-display').textContent = total === 0 ? '無料' : '¥' + total.toLocaleString();
+}
+
+async function submitManualOrder() {
+  const name = document.getElementById('mo-name').value.trim();
+  if (!name) { showToast('お名前を入力してください'); return; }
+  const qty = parseInt(document.getElementById('mo-qty').value) || 1;
+  const earlyBird = document.getElementById('mo-earlybird').checked;
+  const inputCode = document.getElementById('mo-code').value.trim().toUpperCase();
+  const code = inputCode || genCode();
+  const ref = 'M-' + Date.now().toString(36).toUpperCase();
+
+  const order = {
+    ref, code, type: _manualOrderType,
+    date: new Date().toISOString(),
+    name,
+    circleName: document.getElementById('mo-circle').value.trim(),
+    circleSpace: document.getElementById('mo-space').value.trim(),
+    email: document.getElementById('mo-email').value.trim(),
+    xAccount: (document.getElementById('mo-x').value.trim()).replace(/^@/, ''),
+    contactPref: document.getElementById('mo-x').value.trim() ? 'x' : 'email',
+    shape: document.getElementById('mo-shape').value,
+    qty, earlyBird,
+    freeQty: _manualOrderType === 'circle' ? (isFreeQtyReduced() ? 2 : 3) : 1,
+    sampleRequested: false, sampleFreeEligible: false, sampleCount: 0,
+    wantsCompletionImage: false, completionImgFee: 0,
+    note: document.getElementById('mo-note').value.trim(),
+    freeOverride: false, leatherPreview: false,
+    galleryOk: false, galleryShowName: false, galleryShowCircle: false, galleryShowX: false,
+    status: 'new', codeUsed: false, completionPhotos: [],
+    image_url: '', cutlineUrl: '', adjustment: 0,
+  };
+  order.total = calcOrderTotal(order);
+
+  const btn = document.getElementById('mo-submit-btn');
+  btn.disabled = true; btn.textContent = '保存中…';
+  try {
+    await sbInsertWithRetry(order);
+    orders.unshift(order);
+    saveOrders();
+    renderOrders();
+    renderAdminChart();
+    closeManualOrderModal();
+    showToast(`✅ 手動注文を追加しました（コード：${code}）`);
+  } catch(err) {
+    // DB失敗時はローカルのみ保存
+    orders.unshift(order);
+    saveOrders();
+    renderOrders();
+    renderAdminChart();
+    closeManualOrderModal();
+    showToast(`⚠ サーバーへの保存に失敗しました。この端末には保存済みです（コード：${code}）`);
+  } finally {
+    btn.disabled = false; btn.textContent = '追加する';
+  }
+}
+
 function togglePriceNote(type) {
   const more = document.getElementById(`priceNote${type}More`);
   const btn  = document.getElementById(`priceNote${type}Btn`);
@@ -6182,6 +6403,114 @@ function expandAbout() {
   <div class="print-labels-grid" id="printLabelsGrid"></div>
 </div>
 
+
+<!-- 手動注文追加モーダル -->
+<div id="manualOrderModal" class="modal-backdrop">
+  <div class="modal" style="max-width:480px;width:100%;text-align:left;padding:28px 24px;">
+    <div style="font-size:.95rem;font-weight:700;color:var(--potato-dark);margin-bottom:16px;text-align:center;">➕ 手動注文追加</div>
+
+    <div style="display:flex;flex-direction:column;gap:12px;">
+
+      <!-- 参加区分 -->
+      <div>
+        <div class="form-label" style="color:var(--muted);font-size:.75rem;margin-bottom:4px;">参加区分 *</div>
+        <div style="display:flex;gap:8px;">
+          <button id="moTypeCircle" onclick="setManualType('circle')" class="admin-btn" style="flex:1;">🪑 サークル</button>
+          <button id="moTypeGeneral" onclick="setManualType('general')" class="admin-btn" style="flex:1;background:var(--muted);">🎫 一般</button>
+        </div>
+      </div>
+
+      <!-- 氏名 -->
+      <div>
+        <div class="form-label" style="color:var(--muted);font-size:.75rem;margin-bottom:4px;">お名前 *</div>
+        <input id="mo-name" type="text" placeholder="ポコ太郎" style="width:100%;box-sizing:border-box;">
+      </div>
+
+      <!-- サークル情報 -->
+      <div id="mo-circle-fields">
+        <div class="form-label" style="color:var(--muted);font-size:.75rem;margin-bottom:4px;">サークルスペース</div>
+        <input id="mo-space" type="text" placeholder="A-01" style="width:100%;box-sizing:border-box;margin-bottom:8px;">
+        <div class="form-label" style="color:var(--muted);font-size:.75rem;margin-bottom:4px;">サークル名</div>
+        <input id="mo-circle" type="text" placeholder="いもけんび工房" style="width:100%;box-sizing:border-box;">
+      </div>
+
+      <!-- 連絡先 -->
+      <div>
+        <div class="form-label" style="color:var(--muted);font-size:.75rem;margin-bottom:4px;">X アカウント</div>
+        <input id="mo-x" type="text" placeholder="@username" style="width:100%;box-sizing:border-box;">
+      </div>
+      <div>
+        <div class="form-label" style="color:var(--muted);font-size:.75rem;margin-bottom:4px;">メールアドレス</div>
+        <input id="mo-email" type="email" placeholder="example@mail.com" style="width:100%;box-sizing:border-box;">
+      </div>
+
+      <!-- 形状・点数 -->
+      <div style="display:flex;gap:10px;">
+        <div style="flex:1;">
+          <div class="form-label" style="color:var(--muted);font-size:.75rem;margin-bottom:4px;">形状 *</div>
+          <select id="mo-shape" style="width:100%;box-sizing:border-box;" onchange="updateManualTotal()">
+            <option value="スクエア">スクエア</option>
+            <option value="サークル">サークル</option>
+          </select>
+        </div>
+        <div style="flex:1;">
+          <div class="form-label" style="color:var(--muted);font-size:.75rem;margin-bottom:4px;">点数 *</div>
+          <input id="mo-qty" type="number" min="1" max="20" value="1" style="width:100%;box-sizing:border-box;text-align:center;" oninput="updateManualTotal()">
+        </div>
+      </div>
+
+      <!-- 早割 -->
+      <label style="display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--ink);cursor:pointer;">
+        <input type="checkbox" id="mo-earlybird" onchange="updateManualTotal()">
+        早割適用
+      </label>
+
+      <!-- 引換コード -->
+      <div>
+        <div class="form-label" style="color:var(--muted);font-size:.75rem;margin-bottom:4px;">引換コード（空欄で自動生成）</div>
+        <div style="display:flex;gap:8px;">
+          <input id="mo-code" type="text" maxlength="5" style="flex:1;box-sizing:border-box;text-transform:uppercase;font-family:monospace;font-size:1rem;letter-spacing:.1em;" placeholder="自動生成" oninput="this.value=this.value.toUpperCase()">
+          <button onclick="document.getElementById('mo-code').value=''" class="admin-btn" style="background:var(--muted);flex-shrink:0;">クリア</button>
+        </div>
+      </div>
+
+      <!-- 合計 -->
+      <div style="background:var(--potato-bg);border-radius:8px;padding:10px 14px;font-size:.88rem;color:var(--ink);">
+        合計金額：<strong id="mo-total-display" style="color:var(--potato-dark);">¥0</strong>
+      </div>
+
+      <!-- 備考 -->
+      <div>
+        <div class="form-label" style="color:var(--muted);font-size:.75rem;margin-bottom:4px;">備考</div>
+        <textarea id="mo-note" style="width:100%;box-sizing:border-box;height:60px;resize:vertical;" placeholder="特記事項など"></textarea>
+      </div>
+
+    </div>
+
+    <div style="display:flex;gap:10px;margin-top:18px;">
+      <button onclick="submitManualOrder()" class="admin-btn" style="flex:1;background:#4a7c40;padding:10px;" id="mo-submit-btn">追加する</button>
+      <button onclick="closeManualOrderModal()" class="modal-close" style="flex:1;">キャンセル</button>
+    </div>
+  </div>
+</div>
+
+<!-- 送信失敗エラーモーダル -->
+<div id="submitErrorModal" class="modal-backdrop">
+  <div class="modal" style="max-width:420px;width:100%;">
+    <div style="font-size:1.5rem;text-align:center;margin-bottom:8px;">⚠️</div>
+    <div style="font-size:1rem;font-weight:700;color:#c03030;text-align:center;margin-bottom:12px;">送信に失敗しました</div>
+    <p style="font-size:.85rem;color:var(--muted);line-height:1.7;margin-bottom:14px;">
+      サーバーへの送信が完了できませんでした。お手数ですが、以下の注文内容をコピーして、XまたはメールでDMをお送りください。
+    </p>
+    <div id="submitErrorContent" style="background:#f8f4ec;border:1.5px solid var(--border);border-radius:8px;padding:12px;font-size:.8rem;font-family:monospace;white-space:pre-wrap;word-break:break-all;margin-bottom:14px;max-height:200px;overflow-y:auto;"></div>
+    <div style="display:flex;gap:10px;margin-bottom:14px;">
+      <button onclick="copySubmitError()" class="admin-btn" style="flex:1;">📋 内容をコピー</button>
+      <a id="submitErrorXLink" href="" target="_blank" rel="noopener" class="admin-btn" style="flex:1;text-align:center;text-decoration:none;">𝕏 DM</a>
+      <a id="submitErrorMailLink" href="" class="admin-btn" style="flex:1;text-align:center;text-decoration:none;">✉ メール</a>
+    </div>
+    <p style="font-size:.76rem;color:var(--muted);line-height:1.6;">※入力内容はこのブラウザに一時保存されています。ページを閉じる前に必ずコピーしてください。</p>
+  </div>
+</div>
 
 <!-- 管理者パスワードモーダル -->
 <div id="adminPwModal" style="display:none;position:fixed;inset:0;background:rgba(20,14,8,.7);z-index:9999;display:none;align-items:center;justify-content:center;">
