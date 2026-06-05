@@ -70,9 +70,6 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15p
   text-shadow:0 0 8px #ffd93d;
 }
 @keyframes baka-arrow{from{transform:translateX(-3px)}to{transform:translateX(3px)}}
-.gate-participants{margin-bottom:20px;display:flex;flex-direction:column;align-items:center;gap:10px;}
-.gate-participants-count{font-size:.82rem;font-weight:700;color:var(--muted);letter-spacing:.04em;}
-.gate-participants-count span{color:var(--potato-dark);font-size:1.1rem;}
 .gate-avatars{display:flex;flex-wrap:nowrap;justify-content:flex-start;gap:0;}
 .gate-avatar{width:28px;height:28px;border-radius:50%;border:2px solid var(--potato-bg);overflow:hidden;margin-left:-6px;background:var(--border);flex-shrink:0;transition:transform .15s;cursor:default;position:relative;}
 .gate-avatar:first-child{margin-left:0;}
@@ -228,8 +225,10 @@ h1.site-title small{display:block;font-size:.6em;color:var(--potato-light);font-
 .section-title::before{content:'';display:block;width:5px;height:1.25rem;background:var(--potato-light);border-radius:3px;flex-shrink:0;}
 .section-sub{font-size:.88rem;color:var(--muted);margin-bottom:24px;}
 hr.divider{border:none;border-top:1px solid var(--border);margin:0;}
-@media(max-width:560px){.req-grid{grid-template-columns:1fr !important;}}
-@media(max-width:600px){.receive-grid{grid-template-columns:1fr !important;}}
+@media(max-width:560px){.req-grid{grid-template-columns:1fr;}}
+@media(max-width:600px){.receive-grid{grid-template-columns:1fr;}}
+.receive-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:14px;}
+.req-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px;}
 
 /* DATES INFO BOX */
 .dates-box{background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:18px 20px;margin-bottom:14px;}
@@ -267,6 +266,16 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:0;}
 .flow-body-inner{padding-top:14px;font-size:.88rem;color:var(--ink);line-height:1.75;}
 .flow-body-inner h4{font-size:.9rem;font-weight:700;color:var(--potato-dark);margin:14px 0 6px;}
 .flow-body-inner h4:first-child{margin-top:0;}
+.flow-body-inner h5{font-size:.8rem;font-weight:700;color:var(--potato-dark);margin:10px 0 4px;opacity:.85;}
+.flow-body-inner h5:first-child{margin-top:0;}
+.flow-col-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.flow-col-2-3{display:grid;grid-template-columns:2fr 3fr;gap:14px;}
+.flow-col-auto{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:start;}
+.flow-maker{background:rgba(160,120,74,.1);border-radius:8px;padding:12px;}
+@media(max-width:480px){
+  .flow-col-2,.flow-col-2-3,.flow-col-auto{grid-template-columns:1fr;}
+  .flow-maker{margin-top:4px;}
+}
 .flow-body-inner ul{padding-left:18px;}
 .flow-body-inner li{margin-bottom:4px;}
 .flow-body-inner .tip-box{background:var(--potato-bg);border-left:3px solid var(--potato-light);border-radius:0 6px 6px 0;padding:10px 14px;margin:12px 0;font-size:.85rem;}
@@ -725,11 +734,6 @@ footer a{color:var(--potato-light);text-decoration:none;}
 
 
 
-    <div class="gate-participants" id="gateParticipants" style="display:none">
-      <div class="gate-participants-count">現在の参加者：<span id="gateCount">0</span> 人</div>
-      <div class="gate-avatars" id="gateAvatars"></div>
-    </div>
-
     <!-- 完成品ギャラリー(実績が貯まると表示・新規ユーザーへのリーチ用) -->
     <div id="gallerySection" style="display:none;margin-bottom:8px;">
       <div class="gallery-section-title">🖼️ これまでの制作例</div>
@@ -798,7 +802,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
           <ul class="gate-card-perks" id="gateCirclePerks">
             <li id="gateCircleFreeQtyText">3点まで無料</li>
             <li id="gateCircleTier1Text">4〜8点目：¥220/点〜</li>
-            <li>9点目以降：¥230/点〜</li>
+            <li id="gateCircleTier2Text">9点目以降：¥230/点〜</li>
             <li>1か月前まで：早割あり</li>
             <li id="gateCircleMax">最大20点まで</li>
           </ul>
@@ -880,8 +884,6 @@ footer a{color:var(--potato-light);text-decoration:none;}
 <!-- ══ MAIN ══ -->
 <div id="mainContent" style="display:none">
 
-
-
 <!-- DEADLINE BANNER -->
 <div class="deadline-banner" id="deadlineBanner" role="status" aria-live="polite">
   🚫 申し込みは締め切りました(開催2日前 朝4時に締め切り)
@@ -932,7 +934,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
 <!-- 受け取れるもの -->
 <div class="tone tone-2"><div class="section">
   <div class="section-title">参加して受け取れるもの</div>
-  <div class="receive-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:14px;">
+  <div class="receive-grid">
     <div style="background:var(--card);border:1.5px solid var(--border);border-radius:12px;overflow:hidden;">
       <img src="https://bzjwhtemobtrfaghsdwt.supabase.co/storage/v1/object/public/order-images/20260603-compimg01.png" alt="イラスト入りレザーコースターの完成品" loading="lazy"
         style="width:100%;aspect-ratio:1;object-fit:cover;display:block;">
@@ -954,7 +956,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
 
 <div class="tone tone-3"><div class="section">
   <div class="section-title">参加資格・イラストの制限</div>
-  <div class="req-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px;">
+  <div class="req-grid">
     <div style="background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:22px 20px;">
       <div style="font-size:.95rem;font-weight:700;color:var(--potato-dark);margin-bottom:14px;display:flex;align-items:center;gap:8px;"><span>✅</span> 参加資格</div>
       <ul style="list-style:none;display:flex;flex-direction:column;gap:10px;padding:0;">
@@ -1026,14 +1028,6 @@ footer a{color:var(--potato-light);text-decoration:none;}
               · セーフエリア外〜カットラインまでの領域も<strong>余白にはならず出力されます</strong>。カットの際にわずかにズレが生じる可能性があるため、ギリギリまで描き込みたい場合はこの余白を活用してください。
             </div>
           </div>
-          <div class="tip-box">
-            💡 <strong>350dpi・原寸サイズ</strong>で新規作成してください。<br>
-            <br>
-            <strong>スクエア(85×85mm)</strong>：1171 × 1171 px<br>
-            <strong>サークル(φ90mm)</strong>：1240 × 1240 px<br>
-            <br>
-            小さいサイズで描いて拡大すると粗くなります。必ず上記サイズで新規作成してから描き始めてください。
-          </div>
           <div style="margin:12px 0;border:2.5px solid #e05040;border-radius:8px;overflow:hidden;">
             <div style="background:#e05040;color:#fff;font-weight:700;font-size:.82rem;padding:6px 12px;letter-spacing:.04em;">
               ⚠️ グレースケール指定で新規作成してください(重要)
@@ -1046,53 +1040,56 @@ footer a{color:var(--potato-light);text-decoration:none;}
                 <li>Photoshop・CLIP STUDIO等では「新規作成」時にカラーモードを <strong>グレースケール</strong> に指定してください。</li>
                 <li>白と黒ベースのデータがきれいに仕上がります。中間色がどうしても必要な箇所のみグレーを置く感覚で描くのがおすすめです。</li>
                 <li>白い紙にインクで出力するプリントと違い、細かい凹凸のある茶色い革に、レーザーで彫り込んで絵柄を表現する手法となるため、思っている以上に濃く、暗く出力されます。彩色・着色などに40%以上のグレーを使うと、ほぼ黒ベタになってしまいますので注意が必要です。</li>
-                <li>グラデーションは白寄りを多くすると良好な結果になります。白側の比重を90%ぐらいの感覚です。</li>
-                <li>彩色は3%、7%、14%あたりのグレー使用を推奨します。25%以上は黒ベタとあまり見分けがつきません。</li>
-                <li>0.2mmなど小数点以下の極端に細いラインはきれいに出力されないことがあります。</li>
-                <li>目の中のハイライトなど細かい部分の小さい白が出力されないことがあります。意識して大きくしたり周辺の黒線を細くするときれいになります。</li>
-                <li>ディザリングにはStuckiを使用しています。</li>
               </ul>
+              <div style="margin-top:6px;">
+                <button onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none';this.textContent=this.textContent.includes('▼')?'詳細を閉じる ▲':'詳細を見る ▼';" style="background:none;border:none;color:var(--accent);font-size:.8rem;font-weight:700;cursor:pointer;padding:0;font-family:inherit;">詳細を見る ▼</button>
+                <div style="display:none;margin-top:8px;">
+                  <ul style="font-size:.82rem;line-height:1.75;padding-left:18px;color:var(--muted);">
+                    <li>彩色は3%、7%、14%あたりのグレー使用を推奨します。25%以上は黒ベタとあまり見分けがつきません。</li>
+                    <li>グラデーションは白寄りを多くすると良好な結果になります。白側の比重を90%ぐらいの感覚です。</li>
+                    <li>0.2mmなど小数点以下の極端に細いラインはきれいに出力されないことがあります。</li>
+                    <li>目の中のハイライトなど細かい部分の小さい白が出力されないことがあります。意識して大きくしたり周辺の黒線を細くするときれいになります。</li>
+                    <li>ディザリングにはStuckiを使用しています。</li>
+                  </ul>
+                </div>
+              </div>
             </div>
           </div>
 
 
           <!-- 参考例ギャラリー -->
-                      <div style="margin:14px 0 12px;padding:12px 14px;background:var(--potato-bg);border-left:3px solid var(--potato-light);border-radius:0 6px 6px 0;">
-                        <div style="font-size:.82rem;font-weight:700;color:var(--potato-dark);margin-bottom:4px;">📎 参考例(前回ふたば★学園祭２０より)</div>
-                        <div style="font-size:.76rem;color:var(--muted);margin-bottom:12px;">左が送っていただくデータ、右が実際の仕上がりです。</div>
-                        <div style="display:flex;flex-wrap:wrap;gap:16px;">
-
-                          <div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
-                            <div style="display:flex;gap:6px;align-items:center;">
-                              <img src="https://bzjwhtemobtrfaghsdwt.supabase.co/storage/v1/object/public/order-images/exemplar1_input.png" style="width:70px;height:70px;object-fit:contain;border-radius:6px;border:1.5px solid var(--border);" loading="lazy" alt="元データ1">
-                              <span style="font-size:.85rem;color:var(--muted);">→</span>
-                              <img src="https://bzjwhtemobtrfaghsdwt.supabase.co/storage/v1/object/public/order-images/exemplar1_result.png" style="width:70px;height:70px;object-fit:contain;border-radius:6px;border:1.5px solid var(--border);" loading="lazy" alt="仕上がり1">
-                            </div>
-                            <div style="font-size:.67rem;color:var(--muted);">丸型・人型キャラ</div>
-                          </div>
-
-                          <div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
-                            <div style="display:flex;gap:6px;align-items:center;">
-                              <img src="https://bzjwhtemobtrfaghsdwt.supabase.co/storage/v1/object/public/order-images/exemplar2_input.png" style="width:70px;height:70px;object-fit:contain;border-radius:6px;border:1.5px solid var(--border);" loading="lazy" alt="元データ2">
-                              <span style="font-size:.85rem;color:var(--muted);">→</span>
-                              <img src="https://bzjwhtemobtrfaghsdwt.supabase.co/storage/v1/object/public/order-images/exemplar2_result.png" style="width:70px;height:70px;object-fit:contain;border-radius:6px;border:1.5px solid var(--border);" loading="lazy" alt="仕上がり2">
-                            </div>
-                            <div style="font-size:.67rem;color:var(--muted);">角型・パターン柄</div>
-                          </div>
-
-                          <div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
-                            <div style="display:flex;gap:6px;align-items:center;">
-                              <img src="https://bzjwhtemobtrfaghsdwt.supabase.co/storage/v1/object/public/order-images/exemplar3_input.png" style="width:70px;height:70px;object-fit:contain;border-radius:6px;border:1.5px solid var(--border);" loading="lazy" alt="元データ3">
-                              <span style="font-size:.85rem;color:var(--muted);">→</span>
-                              <img src="https://bzjwhtemobtrfaghsdwt.supabase.co/storage/v1/object/public/order-images/exemplar3_result.png" style="width:70px;height:70px;object-fit:contain;border-radius:6px;border:1.5px solid var(--border);" loading="lazy" alt="仕上がり3">
-                            </div>
-                            <div style="font-size:.67rem;color:var(--muted);">丸型・動物キャラ</div>
-                          </div>
-
-                        </div>
-                      </div>
-
-                    <div class="warn-box">⚠️ <strong>デザインの修正・色調整はこちらではお受けできません。</strong>当企画では受領した画像をそのまま出力するのが基本となりますが、一部形式の画像については位置・回転・反転・フィット縮小調節がプレビューにて可能となっています。誤ってイラストがカットされてしまうことのないよう、よくご確認の上送信してください。<br>プレビューの各機能は、あくまで補助的なものとなります。ご自身の環境で調整・縮小を行ったデータをご送信いただき、当方はそれを出力するだけという状態になるのがもっとも齟齬のないやり取りになりますことをご理解いただけますと幸いです。</div>
+          <div style="margin:14px 0 12px;padding:12px 14px;background:var(--potato-bg);border-left:3px solid var(--potato-light);border-radius:0 6px 6px 0;">
+            <div style="font-size:.82rem;font-weight:700;color:var(--potato-dark);margin-bottom:4px;">📎 参考例(前回ふたば★学園祭２０より)</div>
+            <div style="font-size:.76rem;color:var(--muted);margin-bottom:12px;">左が送っていただくデータ、右が実際の仕上がりです。</div>
+            <div style="display:flex;flex-wrap:wrap;gap:16px;">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
+                <div style="display:flex;gap:6px;align-items:center;">
+                  <img src="https://bzjwhtemobtrfaghsdwt.supabase.co/storage/v1/object/public/order-images/exemplar1_input.png" style="width:70px;height:70px;object-fit:contain;border-radius:6px;border:1.5px solid var(--border);" loading="lazy" alt="元データ1">
+                  <span style="font-size:.85rem;color:var(--muted);">→</span>
+                  <img src="https://bzjwhtemobtrfaghsdwt.supabase.co/storage/v1/object/public/order-images/exemplar1_result.png" style="width:70px;height:70px;object-fit:contain;border-radius:6px;border:1.5px solid var(--border);" loading="lazy" alt="仕上がり1">
+                </div>
+                <div style="font-size:.67rem;color:var(--muted);">丸型・人型キャラ</div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
+                <div style="display:flex;gap:6px;align-items:center;">
+                  <img src="https://bzjwhtemobtrfaghsdwt.supabase.co/storage/v1/object/public/order-images/exemplar2_input.png" style="width:70px;height:70px;object-fit:contain;border-radius:6px;border:1.5px solid var(--border);" loading="lazy" alt="元データ2">
+                  <span style="font-size:.85rem;color:var(--muted);">→</span>
+                  <img src="https://bzjwhtemobtrfaghsdwt.supabase.co/storage/v1/object/public/order-images/exemplar2_result.png" style="width:70px;height:70px;object-fit:contain;border-radius:6px;border:1.5px solid var(--border);" loading="lazy" alt="仕上がり2">
+                </div>
+                <div style="font-size:.67rem;color:var(--muted);">角型・パターン柄</div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
+                <div style="display:flex;gap:6px;align-items:center;">
+                  <img src="https://bzjwhtemobtrfaghsdwt.supabase.co/storage/v1/object/public/order-images/exemplar3_input.png" style="width:70px;height:70px;object-fit:contain;border-radius:6px;border:1.5px solid var(--border);" loading="lazy" alt="元データ3">
+                  <span style="font-size:.85rem;color:var(--muted);">→</span>
+                  <img src="https://bzjwhtemobtrfaghsdwt.supabase.co/storage/v1/object/public/order-images/exemplar3_result.png" style="width:70px;height:70px;object-fit:contain;border-radius:6px;border:1.5px solid var(--border);" loading="lazy" alt="仕上がり3">
+                </div>
+                <div style="font-size:.67rem;color:var(--muted);">丸型・動物キャラ</div>
+              </div>
+            </div>
+          </div>
+          <div class="warn-box">⚠️ <strong>デザインの修正・色調整はこちらではお受けできません。</strong>受領した画像をそのまま出力するのが基本となります。誤ってイラストがカットされてしまうことのないよう、送信前に必ずプレビューでご確認ください。</div>
+          <div class="tip-box" style="margin-top:8px;">💡 プレビューの調整機能はあくまで補助的なものです。ご自身の環境で調整・縮小を行ったデータをお送りいただくのが、最も齟齬のないやり取りになります。</div>
         </div></div>
       </div>
       <div class="flow-item" id="flow-1">
@@ -1138,7 +1135,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
           <div class="flow-toggle">▼</div>
         </div>
         <div class="flow-body"><div class="flow-body-inner">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <div class="flow-col-2">
             <div>
               <h4>👤 あなた</h4>
               <h5>🔑 引換コードを保存する</h5>
@@ -1147,9 +1144,8 @@ footer a{color:var(--potato-light);text-decoration:none;}
                 <li>「コピー」「画像保存」「メール送信」のいずれかで保存してください。</li>
                 <li>コードを紛失した場合、お名前・メールアドレスでの照合になります(時間がかかります)。</li>
               </ul>
-              <div class="warn-box">⚠️ 1注文につき1コードが発行されます。同じコードで複数回の受け取りはできません。</div>
             </div>
-            <div style="background:rgba(160,120,74,.1);border-radius:8px;padding:12px;">
+            <div class="flow-maker">
               <h4>🔨 製作者</h4>
               <h5>📋 イラストを確認して製作を開始する</h5>
               <ul>
@@ -1159,6 +1155,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
               </ul>
             </div>
           </div>
+          <div class="warn-box">⚠️ 1注文につき1コードが発行されます。同じコードで複数回の受け取りはできません。</div>
         </div></div>
       </div>
       <div class="flow-item" id="flow-3">
@@ -1171,25 +1168,27 @@ footer a{color:var(--potato-light);text-decoration:none;}
           <div class="flow-toggle">▼</div>
         </div>
         <div class="flow-body"><div class="flow-body-inner">
-          <div style="display:grid;grid-template-columns:2fr 3fr;gap:14px;">
+          <div class="flow-col-2-3">
             <div>
               <h4>👤 あなた</h4>
+              <h5>⏳ 完成をお待ちください</h5>
               <ul>
                 <li>完成のご連絡をお待ちください。</li>
                 <li>端材試作・仕上がり確認をご希望の場合は、確認のご連絡が届きます。お早めに返信をお願いします。</li>
               </ul>
             </div>
-            <div style="background:rgba(160,120,74,.1);border-radius:8px;padding:12px;">
+            <div class="flow-maker">
               <h4>🔨 製作者</h4>
+              <h5>🛠️ 製作・仕上げ</h5>
               <ul>
                 <li>コースターの出力・切り出し。</li>
                 <li>防水コーティング加工。</li>
                 <li>梱包して当日お渡しできる状態に整えます。</li>
                 <li>仕上がり確認をご希望の場合は、1点目完成後に写真をお送りします。OKのご連絡をいただいてから残りを製作します。</li>
               </ul>
-              <div class="tip-box">💡 完成画像は、申し込みから<strong>おおむね4日後まで</strong>にお送りします（点数・混雑状況によって前後します）。</div>
             </div>
           </div>
+          <div class="tip-box">💡 完成画像は、申し込みから<strong>おおむね4日後まで</strong>にお送りします（点数・混雑状況によって前後します）。</div>
         </div></div>
       </div>
       <div class="flow-item" id="flow-4">
@@ -1202,7 +1201,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
           <div class="flow-toggle">▼</div>
         </div>
         <div class="flow-body"><div class="flow-body-inner">
-          <div style="display:grid;grid-template-columns:3fr 1fr;gap:14px;">
+          <div class="flow-col-auto">
             <div>
               <h4>👤 あなた</h4>
               <h5>💴 お支払いについて</h5>
@@ -1211,15 +1210,15 @@ footer a{color:var(--potato-light);text-decoration:none;}
                 <li>お支払い方法は現金です。</li>
                 <li>おつりの出ないようにご準備いただけると大変助かります。</li>
               </ul>
-              <div class="tip-box">💡 無料範囲内の注文は0円です。その場合も必ずコードをご提示ください。</div>
             </div>
-            <div style="background:rgba(160,120,74,.1);border-radius:8px;padding:12px;">
+            <div class="flow-maker" style="min-width:130px;">
               <h4>🔨 製作者</h4>
               <h5>📍 受付場所</h5>
               <p style="font-weight:700;color:var(--potato-dark);">A-01<br>大喜幸四郎</p>
               <p style="font-size:.82rem;color:var(--muted);">ブースにてお待ちしています。コードを提示してください。</p>
             </div>
           </div>
+          <div class="tip-box">💡 無料範囲内の注文は0円です。その場合も必ずコードをご提示ください。</div>
         </div></div>
       </div>
     </div>
@@ -1228,11 +1227,9 @@ footer a{color:var(--potato-light);text-decoration:none;}
 
 <hr class="divider">
 
-<hr class="divider">
-
 </div>
 
-<!-- 参加資格 -->
+<!-- 料金表 -->
 <div class="tone tone-5"><div class="section">
   <div class="section-title">料金表</div>
 
@@ -1802,7 +1799,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
 //   マイナー … 新機能の追加
 //   機能変更 … 既存機能の修正・調整・バグfix
 //   文言変更 … テキストや表記だけの修正
-const SITE_VERSION = 'v1.3.2.2';
+const SITE_VERSION = 'v1.3.3.1';
 // ▲▲▲ リロードして表示が変われば新版が反映済み ▲▲▲
 // ══════════════════════════════════════════
 // ▼▼▼ 開催日を変更するとすべての日付が連動します ▼▼▼
@@ -2364,10 +2361,12 @@ function initDatesUI() {
     : [{from:4,to:8},{from:9,to:12},{from:13,to:16},{from:17,to:20}];
   const el_gateText   = document.getElementById('gateCircleFreeQtyText');
   const el_gateTier1  = document.getElementById('gateCircleTier1Text');
+  const el_gateTier2  = document.getElementById('gateCircleTier2Text');
   const el_priceRange = document.getElementById('priceFreeRangeText');
   const el_priceNote  = document.getElementById('priceFreeNoteText');
   if (el_gateText)   el_gateText.textContent   = `${circleFreeQty}点まで無料`;
   if (el_gateTier1)  el_gateTier1.textContent  = `${tiers[0].from}〜${tiers[0].to}点目：¥220/点〜`;
+  if (el_gateTier2)  el_gateTier2.textContent  = `${tiers[1].from}点目以降：¥230/点〜`;
   if (el_priceRange) el_priceRange.textContent = freeRange;
   if (el_priceNote)  el_priceNote.textContent  = `無料枠(${freeRange})は、同一サークルの最初の注文にのみ適用されます。`;
   [1,2,3,4].forEach((n, i) => {
