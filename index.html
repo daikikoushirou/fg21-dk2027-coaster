@@ -907,7 +907,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
     前回のふたば★学園祭２０で、一般参加とサークル参加のちょうど中間くらいの、絵を描くことが好きな人がゆるく参加できるかたちをつくってみたいと思い、この企画を始めました。ありがたいことにご好評をいただいた一方で、私の力不足から至らない点も多くありました。そこで今回は、コースターの紹介から発注までをこのサイト上で完結できるようにし、初めての方にも企画の内容が伝わるよう説明を充実させ、イラストの入稿もサポートしていくことを目指しました。
   </p>
   <p style="color:var(--muted);font-size:.92rem;line-height:1.9;margin:14px 0 0;">
-    「なぜ1点無料なの？」と思われるかもしれません。お送りいただいたコースターは、当スペースの一角で展示させていただく予定です。また、当初は合同企画として始めた経緯もあり、1〜2点ほど頒布させてもらうことも考えています。コースターは、そのお礼のようなものだと思っていただければ幸いです。
+    <span id="whyFreeText">「なぜ1点無料なの？」</span>と思われるかもしれません。お送りいただいたイラストは、当スペースの一角でコースターとして展示させていただきます。また、1〜2点ほど有料頒布もさせていただく予定です。展示・頒布にイラストを使用させていただく対価として、コースターをお渡ししています。
   </p>
   <p style="color:var(--muted);font-size:.92rem;line-height:1.9;margin:14px 0 0;">
     展示をきっかけに、見てくれた方がイラストを描いた方のサークルへ足を運んでくれたり、自分のコースターを受け取りに会場へ遊びに来てもらえたりしたら、とてもうれしいです。ひいては、ふたば★学園祭が少しでもにぎやかになったら最高だな…！と思っているわけです。
@@ -916,7 +916,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
     下にスクロールすると、受け取れるもの・参加できる条件・製作の流れ・料金を順にご案内しています。
   </p>
   <p style="color:var(--muted);font-size:.92rem;line-height:1.9;margin:14px 0 0;">
-    いただいたイラストデータは、ふたば★学園祭２１のコースター企画のためだけに使用します。また、お名前・メールアドレスなどは個人情報として、当企画およびふたば★学園祭に関わる範囲に限って利用いたします。いずれも外部に漏れることのないよう、細心の注意を払って取り扱います。
+    お送りいただいたイラストデータは、ふたば★学園祭２１のコースター企画のためだけに使用いたします。また、お名前・メールアドレスなどは個人情報として、当企画およびふたば★学園祭に関わる範囲に限って利用いたします。いずれも外部に漏れることのないよう、細心の注意を払って取り扱います。
   </p>
   <p style="color:var(--muted);font-size:.92rem;line-height:1.9;margin:14px 0 0;">
     ご不明な点があれば、<a onclick="openContactModal()" style="color:var(--accent);font-weight:700;cursor:pointer;text-decoration:underline;">お気軽にお問い合わせください</a>。
@@ -928,10 +928,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
 <!-- 受け取れるもの -->
 <div class="tone tone-2"><div class="section">
   <div class="section-title">参加して受け取れるもの</div>
-  <p style="color:var(--muted);font-size:.92rem;line-height:1.8;margin:14px 0 22px;">
-    お送りいただいたイラストを刻印したレザーコースターをお渡しします。あわせて、完成したコースターをきれいに撮影した宣材写真もお送りします。こちらの写真は、SNSへの投稿などにご自由にお使いいただけます。
-  </p>
-  <div class="receive-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
+  <div class="receive-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:14px;">
     <div style="background:var(--card);border:1.5px solid var(--border);border-radius:12px;overflow:hidden;">
       <img src="https://bzjwhtemobtrfaghsdwt.supabase.co/storage/v1/object/public/order-images/20260603-compimg01.png" alt="イラスト入りレザーコースターの完成品" loading="lazy"
         style="width:100%;aspect-ratio:1;object-fit:cover;display:block;">
@@ -1222,7 +1219,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
       ⚠️ <strong id="priceFreeNoteText">無料枠(1〜3点目)は、同一サークルの最初の注文にのみ適用されます。</strong>複数デザインを分けて申し込む場合や複数回注文する場合、2回目以降の注文は全点数有料となります。
     </div>
     <div class="shape-note" id="priceNoteCircleWrap" style="margin-top:8px;background:#fff8f0;border-left:3px solid #e8b060;border-radius:0 8px 8px 0;font-size:.82rem;line-height:1.75;color:var(--ink);">
-      📝 <strong>価格変更の可能性について：</strong>1人で製作しているため、状況次第で料金が上がる可能性があります。
+      📝 <strong>価格変更の可能性について：</strong>1人で製作しているため、状況次第で料金表に変動がある可能性があります。
       <span id="priceNoteCircleMore" style="display:none;">前回の学園祭では開催10日前ごろに申し込みが集中し、現場がかなりバタバタしました。今回は早割も導入しましたので、<strong>早ければ早いほど安い</strong>と思っていただいて間違いありません。数を作ってみたいサークルの方も、まずは少部数で早めの申し込みをいただけると大変助かります。それから、防水加工などをすべて手作業で行っているため量が多ければ多いほど高いです。ここはなにとぞご容赦ください。</span>
       <button onclick="togglePriceNote('Circle')" id="priceNoteCircleBtn" style="background:none;border:none;color:var(--accent);font-weight:700;font-size:.8rem;cursor:pointer;padding:0;margin-left:4px;font-family:inherit;">続きを読む ▼</button>
     </div>
@@ -1230,7 +1227,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
   <div class="pricing-panel" id="notesPanel-general">
     <div class="shape-note" style="background:#fdf0e0;border-left:3px solid var(--accent-light);border-radius:0 8px 8px 0;">⚠️ <strong>2種類以上のイラストを製作できるのはサークル参加者に限られます。</strong></div>
     <div class="shape-note" id="priceNoteGeneralWrap" style="margin-top:8px;background:#fff8f0;border-left:3px solid #e8b060;border-radius:0 8px 8px 0;font-size:.82rem;line-height:1.75;color:var(--ink);">
-      📝 <strong>価格変更の可能性について：</strong>1人で製作しているため、状況次第で料金が上がる可能性があります。
+      📝 <strong>価格変更の可能性について：</strong>1人で製作しているため、状況次第で料金表に変動がある可能性があります。
       <span id="priceNoteGeneralMore" style="display:none;">前回の学園祭では開催直前に申し込みが集中し、製作がギリギリになってしまいました。早めにお申し込みいただくほど余裕を持って丁寧に仕上げられますので、早めのご依頼をお待ちしております。</span>
       <button onclick="togglePriceNote('General')" id="priceNoteGeneralBtn" style="background:none;border:none;color:var(--accent);font-weight:700;font-size:.8rem;cursor:pointer;padding:0;margin-left:4px;font-family:inherit;">続きを読む ▼</button>
     </div>
@@ -1743,7 +1740,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
 //   マイナー … 新機能の追加
 //   機能変更 … 既存機能の修正・調整・バグfix
 //   文言変更 … テキストや表記だけの修正
-const SITE_VERSION = 'v1.2.4.6';
+const SITE_VERSION = 'v1.2.5.1';
 // ▲▲▲ リロードして表示が変われば新版が反映済み ▲▲▲
 // ══════════════════════════════════════════
 // ▼▼▼ 開催日を変更するとすべての日付が連動します ▼▼▼
@@ -2540,6 +2537,12 @@ function applyModeUI() {
   applyDeadlineUI();
   refreshRequiredMarks();
   onContactPrefChange(); // 初期状態(無選択)のラベルを設定
+  // 「なぜ○点無料なの？」を参加種別・無料枠状態に応じて更新
+  const whyFreeEl = document.getElementById('whyFreeText');
+  if (whyFreeEl) {
+    const freeQty = isC ? (isFreeQtyReduced() ? 2 : 3) : 1;
+    whyFreeEl.textContent = `「なぜ${freeQty}点無料なの？」`;
+  }
   // 仕上がり確認：10日前まで無料 / 5日前まで¥100 / それ以降は受付終了
   const completionArea = document.getElementById('completionImgArea');
   if (completionArea) {
