@@ -93,7 +93,6 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15p
 .gate-countdown-label{font-size:.72rem;font-weight:700;color:var(--muted);letter-spacing:.08em;margin-bottom:4px;}
 .gate-countdown-days{font-size:2.8rem;font-weight:900;line-height:1;color:var(--accent);letter-spacing:-.02em;}
 .gate-countdown-days span{font-size:1rem;font-weight:700;color:var(--muted);margin-left:4px;}
-.gate-countdown-sub{font-size:.72rem;color:var(--muted);margin-top:3px;}
 .gate-deadline-note{font-size:.72rem;color:var(--muted);text-align:center;margin-bottom:10px;display:none;}
 .gate-divider{border:none;border-top:2px dashed var(--border);margin:0 0 20px;}
 .gate-prompt{font-size:.9rem;font-weight:700;color:var(--potato-dark);margin-bottom:16px;}
@@ -132,21 +131,11 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15p
 .gate-pcol-count{font-size:.72rem;font-weight:700;color:var(--muted);line-height:1.4;}
 .gate-pcol-count.interest{color:var(--muted);}
 .gate-pcol-divider{border:none;border-top:1px dashed var(--border);margin:6px 0;}
-.gate-pcol-interest-head{display:flex;align-items:flex-end;justify-content:space-between;gap:4px;}
-.gate-pcol-interest-head .heart-bubble-wrap,.gate-pcol-interest-head>.heart-btn,.gate-pcol-interest-head>.soudane-btn{align-self:flex-end;}
 .soudane-btn{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1.5px solid var(--border);border-radius:8px;overflow:hidden;cursor:pointer;padding:0;transition:border-color .15s,box-shadow .15s;}
 .soudane-btn:hover{border-color:#e05080;box-shadow:0 0 0 2px rgba(224,80,128,.15);}
 .soudane-btn.liked{border-color:#e05080;box-shadow:0 0 0 2px rgba(224,80,128,.15);}
 .soudane-cell{background:var(--card);font-size:.72rem;font-weight:900;color:var(--muted);width:18px;height:18px;display:flex;align-items:center;justify-content:center;transition:background .15s,color .15s;line-height:1;}
 .soudane-btn:hover .soudane-cell,.soudane-btn.liked .soudane-cell{color:#e05080;background:#fff5f7;}
-.join-btn{display:inline-flex;align-items:center;justify-content:center;background:none;border:1.5px solid var(--border);border-radius:20px;padding:3px 9px;font-size:.72rem;font-weight:700;color:var(--muted);cursor:pointer;white-space:nowrap;transition:border-color .15s,color .15s,background .15s;font-family:var(--sans);}
-.join-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(180,120,60,.08);}
-.join-btn.liked{border-color:var(--accent);color:var(--accent);background:rgba(180,120,60,.08);}
-.heart-btn{display:flex;align-items:center;gap:4px;background:none;border:1.5px solid var(--border);border-radius:20px;padding:3px 10px;cursor:pointer;font-size:.78rem;font-weight:700;color:var(--muted);transition:border-color .15s,color .15s,background .15s;font-family:var(--sans);}
-.heart-btn:hover{border-color:#e05080;color:#e05080;background:#fff5f7;}
-.heart-btn.liked{border-color:#e05080;color:#e05080;background:#fff5f7;}
-.heart-btn .heart-icon{font-size:.95rem;transition:transform .2s;}
-.heart-btn:hover .heart-icon,.heart-btn.liked .heart-icon{transform:scale(1.25);}
 .heart-bubble-wrap{position:relative;display:inline-flex;flex-direction:column;align-items:center;}
 .heart-bubble{position:absolute;top:calc(100% + 12px);right:0;background:#fff;border:1.5px solid #f0a0b8;border-radius:10px;padding:7px 10px;font-size:.72rem;font-weight:700;color:#c0406a;line-height:1.45;white-space:nowrap;box-shadow:0 3px 10px rgba(224,80,128,.18);pointer-events:none;animation:bubbleFloat 3s ease-in-out infinite;z-index:10;}
 .heart-bubble::before{content:'';position:absolute;top:-9px;right:11px;width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:9px solid #f0a0b8;}
@@ -213,9 +202,6 @@ h1.site-title small{display:block;font-size:.6em;color:var(--potato-light);font-
 .cal-bar{width:100%;height:4px;flex-shrink:0;cursor:default;}
 #calTooltip{display:none;position:fixed;background:#2c2418;color:#fff;font-size:.75rem;line-height:1.6;padding:7px 11px;border-radius:7px;white-space:nowrap;z-index:9999;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.3);transform:translateX(-50%);}
 #calTooltip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#2c2418;}
-.cal-legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;padding:0 2px;}
-.cal-legend-item{display:flex;align-items:center;gap:5px;font-size:.72rem;color:var(--muted);}
-.cal-legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
 .deadline-banner{display:none;background:#8a1010;color:#fff;text-align:center;padding:14px 20px;font-size:.9rem;font-weight:700;line-height:1.5;}
 .deadline-banner.show{display:block;}
 
@@ -247,7 +233,6 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:0;}
 
 /* EARLY BIRD BADGE */
 .early-bird-badge{display:inline-flex;align-items:center;gap:5px;background:var(--gold-bg);border:1.5px solid var(--gold-border);color:var(--gold);font-size:.78rem;font-weight:700;padding:4px 10px;border-radius:6px;margin-left:8px;}
-.early-bird-note{font-size:.82rem;background:var(--gold-bg);border:1.5px solid var(--gold-border);border-radius:8px;padding:10px 14px;margin-top:12px;color:var(--gold);line-height:1.6;}
 
 /* FLOW */
 .flow-section{background:#ddceaa;border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
@@ -269,11 +254,9 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:0;}
 .flow-body-inner h5{font-size:.8rem;font-weight:700;color:var(--potato-dark);margin:10px 0 4px;opacity:.85;}
 .flow-body-inner h5:first-child{margin-top:0;}
 .flow-col-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-.flow-col-2-3{display:grid;grid-template-columns:2fr 3fr;gap:14px;}
-.flow-col-auto{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:start;}
 .flow-maker{background:rgba(160,120,74,.1);border-radius:8px;padding:12px;}
 @media(max-width:480px){
-  .flow-col-2,.flow-col-2-3,.flow-col-auto{grid-template-columns:1fr;}
+  .flow-col-2{grid-template-columns:1fr;}
   .flow-maker{margin-top:4px;}
 }
 .flow-body-inner ul{padding-left:18px;}
@@ -283,11 +266,9 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:0;}
 .flow-body-inner .warn-box{background:#fdf0e0;border-left:3px solid var(--accent-light);border-radius:0 6px 6px 0;padding:10px 14px;margin:12px 0;font-size:.85rem;}
 
 /* PRICING */
-.pricing-tabs{display:flex;gap:0;border:1.5px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:24px;}
 .pricing-tab{flex:1;padding:11px 12px;font-size:.83rem;font-weight:700;cursor:pointer;background:var(--card);color:var(--muted);border:none;border-right:1px solid var(--border);transition:background .15s,color .15s;}
 .pricing-tab:last-child{border-right:none;}
 .pricing-tab.active.circle-tab{background:var(--circle-bg);color:var(--circle-color);}
-.pricing-tab.active.general-tab{background:var(--general-bg);color:var(--general-color);}
 .pricing-panel{display:none;}
 .pricing-panel.active{display:block;}
 .price-tier-table{width:100%;border-collapse:collapse;border:1.5px solid var(--border);border-radius:8px;overflow:hidden;font-size:.9rem;}
@@ -302,13 +283,9 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:0;}
 .price-tier-table tr.early-row td{background:var(--gold-bg);}
 .price-big{font-size:1.05rem;font-weight:700;color:var(--potato-dark);}
 .price-small{font-size:.8rem;color:var(--muted);}
-.price-strike{text-decoration:line-through;color:var(--muted);font-size:.85rem;margin-right:4px;}
 .tier-badge{display:inline-block;padding:2px 9px;border-radius:4px;font-size:.72rem;font-weight:700;}
 .badge-free{background:#b8e0a0;color:#2a5a10;}
 .badge-extra{background:#fde8a0;color:#7a4010;}
-.badge-mid1{background:#f8d47a;color:#6a3800;}
-.badge-mid2{background:#f4bc50;color:#5a2800;}
-.badge-upper{background:#eda830;color:#4a1800;}
 .badge-value{background:#4a9a60;color:#fff;}
 .badge-plus{background:#2e86c1;color:#fff;}
 .badge-pro{background:#6c3483;color:#fff;}
@@ -316,7 +293,6 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:0;}
 .badge-plus{background:#5a7aaa;color:#fff;}
 .badge-pro{background:#7a5aaa;color:#fff;}
 .badge-max{background:#aa5a5a;color:#fff;}
-.badge-early{background:var(--gold-bg);color:var(--gold);border:1px solid var(--gold-border);}
 .shape-note{margin-top:14px;font-size:.84rem;color:var(--muted);background:var(--potato-bg);border-radius:8px;padding:10px 14px;}
 
 /* FORM */
@@ -326,8 +302,6 @@ hr.divider{border:none;border-top:1px solid var(--border);margin:0;}
 .form-section .section-sub{color:rgba(255,255,255,.8);}
 .form-deadline-note{display:none;background:#8a1010;color:#fff;border-radius:8px;padding:14px 16px;margin-bottom:16px;font-size:.88rem;font-weight:700;line-height:1.6;}
 .form-deadline-note.show{display:block;}
-.form-earlybird-note{display:none;background:var(--gold-bg);border:1.5px solid var(--gold-border);border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:.88rem;color:var(--gold);font-weight:700;line-height:1.6;}
-.form-earlybird-note.show{display:block;}
 .order-form{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:24px;}
 @media(max-width:560px){.order-form{grid-template-columns:1fr;}}
 .form-group{display:flex;flex-direction:column;gap:6px;}
@@ -389,8 +363,6 @@ canvas{display:block;border-radius:4px;}
 canvas.draggable-img{cursor:grab;}
 canvas.draggable-img:active{cursor:grabbing;}
 canvas.ci{border-radius:4px;}
-.remove-btn{margin-top:8px;background:none;border:1.5px solid rgba(255,255,255,.2);color:rgba(255,255,255,.5);font-family:var(--sans);font-size:.76rem;padding:4px 12px;cursor:pointer;border-radius:6px;transition:border-color .15s,color .15s;}
-.remove-btn:hover{border-color:#e05040;color:#f08070;}
 .preview-controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;}
 .ctrl-group{display:flex;flex-direction:column;gap:4px;}
 .ctrl-label{font-size:.7rem;color:rgba(255,255,255,.45);text-align:center;}
@@ -546,7 +518,6 @@ footer a{color:var(--potato-light);text-decoration:none;}
 .label-entry-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;max-height:320px;overflow-y:auto;}
 .label-entry-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1.5px solid var(--border);border-radius:7px;background:var(--bg);font-size:.85rem;}
 .label-entry-check{width:16px;height:16px;cursor:pointer;flex-shrink:0;accent-color:var(--potato-dark);}
-.label-entry-name{font-weight:700;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .label-entry-x{font-size:.78rem;color:var(--circle-color);flex-shrink:0;}
 .label-btn-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
 .label-btn{background:var(--potato-dark);color:#fff;border:none;padding:8px 16px;font-family:var(--sans);font-size:.82rem;font-weight:700;cursor:pointer;border-radius:7px;transition:background .15s;}
@@ -559,7 +530,6 @@ footer a{color:var(--potato-light);text-decoration:none;}
 .print-labels-grid{display:grid;grid-template-columns:repeat(2,80mm);gap:4mm 6mm;}
 .label-print-item{width:80mm;height:20mm;display:flex;align-items:center;border:.3mm solid #000;background:#fff;overflow:hidden;padding:1mm 1mm 1mm 2.5mm;gap:1.5mm;page-break-inside:avoid;font-family:'Helvetica Neue',Arial,'Hiragino Sans',sans-serif;}
 .lp-text{flex:1;display:flex;flex-direction:column;justify-content:center;min-width:0;overflow:hidden;}
-.lp-by{font-size:5.5pt;color:#000;white-space:nowrap;}
 .lp-name{font-size:11pt;font-weight:700;color:#000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.15;margin-top:.3mm;}
 .lp-circle{font-size:6pt;color:#000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:.3mm;font-weight:600;}
 .lp-handle{font-size:5.5pt;color:#000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:.5mm;}
@@ -575,15 +545,6 @@ footer a{color:var(--potato-light);text-decoration:none;}
 }
 
 /* ── INTERESTS ── */
-.gate-interests-row{margin-top:10px;background:rgba(255,255,255,.65);border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;}
-.gate-interests-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:8px;}
-.gate-interests-label{font-size:.72rem;font-weight:700;color:var(--muted);}
-.heart-btn{display:flex;align-items:center;gap:5px;background:none;border:1.5px solid var(--border);border-radius:20px;padding:5px 14px;cursor:pointer;font-size:.82rem;font-weight:700;color:var(--muted);transition:border-color .15s,color .15s,background .15s;font-family:var(--sans);}
-.heart-btn:hover{border-color:#e05080;color:#e05080;background:#fff5f7;}
-.heart-btn.liked{border-color:#e05080;color:#e05080;background:#fff5f7;}
-.heart-btn .heart-icon{font-size:1rem;transition:transform .2s;}
-.heart-btn:hover .heart-icon,.heart-btn.liked .heart-icon{transform:scale(1.25);}
-.gate-interests-avatars{display:flex;flex-wrap:wrap;gap:0;min-height:22px;}
 .interest-modal-bg{display:none;position:fixed;inset:0;background:rgba(20,14,8,.55);z-index:2100;align-items:flex-end;justify-content:center;padding:0 0 40px;overflow-y:auto;}
 .interest-modal-bg.show{display:flex;}
 .interest-modal{background:var(--card);border-radius:14px;padding:24px 22px 22px;width:100%;max-width:380px;box-shadow:0 8px 32px rgba(0,0,0,.25);color:#1a1208;position:relative;max-height:calc(100dvh - 60px);overflow-y:auto;}
@@ -608,8 +569,6 @@ footer a{color:var(--potato-light);text-decoration:none;}
 .completion-img-area{background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.28);border-radius:8px;padding:12px 16px;margin-top:10px;}
 .completion-img-head{display:flex;align-items:flex-start;gap:10px;cursor:pointer;}
 .completion-img-head input[type="checkbox"]{width:18px;height:18px;flex-shrink:0;margin-top:2px;cursor:pointer;accent-color:var(--potato-light);}
-.completion-img-title{font-size:.9rem;font-weight:700;color:#fff;}
-.completion-img-note{font-size:.8rem;color:rgba(255,255,255,.85);margin-top:4px;line-height:1.6;}
 
 /* ── ADMIN CARDS ── */
 .order-cards{display:flex;flex-direction:column;gap:10px;}
@@ -937,7 +896,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
   <div class="section-title">参加して受け取れるもの</div>
   <div class="receive-grid">
     <div style="background:var(--card);border:1.5px solid var(--border);border-radius:12px;overflow:hidden;">
-      <img src="https://bzjwhtemobtrfaghsdwt.supabase.co/storage/v1/object/public/order-images/20260603-compimg01.png" alt="イラスト入りレザーコースターの完成品" loading="lazy"
+      <img src="https://bzjwhtemobtrfaghsdwt.supabase.co/storage/v1/object/public/coaster-public/20260603-compimg01.png" alt="イラスト入りレザーコースターの完成品" loading="lazy"
         style="width:100%;aspect-ratio:1;object-fit:cover;display:block;">
       <div style="padding:14px 16px;">
         <div style="font-weight:700;color:var(--potato-dark);font-size:.95rem;margin-bottom:4px;">🪵 イラスト入りレザーコースター（実物）</div>
@@ -945,7 +904,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
       </div>
     </div>
     <div style="background:var(--card);border:1.5px solid var(--border);border-radius:12px;overflow:hidden;">
-      <img src="https://bzjwhtemobtrfaghsdwt.supabase.co/storage/v1/object/public/order-images/20260603-compimg02.png" alt="完成品の宣材写真" loading="lazy"
+      <img src="https://bzjwhtemobtrfaghsdwt.supabase.co/storage/v1/object/public/coaster-public/20260603-compimg02.png" alt="完成品の宣材写真" loading="lazy"
         style="width:100%;aspect-ratio:1;object-fit:cover;display:block;">
       <div style="padding:14px 16px;">
         <div style="font-weight:700;color:var(--potato-dark);font-size:.95rem;margin-bottom:4px;">📸 完成品の宣材写真</div>
@@ -1065,25 +1024,25 @@ footer a{color:var(--potato-light);text-decoration:none;}
             <div style="display:flex;flex-wrap:wrap;gap:16px;">
               <div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
                 <div style="display:flex;gap:6px;align-items:center;">
-                  <img src="https://bzjwhtemobtrfaghsdwt.supabase.co/storage/v1/object/public/order-images/exemplar1_input.png" style="width:70px;height:70px;object-fit:contain;border-radius:6px;border:1.5px solid var(--border);" loading="lazy" alt="元データ1">
+                  <img src="https://bzjwhtemobtrfaghsdwt.supabase.co/storage/v1/object/public/coaster-public/exemplar1_input.png" style="width:70px;height:70px;object-fit:contain;border-radius:6px;border:1.5px solid var(--border);" loading="lazy" alt="元データ1">
                   <span style="font-size:.85rem;color:var(--muted);">→</span>
-                  <img src="https://bzjwhtemobtrfaghsdwt.supabase.co/storage/v1/object/public/order-images/exemplar1_result.png" style="width:70px;height:70px;object-fit:contain;border-radius:6px;border:1.5px solid var(--border);" loading="lazy" alt="仕上がり1">
+                  <img src="https://bzjwhtemobtrfaghsdwt.supabase.co/storage/v1/object/public/coaster-public/exemplar1_result.png" style="width:70px;height:70px;object-fit:contain;border-radius:6px;border:1.5px solid var(--border);" loading="lazy" alt="仕上がり1">
                 </div>
                 <div style="font-size:.67rem;color:var(--muted);">丸型・人型キャラ</div>
               </div>
               <div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
                 <div style="display:flex;gap:6px;align-items:center;">
-                  <img src="https://bzjwhtemobtrfaghsdwt.supabase.co/storage/v1/object/public/order-images/exemplar2_input.png" style="width:70px;height:70px;object-fit:contain;border-radius:6px;border:1.5px solid var(--border);" loading="lazy" alt="元データ2">
+                  <img src="https://bzjwhtemobtrfaghsdwt.supabase.co/storage/v1/object/public/coaster-public/exemplar2_input.png" style="width:70px;height:70px;object-fit:contain;border-radius:6px;border:1.5px solid var(--border);" loading="lazy" alt="元データ2">
                   <span style="font-size:.85rem;color:var(--muted);">→</span>
-                  <img src="https://bzjwhtemobtrfaghsdwt.supabase.co/storage/v1/object/public/order-images/exemplar2_result.png" style="width:70px;height:70px;object-fit:contain;border-radius:6px;border:1.5px solid var(--border);" loading="lazy" alt="仕上がり2">
+                  <img src="https://bzjwhtemobtrfaghsdwt.supabase.co/storage/v1/object/public/coaster-public/exemplar2_result.png" style="width:70px;height:70px;object-fit:contain;border-radius:6px;border:1.5px solid var(--border);" loading="lazy" alt="仕上がり2">
                 </div>
                 <div style="font-size:.67rem;color:var(--muted);">角型・パターン柄</div>
               </div>
               <div style="display:flex;flex-direction:column;align-items:center;gap:5px;">
                 <div style="display:flex;gap:6px;align-items:center;">
-                  <img src="https://bzjwhtemobtrfaghsdwt.supabase.co/storage/v1/object/public/order-images/exemplar3_input.png" style="width:70px;height:70px;object-fit:contain;border-radius:6px;border:1.5px solid var(--border);" loading="lazy" alt="元データ3">
+                  <img src="https://bzjwhtemobtrfaghsdwt.supabase.co/storage/v1/object/public/coaster-public/exemplar3_input.png" style="width:70px;height:70px;object-fit:contain;border-radius:6px;border:1.5px solid var(--border);" loading="lazy" alt="元データ3">
                   <span style="font-size:.85rem;color:var(--muted);">→</span>
-                  <img src="https://bzjwhtemobtrfaghsdwt.supabase.co/storage/v1/object/public/order-images/exemplar3_result.png" style="width:70px;height:70px;object-fit:contain;border-radius:6px;border:1.5px solid var(--border);" loading="lazy" alt="仕上がり3">
+                  <img src="https://bzjwhtemobtrfaghsdwt.supabase.co/storage/v1/object/public/coaster-public/exemplar3_result.png" style="width:70px;height:70px;object-fit:contain;border-radius:6px;border:1.5px solid var(--border);" loading="lazy" alt="仕上がり3">
                 </div>
                 <div style="font-size:.67rem;color:var(--muted);">丸型・動物キャラ</div>
               </div>
@@ -1809,7 +1768,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
 //   マイナー … 新機能の追加
 //   機能変更 … 既存機能の修正・調整・バグfix
 //   文言変更 … テキストや表記だけの修正
-const SITE_VERSION = 'v1.3.5.2';
+const SITE_VERSION = 'v1.4.0.0';
 // ▲▲▲ リロードして表示が変われば新版が反映済み ▲▲▲
 // ══════════════════════════════════════════
 // ▼▼▼ 開催日を変更するとすべての日付が連動します ▼▼▼
@@ -1932,11 +1891,11 @@ const SB_H = () => ({
   'Prefer': 'return=representation'
 });
 
-// 画像をStorageにアップロード → 公開URLを返す
+// 画像を非公開バケット(coaster-orders)にアップロード → ファイルパスを返す
 async function sbUploadImage(file, filename) {
   // x-upsert は付けない：上書き(UPDATE)はanon権限で拒否されるため。
   // 注文ごとにファイル名は一意なので新規作成(INSERT)で十分。
-  const res = await fetch(`${SUPABASE_URL}/storage/v1/object/order-images/${filename}`, {
+  const res = await fetch(`${SUPABASE_URL}/storage/v1/object/coaster-orders/${filename}`, {
     method: 'POST',
     headers: {
       'apikey': SUPABASE_ANON_KEY,
@@ -1951,7 +1910,43 @@ async function sbUploadImage(file, filename) {
     console.error('画像アップロード失敗', res.status, filename, detail);
     throw new Error(`画像アップロード失敗 ${res.status}: ${detail.slice(0,200)}`);
   }
-  return `${SUPABASE_URL}/storage/v1/object/public/order-images/${filename}`;
+  // 非公開バケットなので公開URLではなくバケット内パスを保存する
+  return `coaster-orders/${filename}`;
+}
+
+// 公開バケット(coaster-public)にアップロード → 公開URLを返す（ギャラリー掲載用）
+async function sbUploadPublicImage(file, filename) {
+  const res = await fetch(`${SUPABASE_URL}/storage/v1/object/coaster-public/${filename}`, {
+    method: 'POST',
+    headers: {
+      'apikey': SUPABASE_ANON_KEY,
+      'Authorization': authBearer(),
+      'Content-Type': file.type || 'image/png'
+    },
+    body: file
+  });
+  if (!res.ok) {
+    let detail = '';
+    try { detail = await res.text(); } catch(_) {}
+    console.error('公開画像アップロード失敗', res.status, filename, detail);
+    throw new Error(`公開画像アップロード失敗 ${res.status}: ${detail.slice(0,200)}`);
+  }
+  return `${SUPABASE_URL}/storage/v1/object/public/coaster-public/${filename}`;
+}
+
+// 非公開バケットの画像を管理者トークン付きで取得しBlob URL化（<img src>用）
+async function sbAuthedImageUrl(path) {
+  if (!path) return '';
+  // 旧データ(完全URL)はそのまま返す
+  if (/^https?:\/\//.test(path)) return path;
+  try {
+    const res = await fetch(`${SUPABASE_URL}/storage/v1/object/authenticated/${path}`, {
+      headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': authBearer() }
+    });
+    if (!res.ok) return '';
+    const blob = await res.blob();
+    return URL.createObjectURL(blob);
+  } catch { return ''; }
 }
 
 // 注文データをDBに保存(thumbはサイズが大きいのでDBには入れない)
@@ -3018,11 +3013,6 @@ function onImageSelect(e) {
 }
 function isPsdAi(file) {
   return /\.(psd|ai)$/i.test(file.name);
-}
-
-function calcCoverScale(imgW, imgH) {
-  const aspect = imgW / imgH;
-  return Math.min(150, Math.round((aspect >= 1 ? aspect : 1 / aspect) * 100));
 }
 
 function loadImageFile(file) {
@@ -4253,10 +4243,11 @@ function renderOrders() {
         <!-- サムネイル＋氏名(左50%) -->
         <div class="oc-thumb-col">
           <div class="oc-thumb-wrap">
-            ${(o.thumb || o.image_url)
-              ? `<img class="oc-thumb-lg ${o.shape==='サークル'?'ci':'sq'}" src="${o.thumb || o.image_url}" alt=""
-                  onclick="zoomImg('${o.thumb || o.image_url}')">`
-              : `<div class="oc-thumb-empty">なし</div>`
+            ${o.thumb
+              ? `<img class="oc-thumb-lg ${o.shape==='サークル'?'ci':'sq'}" src="${o.thumb}" alt="" onclick="zoomImg('${o.thumb}')">`
+              : (o.image_url
+                ? `<img class="oc-thumb-lg ${o.shape==='サークル'?'ci':'sq'}" alt="" data-authed-img="${escapeHTML(o.image_url)}" style="cursor:zoom-in;">`
+                : `<div class="oc-thumb-empty">なし</div>`)
             }
           </div>
           <div class="oc-group" style="flex:1;min-width:0;">
@@ -4402,6 +4393,20 @@ function renderOrders() {
       </div>` : ''}
     </div>`;
   }).join('')}</div>`;
+
+  // 非公開バケットの画像(data-authed-img)を管理者トークン付きで読み込む
+  c.querySelectorAll('img[data-authed-img]').forEach(async (img) => {
+    const path = img.getAttribute('data-authed-img');
+    const url = await sbAuthedImageUrl(path);
+    if (url) {
+      img.src = url;
+      img.onclick = () => zoomImg(url);
+    } else {
+      img.replaceWith(Object.assign(document.createElement('div'), {
+        className: 'oc-thumb-empty', textContent: '表示不可'
+      }));
+    }
+  });
 }
 
 async function toggleSampleSent(ref) {
@@ -5220,7 +5225,7 @@ async function uploadCompletionPhoto(ref, file) {
   try {
     const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
     const filename = `completion_${ref}_${Date.now()}.${ext}`;
-    const url = await sbUploadImage(file, filename);
+    const url = await sbUploadPublicImage(file, filename);
     o.completionPhotos = [...o.completionPhotos, url];
     saveOrders();
     await sbPatch(ref, { completionPhotos: o.completionPhotos });
