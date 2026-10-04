@@ -4195,7 +4195,7 @@ async function submitAdminPw() {
 // ログイン成功後の共通処理：管理パネルを開いてデータを読み込む
 async function openAdminPanel(restoreScroll = null) {
   closeAdminPwModal();
-  if(restoreScroll!==null){document.getElementById('mainContent').style.display='block';document.getElementById('gate').style.display='none';}
+  if(restoreScroll!==null||location.hash==='#admin'){document.getElementById('mainContent').style.display='block';document.getElementById('gate').style.display='none';}
   adminVisible = true;
   setAdminOpen(true);
   document.getElementById('adminPanel').style.display = 'block';
@@ -7015,7 +7015,7 @@ window.addEventListener('pagehide',()=>{
   try{const s=readAdminSession();if(s){s.open=adminVisible;s.scroll=window.scrollY;sessionStorage.setItem(ADMIN_SESSION_KEY,JSON.stringify(s));}}catch{}
 });
 async function restoreAdminSession(){
-  const s=readAdminSession();if(!s?.open||location.hash.startsWith('#review='))return;
+  const s=readAdminSession();if((!s?.open&&location.hash!=='#admin')||!s?.access_token||location.hash.startsWith('#review='))return;
   try{
     let token=s.access_token;
     if(!token||Number(s.expires_at)<Date.now()/1000+30){
@@ -7031,7 +7031,9 @@ async function restoreAdminSession(){
     _authToken=token;await openAdminPanel(Number(s.scroll)||0);
   }catch(err){_authToken=null;showToast(err.message||'管理者として再ログインしてください。');}
 }
-restoreAdminSession();
+restoreAdminSession().then(()=>{
+  if(location.hash==='#admin'&&!adminVisible)toggleAdmin({preventDefault(){}});
+});
 
 </script>
 </body>
