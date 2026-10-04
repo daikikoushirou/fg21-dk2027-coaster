@@ -2178,7 +2178,7 @@ async function notifyMake(order, cutlineBlob = null, imageMeta = null) {
       body:JSON.stringify({
         name:order.name, circle_name:order.circleName||'',circle_space:order.circleSpace||'',
         shape:order.shape,qty:order.qty,total:order.total,order_type:order.type,
-        code:order.code,ref:order.ref,email:order.email,x_account:order.xAccount||'',
+        code:order.code,ref:order.ref,email:order.email,x_account:order.xAccount||'',contact_pref:order.contactPref||'email',contact_label:order.contactPref==='x'?'X優先：@'+(order.xAccount||'')+'へDMで連絡してください':'メール優先',
         early_bird:order.earlyBird?'早割':'', ...attachment
       })
     });
@@ -4388,6 +4388,7 @@ function renderOrders() {
       </div>` : ''}
 
       <div class="order-card-row"><button class="oc-delete-btn" onclick="deleteOrder('${o.ref}')">この注文を削除</button></div></details>
+      ${dmAdminControls(o)}
       ${reviewAdminControls(o)}
       <details class="admin-order-details" data-admin-section="gallery-${o.ref}"><summary>展示・ギャラリー写真 ${o.completionPhotos?.length?'（'+o.completionPhotos.length+'枚）':'（未登録）'}</summary><p class="admin-section-help">こちらは公開展示用の写真です。注文者に確認してもらう写真は「確認・連絡」で登録します。</p>
       <!-- 完成写真アップロード(ギャラリー用) -->
@@ -6764,6 +6765,7 @@ async function saveMaterialStock() {
 
 let coasterReviewRows=[];
 let coasterReviewFiles=[];
+let coasterDmRows=[];
 async function reviewRpc(name,body,admin=false){
   const res=await fetch(`${SUPABASE_URL}/rest/v1/rpc/${name}`,{method:'POST',headers:{...SB_H(),Authorization:admin?authBearer():'Bearer '+SUPABASE_ANON_KEY},body:JSON.stringify(body)});
   if(!res.ok){const text=await res.text();let message='確認処理に失敗しました。';try{message=JSON.parse(text).message||message;}catch{}if(message.includes('MATERIAL_CAPACITY_EXCEEDED'))message='追加製作分の材料が不足しているため確定できません。主催者にご連絡ください。追加料金はまだ加算していません。';throw Error(message);}
@@ -6778,20 +6780,52 @@ async function loadCoasterReviews(){
     ]);
     if(!res.ok||!files.ok)throw Error('確認・原稿の設定を読み込めません。SQL10の適用を確認してください。');
     coasterReviewRows=await res.json();coasterReviewFiles=await files.json();
-  }catch(err){coasterReviewRows=[];coasterReviewFiles=[];showToast(err.message);}
+    const dm=await fetch(`${SUPABASE_URL}/rest/v1/coaster_review_mail_queue?delivery_channel=eq.x&select=id,review_id,event_type,dm_text,dm_account,dm_sent_at,created_at,review_version&order=created_at.desc&limit=500`,{headers:SB_H()});
+    coasterDmRows=dm.ok?await dm.json():[];
+  }catch(err){coasterReviewRows=[];coasterReviewFiles=[];coasterDmRows=[];showToast(err.message);}
+}
+function orderDmTasks(o){
+ const ids=new Set(coasterReviewRows.filter(r=>r.order_ref===o.ref&&r.status!=='superseded').map(r=>r.id));
+ return coasterDmRows.filter(q=>ids.has(q.review_id)||q.dm_text?.includes('注文番号：'+o.ref+'\n')||q.dm_text?.endsWith('注文番号：'+o.ref)).filter(q=>{
+   if(q.dm_sent_at)return true;
+   const r=coasterReviewRows.find(x=>x.id===q.review_id);
+   if(q.event_type==='ready')return ['made','done'].includes(o.status);
+   if(!r||r.status==='superseded')return false;
+   if(q.event_type==='request')return r.status==='pending';
+   if(q.event_type==='quote')return r.status==='quote_ready'&&r.quote_version===q.review_version;
+   if(q.event_type==='reminder')return !r.held&&['pending','consultation','quote_ready'].includes(r.status)&&r.waiting_for?.startsWith('customer');
+   if(q.event_type==='hold')return r.held;
+   return false;
+ });
+}
+function dmAdminControls(o){
+ if(o.contactPref!=='x')return '';
+ const tasks=orderDmTasks(o),pending=tasks.filter(q=>!q.dm_sent_at);
+ const labels={request:'写真確認の依頼',quote:'再製作内容・料金の確認',reminder:'再通知',hold:'製作保留のお知らせ',ready:'完成のお知らせ'};
+ return `<details class="admin-order-details" data-admin-section="dm-${o.ref}" ${pending.length?'open':''}><summary>X優先・DM連絡 ${pending.length?'（未記録 '+pending.length+'件）':'（送信待ちなし）'}</summary><div style="padding:0 14px 14px;"><p>本人への連絡はXのDMで送ってください。通知メールは主催者宛です。DMを送った後に送信済みを記録します。</p>${tasks.length?tasks.slice(0,8).map(q=>`<div style="border:1px solid var(--border);border-radius:8px;padding:12px;margin:10px 0;"><strong>${escapeHTML(labels[q.event_type]||'連絡')} ／ ${q.dm_sent_at?'DM送信記録済み':'DM送信が必要'}</strong><p>@${escapeHTML(q.dm_account||o.xAccount||'未登録')}</p><textarea readonly style="width:100%;min-height:120px;background:white;color:#222;">${escapeHTML(q.dm_text||'')}</textarea><button class="admin-btn" onclick="copyCoasterDm('${q.id}')">DM文面をコピー</button><a href="https://x.com/${encodeURIComponent((q.dm_account||o.xAccount||'').replace(/^@/,''))}" target="_blank" rel="noopener noreferrer">Xプロフィールを開く</a>${!q.dm_sent_at?`<button class="admin-btn" onclick="recordCoasterDmSent('${q.id}')">DM送信済みを記録</button>`:''}</div>`).join(''):'<p>現在の写真確認・完成通知のDM作業はありません。既にメールで送られた過去の依頼は、自動では作り直しません。</p>'}</div></details>`;
+}
+async function copyCoasterDm(id){
+ const q=coasterDmRows.find(x=>x.id===id);if(!q)return;
+ try{await navigator.clipboard.writeText(q.dm_text||'');showToast('DM用の文面をコピーしました。');}catch{prompt('この文面をコピーしてXのDMで送ってください。',q.dm_text||'');}
+}
+async function recordCoasterDmSent(id){
+ if(!confirm('本人へXのDMを送信済みであることを記録しますか？'))return;
+ try{await reviewRpc('coaster_record_dm_sent',{p_id:id},true);await loadAndRenderOrders();showToast('DM送信を記録しました。返信期限はこの記録から数えます。');}catch(err){showToast(err.message);}
 }
 function adminNextAction(o){
+ if(orderDmTasks(o).some(q=>!q.dm_sent_at))return 'XのDMで連絡し、送信済みを記録';
  const reviews=coasterReviewRows.filter(r=>r.order_ref===o.ref&&r.status!=='superseded');
  if(reviews.some(r=>r.held))return '製作保留：返答・原稿と日程を確認';
  if(reviews.some(r=>r.status==='consultation'&&r.waiting_for==='organizer'))return '修正相談・原稿を確認して再製作内容を案内';
  if(reviews.some(r=>r.waiting_for==='customer_data'))return '注文者の修正原稿待ち';
  if(reviews.some(r=>r.status==='quote_ready'))return '再製作内容・追加料金への同意待ち';
- if(reviews.some(r=>r.status==='pending'))return '写真への返答待ち';
+ const pending=reviews.find(r=>r.status==='pending');if(pending)return (pending.kind==='sample'?'端材試作':'完成写真')+'への返答待ち';
  if(o.status==='done')return '受け渡し完了';
  if(o.sampleRequested&&!reviews.some(r=>r.kind==='sample'))return '端材試作の写真を登録して確認を依頼';
  if(o.wantsCompletionImage&&!reviews.some(r=>r.kind==='completion')&&['made','working','making'].includes(o.status))return '仕上がり写真を登録して確認を依頼';
  if(reviews.some(r=>r.status==='revision_confirmed'))return '同意済みの内容で再製作';
- if(o.status==='made')return '当日の受け渡し待ち';
+ if(o.status==='made')return (reviews.some(r=>r.kind==='completion'&&r.status==='approved')?'完成写真OK済み ／ ':'')+'当日の受け渡し待ち';
+ if(reviews.some(r=>r.kind==='sample'&&r.status==='approved'))return '端材試作OK済み ／ 本番製作を進める';
  return '製作を進める';
 }
 function reviewAdminControls(o){
@@ -6800,7 +6834,7 @@ function reviewAdminControls(o){
   const labels={pending:'返答待ち',approved:'OK・承認済み',revision_requested:'修正希望（旧方式）',consultation:'修正相談中・未加算',quote_ready:'再製作内容・料金の同意待ち',revision_confirmed:'再製作依頼確定・加算済み'};
   const row=kind=>{
     const review=entries.find(r=>r.kind===kind);
-    const state=review?(review.held?'製作保留 ／ ':'')+(Date.parse(review.expires_at)<Date.now()?'リンク期限切れ':labels[review.status]):'写真未登録';
+    const state=review?(review.held?'製作保留 ／ ':'')+(review.status==='approved'?'本人OK済み':Date.parse(review.expires_at)<Date.now()?'リンク期限切れ':labels[review.status]):'写真未登録';
     const files=review?coasterReviewFiles.filter(f=>f.review_id===review.id):[];
     return `<div style="margin:8px 0;"><strong>${kind==='sample'?'端材試作':'仕上がり確認'}</strong>：${escapeHTML(state||'未確認')}${review?.message?'<p>'+escapeHTML(review.message)+'</p>':''}
       ${files.map(f=>`<p><button class="admin-btn" onclick="downloadAdminRevision('${f.id}')">原稿をダウンロード</button> ${escapeHTML(f.original_name)}</p>`).join('')}
@@ -6809,7 +6843,9 @@ function reviewAdminControls(o){
       ${review?.status==='quote_ready'?`<button class="admin-btn" onclick="recordReviewContact('${review.id}','confirm')">メール等での再製作・300円の同意を記録</button>`:''}
       <br><label style="font-size:.8rem;color:#2c2418;">確認写真を登録してメール依頼：<input type="file" accept="image/jpeg,image/png,image/webp" style="color:var(--ink);" onchange="createCoasterReview('${o.ref}','${kind}',this)"></label></div>`;
   };
-  return `<details class="admin-order-details" data-admin-section="review-${o.ref}"><summary>確認・連絡（${o.sampleRequested?'端材試作':''}${o.sampleRequested&&o.wantsCompletionImage?'・':''}${o.wantsCompletionImage?'仕上がり確認':''}）</summary><div class="order-card-row" style="display:block;background:rgba(160,120,74,.04);padding:12px;">${o.sampleRequested?row('sample'):''}${o.wantsCompletionImage?row('completion'):''}<details style="margin:12px 0;"><summary style="cursor:pointer;">連絡・料金の扱い</summary><p style="font-size:.75rem;">リンクは30日間有効。未返信は3日後に再通知、7日後に製作保留（開催直前は表示期限まで）。相談・原稿提出だけでは加算しません。メール通知の結果はMakeで確認してください。メール・XのDMで返答を受け取った場合は、記録ボタンから日時・連絡手段・内容を記録してください。原稿をメール・DMで受領済みの場合は、見積もりの「修正原稿が必要」を外して内容と追加料金の同意を依頼できます。</p></details></div></details>`;
+  const compact=kind=>{const r=entries.find(x=>x.kind===kind);return (kind==='sample'?'端材試作':'完成写真')+'：'+(r?(r.held?'製作保留':r.status==='approved'?'本人OK済み':labels[r.status]||'要確認'):'写真未登録');};
+  const summary=[o.sampleRequested&&compact('sample'),o.wantsCompletionImage&&compact('completion')].filter(Boolean).join(' ／ ');
+  return `<details class="admin-order-details" data-admin-section="review-${o.ref}"><summary>確認・連絡<br><span style="font-size:.82rem;font-weight:400;">${escapeHTML(summary)}</span></summary><div class="order-card-row" style="display:block;background:rgba(160,120,74,.04);padding:12px;">${o.sampleRequested?row('sample'):''}${o.wantsCompletionImage?row('completion'):''}<details style="margin:12px 0;"><summary style="cursor:pointer;">連絡・料金の扱い</summary><p style="font-size:.75rem;">リンクは30日間有効。未返信は3日後に再通知、7日後に製作保留（開催直前は表示期限まで）。相談・原稿提出だけでは加算しません。メール通知の結果はMakeで確認してください。メール・XのDMで返答を受け取った場合は、記録ボタンから日時・連絡手段・内容を記録してください。原稿をメール・DMで受領済みの場合は、見積もりの「修正原稿が必要」を外して内容と追加料金の同意を依頼できます。</p></details></div></details>`;
 }
 async function createCoasterReview(ref,kind,input){
   const file=input.files?.[0];if(!file)return;
@@ -6890,13 +6926,13 @@ async function downloadAdminRevision(id){
  };
  const submitResponse=async(actionName,message,later)=>{
    await reviewRpc('coaster_submit_review_response',{p_token:token,p_action:actionName,p_message:message,p_data_later:later});
-   await reload();msg.textContent=actionName==='ok'?'OKの返答を記録しました。':'修正の相談を記録しました。この段階では追加料金を加算していません。データはこの画面から後で送れます。';
+   await reload();msg.textContent=actionName==='ok'?(review?.kind==='sample'?'端材試作':'完成写真')+'へのOKを記録しました。':'修正の相談を記録しました。この段階では追加料金を加算していません。データはこの画面から後で送れます。';
  };
  function render(){
    content.replaceChildren();title.textContent=review.kind==='sample'?'端材試作の確認':'仕上がりの確認';
    content.append(el('p',`${review.name} 様 ／ ${review.ref} ／ ${review.shape} ${review.qty}点 ／ 現在の合計 ${review.total}円`));
    const scope=el('p','デザインの作成・修正は注文者ご自身でお願いします。主催者は受領した原稿を素材に出力します。線の太さ、配置、文字、色などの編集・デザイン修正はお受けできません。変更をご希望の場合は、ご自身で修正した原稿をお送りください。');scope.style.cssText='padding:12px;border:1px solid #c7b98e;border-radius:8px;line-height:1.7;';content.append(scope);
-   const labels={pending:'返答をお待ちしています',approved:'OKの返答を記録済み',consultation:review.waiting_for==='customer_data'?'修正データをお待ちしています（未加算）':'主催者が修正内容を確認しています（未加算）',quote_ready:'再製作内容と追加料金をご確認ください',revision_confirmed:'再製作の依頼・追加料金への同意を記録済み',revision_requested:'修正希望を記録済み（以前の方式）'};
+   const labels={pending:(review.kind==='sample'?'端材試作':'完成写真')+'への返答をお待ちしています',approved:(review.kind==='sample'?'端材試作':'完成写真')+'へのOKを記録済み',consultation:review.waiting_for==='customer_data'?'修正データをお待ちしています（未加算）':'主催者が修正内容を確認しています（未加算）',quote_ready:'再製作内容と追加料金をご確認ください',revision_confirmed:'再製作の依頼・追加料金への同意を記録済み',revision_requested:'修正希望を記録済み（以前の方式）'};
    content.append(el('p',labels[review.status]||'主催者にお問い合わせください'));
    if(review.held)content.append(el('p','現在、製作を保留しています。キャンセルにはしていません。返答・原稿提出後、主催者が製作日程を確認して再開します。'));
    if(review.waiting_for?.startsWith('customer')&&review.reply_by){content.append(el('p','返答・原稿提出の目安：'+new Date(review.reply_by).toLocaleString('ja-JP',{timeZone:'Asia/Tokyo'})+'（日本時間）。間に合わない場合はメールに返信してご相談ください。'));
@@ -6909,7 +6945,7 @@ async function downloadAdminRevision(id){
    if(['pending','consultation','quote_ready'].includes(review.status)){
      const choice=el('fieldset');choice.className='review-choice';choice.append(el('legend','返答を選んでください'));
      let selected=params.get('choice')==='revise'||review.status==='consultation'?'consult':'ok';
-     for(const [value,text]of [['ok',review.status==='quote_ready'?'元の写真のままでOK（修正せず追加料金なし）':'この仕上がりでOK'],['consult','修正を相談する／データは後で送る']]){
+     for(const [value,text]of [['ok',review.status==='quote_ready'?'元の写真のままでOK（修正せず追加料金なし）':review.kind==='sample'?'この端材試作でOK（本番製作へ進む）':'この完成写真でOK'],['consult','修正を相談する／データは後で送る']]){
        const label=el('label'),radio=el('input');radio.type='radio';radio.name='photoReviewResponse';radio.value=value;radio.checked=value===selected;radio.onchange=()=>{selected=value;update();};label.append(radio,document.createTextNode(text));choice.append(label);
      }
      const consult=el('div'),note=el('textarea');note.maxLength=2000;note.placeholder='ご自身で修正した原稿の再出力についての相談。データを後で送る場合は空欄でも送れます。';note.style.cssText=inputStyle+'min-height:100px;';
