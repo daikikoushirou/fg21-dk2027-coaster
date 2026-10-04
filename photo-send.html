@@ -1,5 +1,5 @@
 <!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>主催者用・写真送信｜コースター企画</title><meta name="robots" content="noindex,nofollow"><style>
-*{box-sizing:border-box}body{margin:0;background:#f8f5ee;color:#2c2418;font:16px/1.7 system-ui,sans-serif}main{max-width:680px;margin:24px auto;padding:24px;background:#fffdf6;border:1px solid #d6cdb4;border-radius:14px}h1{font-size:1.4rem;margin:0 0 8px}h2{font-size:1.1rem}p{margin:10px 0}label{display:block;color:#2c2418;margin:12px 0}input,select,button{font:inherit}input,select{width:100%;padding:10px;background:#fff;color:#2c2418;border:1px solid #c7b98e;border-radius:7px}button,.file-button{display:inline-block;padding:10px 16px;background:#59491f;color:#fff;border:0;border-radius:7px;cursor:pointer;margin:6px 8px 6px 0}button:disabled{opacity:.5;cursor:wait}.file-button input{display:none}.hint{font-size:.85rem;color:#736959}#orderInfo{padding:14px;background:#f3ecd9;border-radius:8px;font-weight:700}#preview{display:block;width:100%;max-height:420px;object-fit:contain;margin:16px 0}#message{white-space:pre-wrap;padding:12px;border-left:4px solid #a08b45;background:#f3ecd9}#logout{background:#736959}a{color:#59491f}[hidden]{display:none!important}@media(max-width:720px){main{margin:12px;padding:18px}}
+*{box-sizing:border-box}body{margin:0;background:#f8f5ee;color:#2c2418;font:16px/1.7 system-ui,sans-serif}main{max-width:680px;margin:24px auto;padding:24px;background:#fffdf6;border:1px solid #d6cdb4;border-radius:14px}h1{font-size:1.4rem;margin:0 0 8px}h2{font-size:1.1rem}p{margin:10px 0}label{display:block;color:#2c2418;margin:12px 0}input,select,button{font:inherit}input,select{width:100%;padding:10px;background:#fff;color:#2c2418;border:1px solid #c7b98e;border-radius:7px}button,.file-button{display:inline-block;padding:10px 16px;background:#59491f;color:#fff;border:0;border-radius:7px;cursor:pointer;margin:6px 8px 6px 0}button:disabled{opacity:.5;cursor:default}#sender[aria-busy="true"],#sender[aria-busy="true"] button{cursor:wait}.file-button input{display:none}.hint{font-size:.85rem;color:#736959}#orderInfo{padding:14px;background:#f3ecd9;border-radius:8px;font-weight:700}#preview{display:block;width:100%;max-height:420px;object-fit:contain;margin:16px 0}#message{white-space:pre-wrap;padding:12px;border-left:4px solid #a08b45;background:#f3ecd9}#logout{background:#736959}a{color:#59491f}[hidden]{display:none!important}@media(max-width:720px){main{margin:12px;padding:18px}}
 </style></head><body><main><h1>主催者用・写真送信</h1><p>通知メールのリンクから、その注文の写真を送れます。</p>
 <form id="login"><h2>管理者ログイン</h2><label>メールアドレス<input id="email" type="email" required autocomplete="username" value="daikikoushirou@gmail.com"></label><label>パスワード<input id="password" type="password" required autocomplete="current-password"></label><button id="loginButton">ログイン</button></form>
 <section id="sender" hidden><label>注文番号<input id="orderRef" autocomplete="off"></label><button id="loadOrder" type="button">注文を確認</button><p id="orderInfo"></p><label>送信する写真<select id="kind"><option id="sampleOption" value="sample">端材試作</option><option value="completion">完成写真</option></select></label><p id="outcome"></p><label class="file-button">写真を撮る<input id="camera" type="file" accept="image/*" capture="environment"></label><label class="file-button">写真を選ぶ<input id="photo" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif"></label><img id="preview" alt="送信する写真のプレビュー" hidden><p id="photoInfo" class="hint"></p><p class="hint">元写真は送信しません。写真をJPEGに変換してEXIF・位置情報を除去し、長辺最大2400pxに整えます。デザイン原稿の提出用ではありません。</p><button id="send" type="button" disabled>送信</button><button id="logout" type="button">ログアウト</button></section>
@@ -7,7 +7,7 @@
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ6andodGVtb2J0cmZhZ2hzZHd0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MDY3MzEsImV4cCI6MjA5NTQ4MjczMX0.NJuzPVdv3KWfNFswlfhYqX-ppC5wFUX-7nGXN_HiCLI';</script><script>const OWNER_ID='0285dcfd-9477-4155-8b17-08c51c3fdbd5';
 const SESSION_KEY='bc_admin_tab_session';
 const PHOTO_SESSION_KEY='bc_photo_send_session';
-const qs=new URLSearchParams(location.search),state={token:null,order:null,file:null,prepared:null,pending:null,busy:false};
+const qs=new URLSearchParams(location.search),state={token:null,order:null,file:null,prepared:null,pending:null,busy:false,sent:false};
 const $=id=>document.getElementById(id);
 const notice=text=>{$('message').textContent=text;};
 const params={ref:(qs.get('ref')||'').trim(),kind:qs.get('kind')==='sample'?'sample':'completion'};
@@ -42,7 +42,7 @@ async function loginPhoto(event){
 async function loadPhotoOrder(){
  const ref=$('orderRef').value.trim();if(!ref){state.order=null;notice('通知メールの写真送信リンクから開くか、注文番号を入力してください。');return;}
  const rows=await api('/rest/v1/coaster_orders?ref=eq.'+encodeURIComponent(ref)+'&select=ref,code,name,circle_name,shape,qty,total,status,sample_requested,wants_completion_image,gallery_ok');
- state.order=rows?.[0]||null;state.pending=null;
+ state.order=rows?.[0]||null;state.pending=null;state.sent=false;
  if(!state.order){$('orderInfo').textContent='注文が見つかりません。';$('send').disabled=true;return;}
  const o=state.order;$('orderInfo').textContent=`${o.name} 様 ／ ${o.circle_name||'一般参加'} ／ ${o.ref} ／ ${o.shape} ${o.qty}点 ／ ${o.total}円`;
  $('sampleOption').disabled=!o.sample_requested;if($('kind').value==='sample'&&!o.sample_requested)$('kind').value='completion';
@@ -51,7 +51,7 @@ async function loadPhotoOrder(){
 function updatePhotoKind(){
  const o=state.order;if(!o)return;
  const sample=$('kind').value==='sample';
- $('send').textContent=sample?'端材試作の写真を送信':'完成写真を送信';
+ $('send').textContent=state.sent?'送信完了':(sample?'端材試作の写真を送信':'完成写真を送信');
  $('outcome').textContent=sample?'位置情報を除去して確認メールを依頼します。本人のOKを待ってから本番製作へ進みます。':(o.wants_completion_image?'位置情報を除去して仕上がり確認メールを依頼します。本人のOK後に製作済みへ自動更新します。':'位置情報を除去して完成メールを依頼し、製作済みへ自動更新します。')+(o.gallery_ok?' ギャラリーにも自動登録し、指定日時（未指定なら製作済みから24時間後）に公開します。':' 掲載許可がないためギャラリーには公開しません。');
  $('send').disabled=!state.prepared||['done','cancelled'].includes(o.status);
 }
@@ -73,7 +73,7 @@ async function stripPhotoMetadata(file){
 }
 let prepareVersion=0,previewURL=null;
 async function selectPhoto(event){
- const file=event.target.files?.[0],version=++prepareVersion;state.prepared=null;state.pending=null;$('send').disabled=true;
+ const file=event.target.files?.[0],version=++prepareVersion;state.prepared=null;state.pending=null;state.sent=false;$('send').disabled=true;
  if(previewURL){URL.revokeObjectURL(previewURL);previewURL=null;}$('preview').hidden=true;if(!file)return;
  notice('写真を準備しています…');
  try{
@@ -85,7 +85,7 @@ async function selectPhoto(event){
 }
 async function submitPhoto(){
  if(state.busy||!state.order||!state.prepared)return;
- state.busy=true;const controls=[...$('sender').querySelectorAll('input,select,button')];controls.forEach(n=>n.disabled=true);notice('写真を保存しています…');
+ state.busy=true;$('sender').setAttribute('aria-busy','true');const controls=[...$('sender').querySelectorAll('input,select,button')];controls.forEach(n=>n.disabled=true);notice('写真を保存しています…');
  try{
    const ref=state.order.ref,kind=$('kind').value;
    if(!state.pending)state.pending={id:crypto.randomUUID(),ref,kind,blob:state.prepared.blob,uploaded:false};
@@ -99,16 +99,16 @@ async function submitPhoto(){
    if(!p.photoURL){const signed=await api('/storage/v1/object/sign/coaster-orders/'+filename,{method:'POST',body:JSON.stringify({expiresIn:2592000})});const path=signed?.signedURL||signed?.signedUrl;if(!path)throw Error('写真の共有リンクを作れませんでした。');p.photoURL=path.startsWith('https://')?path:SUPABASE_URL+'/storage/v1'+path;}
    notice('通知と完成情報を登録しています…');
    await api('/rest/v1/rpc/coaster_submit_photo',{method:'POST',body:JSON.stringify({p_id:p.id,p_ref:p.ref,p_kind:p.kind,p_object_path:filename,p_photo_url:p.photoURL})});
-   state.prepared=null;state.pending=null;$('photo').value='';$('camera').value='';$('preview').hidden=true;$('photoInfo').textContent='';
+   state.prepared=null;state.pending=null;state.sent=true;$('photo').value='';$('camera').value='';$('preview').hidden=true;$('preview').removeAttribute('src');if(previewURL){URL.revokeObjectURL(previewURL);previewURL=null;}$('photoInfo').textContent='';
    notice('登録が完了しました。確認／完成メールの送信を依頼しました。この写真について追加の送信・ギャラリー登録操作は不要です。実際のメール送信結果はMakeで確認できます。');
  }catch(err){notice(err.message+' 保存後の通信エラーの場合は、同じ写真のまま再送信してください。二重登録は防止されます。');}
- finally{state.busy=false;controls.forEach(n=>n.disabled=false);updatePhotoKind();}
+ finally{state.busy=false;$('sender').setAttribute('aria-busy','false');controls.forEach(n=>n.disabled=false);updatePhotoKind();}
 }
 $('orderRef').value=params.ref;$('kind').value=params.kind;
 $('login').addEventListener('submit',loginPhoto);
 $('loadOrder').onclick=()=>loadPhotoOrder().catch(err=>notice(err.message));
 $('photo').onchange=selectPhoto;$('camera').onchange=selectPhoto;
-$('kind').onchange=()=>{state.pending=null;updatePhotoKind();};
+$('kind').onchange=()=>{state.pending=null;state.sent=false;updatePhotoKind();};
 $('send').onclick=submitPhoto;
 $('logout').onclick=()=>{clearSession();notice('写真送信画面からログアウトしました。');};
 restorePhotoSession();
