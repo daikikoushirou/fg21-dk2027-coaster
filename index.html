@@ -2013,7 +2013,7 @@ async function sbInsert(order) {
   // anonにはSELECT権限が無いため representation だと読み返しでRLS拒否されるのを回避。
   const res = await fetch(`${SUPABASE_URL}/rest/v1/coaster_orders`, {
     method: 'POST',
-    headers: { ...SB_H(), 'Prefer': 'return=minimal' },
+    headers: { ...SB_H(), Authorization:'Bearer '+SUPABASE_ANON_KEY, 'Prefer': 'return=minimal' },
     body: JSON.stringify(payload)
   });
   if (!res.ok) {
@@ -3812,6 +3812,7 @@ document.getElementById('orderForm').addEventListener('submit', async e => {
   e.preventDefault();
   if (isPastDeadline()) { showToast('申し込みは締め切りました'); return; }
   if (!validateForm()) return;
+  if(!sbReady()){showToast('DBに接続できないため注文を登録できません。接続設定を確認してください。');return;}
   if(sbReady()) {
     try {
       if(!await checkMaterialCapacity(Number(document.getElementById('f-qty').value))) {
@@ -3996,9 +3997,7 @@ document.getElementById('orderForm').addEventListener('submit', async e => {
   // Make.com に注文情報を通知
   // 通知はDB保存成功を確認してから行う。
 
-  // 常にlocalStorageにも保存(バックアップ)
-  orders.unshift(order);
-  saveOrders();
+  // 管理一覧は送信元に関係なくDBから取得し、未保存の注文を混ぜない。
 
   // 全リトライ失敗時はエラーモーダルを表示
   if (cloudSaveFailed) {
@@ -4007,6 +4006,7 @@ document.getElementById('orderForm').addEventListener('submit', async e => {
   }
 
   if (sbReady()) notifyMake(order, cutlineBlob, imageMeta);
+  if(adminVisible){await loadAndRenderOrders();await loadMaterialStock();}
 
   document.getElementById('orderRef').textContent = 'ORDER ' + ref;
   document.getElementById('exchangeCodeDisplay').textContent = code;
@@ -4996,15 +4996,16 @@ async function sbDeleteAllInterests() {
 let _interestsList = [];
 
 async function reloadInterestsAdmin() {
-  document.getElementById('interestsAdminContainer').innerHTML = '<div class="admin-empty">読み込み中…</div>';
-  let list = JSON.parse(localStorage.getItem('bc_interests') || '[]');
+  const container=document.getElementById('interestsAdminContainer');
+  container.innerHTML='<div class="admin-empty">DBから読み込み中…</div>';
+  _interestsList=[];
   try {
-    const remote = await sbFetchInterests();
-    if (remote.length) { list = remote; localStorage.setItem('bc_interests', JSON.stringify(list)); }
-  } catch(e) {}
-  _interestsList = list;
-  renderInterests(list);
-  renderInterestsAdmin();
+    if(!sbReady()||!_authToken)throw Error('管理者としてログインしてください。');
+    _interestsList=await sbFetchInterests();
+    renderInterests(_interestsList);renderInterestsAdmin();
+  }catch(err){
+    _interestsList=[];container.innerHTML='<div class="admin-empty">DBから取得できませんでした。再読み込み、または再ログインしてください。</div>';
+  }
 }
 
 function renderInterestsAdmin() {
