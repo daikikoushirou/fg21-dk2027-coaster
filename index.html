@@ -6863,6 +6863,11 @@ async function downloadAdminRevision(id){
  #orderPhotoReview textarea::placeholder{color:#736959;opacity:1;}
  #orderPhotoReview .admin-btn{display:inline-flex;align-items:center;justify-content:center;line-height:1.5;margin:6px 8px 6px 0;}
  #orderPhotoReview .review-close{display:block;margin-top:14px;}
+ #orderPhotoReview .review-choice{border:0;padding:0;margin:18px 0;}
+ #orderPhotoReview .review-choice legend{font-weight:700;margin-bottom:8px;}
+ #orderPhotoReview .review-choice label{padding:14px;border:2px solid #c7b98e;border-radius:8px;background:#fff;cursor:pointer;}
+ #orderPhotoReview .review-choice label:has(input:checked){border-color:#59491f;background:#f3ecd9;}
+ #orderPhotoReview .review-choice input{flex:0 0 auto;margin-top:5px;accent-color:#59491f;}
  `;document.head.append(style);
  const title=el('h2','注文の写真確認'),content=el('div'),msg=el('p','読み込み中…');msg.setAttribute('role','status');
  const close=el('button','閉じる');close.className='admin-btn review-close';close.onclick=()=>dialog.close();dialog.append(title,content,msg,close);document.body.append(dialog);dialog.showModal();
@@ -6902,14 +6907,16 @@ async function downloadAdminRevision(id){
    const files=review.files||[];
    if(files.length){content.append(el('h3','送信済みの修正データ'));for(const file of files){const item=el('p',file.name+' '),download=el('button','確認・ダウンロード');download.className='admin-btn';download.onclick=()=>action(async()=>{const signed=await uploadRequest({action:'download',id:file.id});if(!safeStorageUrl(signed.url))throw Error('ダウンロード先を確認できません。');const link=el('a');link.href=signed.url;link.download=file.name;link.rel='noreferrer';link.click();});item.append(download);content.append(item);}}
    if(['pending','consultation','quote_ready'].includes(review.status)){
-     const choice=el('select');choice.style.cssText=inputStyle;
-     for(const [value,label]of [['ok',review.status==='quote_ready'?'元の写真のままでOK（修正せず追加料金なし）':'この仕上がりでOK'],['consult','修正を相談する／データは後で送る']]){const opt=el('option',label);opt.value=value;choice.append(opt);}
-     choice.value=params.get('choice')==='revise'||review.status==='consultation'?'consult':'ok';
+     const choice=el('fieldset');choice.className='review-choice';choice.append(el('legend','返答を選んでください'));
+     let selected=params.get('choice')==='revise'||review.status==='consultation'?'consult':'ok';
+     for(const [value,text]of [['ok',review.status==='quote_ready'?'元の写真のままでOK（修正せず追加料金なし）':'この仕上がりでOK'],['consult','修正を相談する／データは後で送る']]){
+       const label=el('label'),radio=el('input');radio.type='radio';radio.name='photoReviewResponse';radio.value=value;radio.checked=value===selected;radio.onchange=()=>{selected=value;update();};label.append(radio,document.createTextNode(text));choice.append(label);
+     }
      const consult=el('div'),note=el('textarea');note.maxLength=2000;note.placeholder='ご自身で修正した原稿の再出力についての相談。データを後で送る場合は空欄でも送れます。';note.style.cssText=inputStyle+'min-height:100px;';
      const later=el('input');later.type='checkbox';later.checked=true;const laterLabel=el('label');laterLabel.append(later,document.createTextNode(' 修正データは後で送ります'));
      consult.append(note,laterLabel,el('p','修正希望の連絡・相談・原稿の提出だけでは追加料金は発生しません。'));
-     const update=()=>consult.hidden=choice.value!=='consult';choice.onchange=update;update();
-     const send=el('button','この内容で返答を送る');send.className='admin-btn';send.style.margin='12px 0';send.onclick=()=>action(()=>submitResponse(choice.value,note.value.trim(),choice.value==='consult'&&later.checked));
+     const update=()=>consult.hidden=selected!=='consult';update();
+     const send=el('button','この内容で返答を送る');send.className='admin-btn';send.style.margin='12px 0';send.onclick=()=>action(()=>submitResponse(selected,note.value.trim(),selected==='consult'&&later.checked));
      content.append(choice,consult,send);
    }
    if(['pending','consultation'].includes(review.status)){
