@@ -6767,7 +6767,8 @@ let coasterReviewFiles=[];
 async function reviewRpc(name,body,admin=false){
   const res=await fetch(`${SUPABASE_URL}/rest/v1/rpc/${name}`,{method:'POST',headers:{...SB_H(),Authorization:admin?authBearer():'Bearer '+SUPABASE_ANON_KEY},body:JSON.stringify(body)});
   if(!res.ok){const text=await res.text();let message='確認処理に失敗しました。';try{message=JSON.parse(text).message||message;}catch{}if(message.includes('MATERIAL_CAPACITY_EXCEEDED'))message='追加製作分の材料が不足しているため確定できません。主催者にご連絡ください。追加料金はまだ加算していません。';throw Error(message);}
-  return res.json();
+  const result=await res.text();
+  return result.trim()?JSON.parse(result):null;
 }
 async function loadCoasterReviews(){
   try{
