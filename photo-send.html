@@ -2,7 +2,7 @@
 *{box-sizing:border-box}body{margin:0;background:#f8f5ee;color:#2c2418;font:16px/1.7 system-ui,sans-serif}main{max-width:680px;margin:24px auto;padding:24px;background:#fffdf6;border:1px solid #d6cdb4;border-radius:14px}h1{font-size:1.4rem;margin:0 0 8px}h2{font-size:1.1rem}p{margin:10px 0}label{display:block;color:#2c2418;margin:12px 0}input,select,button{font:inherit}input,select{width:100%;padding:10px;background:#fff;color:#2c2418;border:1px solid #c7b98e;border-radius:7px}button,.file-button{display:inline-block;padding:10px 16px;background:#59491f;color:#fff;border:0;border-radius:7px;cursor:pointer;margin:6px 8px 6px 0}button:disabled{opacity:.5;cursor:default}#sender[aria-busy="true"],#sender[aria-busy="true"] button{cursor:wait}.file-button input{display:none}.hint{font-size:.85rem;color:#736959}#orderInfo{padding:14px;background:#f3ecd9;border-radius:8px;font-weight:700}#preview{display:block;width:100%;max-height:420px;object-fit:contain;margin:16px 0}#message{white-space:pre-wrap;padding:12px;border-left:4px solid #a08b45;background:#f3ecd9}#logout{background:#736959}a{color:#59491f}[hidden]{display:none!important}@media(max-width:720px){main{margin:12px;padding:18px}}
 </style></head><body><main><h1>主催者用・写真送信</h1><p>通知メールのリンクから、その注文の写真を送れます。</p>
 <form id="login"><h2>管理者ログイン</h2><label>メールアドレス<input id="email" type="email" required autocomplete="username" value="daikikoushirou@gmail.com"></label><label>パスワード<input id="password" type="password" required autocomplete="current-password"></label><button id="loginButton">ログイン</button></form>
-<section id="sender" hidden><label>注文番号<input id="orderRef" autocomplete="off"></label><button id="loadOrder" type="button">注文を確認</button><p id="orderInfo"></p><label>送信する写真<select id="kind"><option id="sampleOption" value="sample">端材試作</option><option value="completion">完成写真</option></select></label><p id="outcome"></p><label class="file-button">写真を撮る<input id="camera" type="file" accept="image/*" capture="environment"></label><label class="file-button">写真を選ぶ<input id="photo" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif"></label><img id="preview" alt="送信する写真のプレビュー" hidden><p id="photoInfo" class="hint"></p><p class="hint">元写真は送信しません。写真をJPEGに変換してEXIF・位置情報を除去し、長辺最大2400pxに整えます。デザイン原稿の提出用ではありません。</p><button id="send" type="button" disabled>送信</button><button id="logout" type="button">ログアウト</button></section>
+<section id="sender" hidden><label>注文番号<input id="orderRef" autocomplete="off"></label><button id="loadOrder" type="button">注文を確認</button><p id="orderInfo"></p><label>送信する写真<select id="kind"><option id="sampleOption" value="sample">端材試作</option><option value="completion">完成写真</option></select></label><p id="outcome"></p><label class="file-button">写真を撮る<input id="camera" type="file" accept="image/*" capture="environment"></label><label class="file-button">写真を選ぶ<input id="photo" type="file" multiple accept="image/jpeg,image/png,image/webp,image/heic,image/heif"></label><img id="preview" alt="送信する写真のプレビュー" hidden><p id="photoInfo" class="hint"></p><p class="hint">写真を選ぶ場合は一度に最大3枚選べます。元写真は送信しません。写真をJPEGに変換してEXIF・位置情報を除去し、長辺最大2400pxに整えます。デザイン原稿の提出用ではありません。</p><button id="send" type="button" disabled>送信</button><button id="logout" type="button">ログアウト</button></section>
 <p id="message" role="status">管理者としてログインしてください。</p><p><a href="./index.html">企画サイトへ</a></p></main><script>const SUPABASE_URL      = 'https://bzjwhtemobtrfaghsdwt.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ6andodGVtb2J0cmZhZ2hzZHd0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MDY3MzEsImV4cCI6MjA5NTQ4MjczMX0.NJuzPVdv3KWfNFswlfhYqX-ppC5wFUX-7nGXN_HiCLI';</script><script>const OWNER_ID='0285dcfd-9477-4155-8b17-08c51c3fdbd5';
 const SESSION_KEY='bc_admin_tab_session';
@@ -73,13 +73,15 @@ async function stripPhotoMetadata(file){
 }
 let prepareVersion=0,previewURL=null;
 async function selectPhoto(event){
- const file=event.target.files?.[0],version=++prepareVersion;state.prepared=null;state.pending=null;state.sent=false;$('send').disabled=true;
- if(previewURL){URL.revokeObjectURL(previewURL);previewURL=null;}$('preview').hidden=true;if(!file)return;
+ const files=[...(event.target.files||[])],version=++prepareVersion;state.prepared=null;state.pending=null;state.sent=false;$('send').disabled=true;
+ if(previewURL){URL.revokeObjectURL(previewURL);previewURL=null;}$('preview').hidden=true;document.querySelectorAll('.extra-photo-preview').forEach(n=>{URL.revokeObjectURL(n.src);n.remove();});if(!files.length)return;
+ if(files.length>3){notice('写真は最大3枚まで選んでください。');return;}
  notice('写真を準備しています…');
  try{
-   const prepared=await stripPhotoMetadata(file);if(version!==prepareVersion)return;
-   state.prepared=prepared;previewURL=URL.createObjectURL(prepared.blob);$('preview').src=previewURL;$('preview').hidden=false;
-   $('photoInfo').textContent=`送信写真：${prepared.width}×${prepared.height}px ／ ${Math.round(prepared.blob.size/1024)}KB（EXIF・GPS位置情報を除去済み）`;
+   const prepared=[];for(const file of files)prepared.push(await stripPhotoMetadata(file));if(version!==prepareVersion)return;
+   state.prepared=prepared;previewURL=URL.createObjectURL(prepared[0].blob);$('preview').src=previewURL;$('preview').hidden=false;
+   for(const photo of prepared.slice(1)){const img=document.createElement('img');img.className='extra-photo-preview';img.src=URL.createObjectURL(photo.blob);img.alt='送信写真のプレビュー';img.style.cssText='width:100%;max-height:420px;object-fit:contain';$('photoInfo').before(img);}
+   $('photoInfo').textContent=`送信写真：${prepared.length}枚 ／ ${Math.round(prepared.reduce((sum,p)=>sum+p.blob.size,0)/1024)}KB（全写真のEXIF・GPS位置情報を除去済み）`;
    notice('この写真と注文でよければ送信してください。');updatePhotoKind();
  }catch(err){if(version===prepareVersion)notice(err.message);}
 }
@@ -88,18 +90,21 @@ async function submitPhoto(){
  state.busy=true;$('sender').setAttribute('aria-busy','true');const controls=[...$('sender').querySelectorAll('input,select,button')];controls.forEach(n=>n.disabled=true);notice('写真を保存しています…');
  try{
    const ref=state.order.ref,kind=$('kind').value;
-   if(!state.pending)state.pending={id:crypto.randomUUID(),ref,kind,blob:state.prepared.blob,uploaded:false};
+   if(!state.pending)state.pending={ref,kind,photos:state.prepared.map(photo=>({id:crypto.randomUUID(),blob:photo.blob,uploaded:false}))};
    const p=state.pending;if(p.ref!==ref||p.kind!==kind)throw Error('送信先が変わりました。写真を選び直してください。');
-   const filename='photo_'+p.id+'.jpg';
-   if(!p.uploaded){
-     const upload=await fetch(SUPABASE_URL+'/storage/v1/object/coaster-orders/'+filename,{method:'POST',headers:{apikey:SUPABASE_ANON_KEY,Authorization:'Bearer '+state.token,'Content-Type':'image/jpeg','x-upsert':'false'},body:p.blob});
+   for(const photo of p.photos){
+   const filename='photo_'+photo.id+'.jpg';photo.object_path=filename;
+   if(!photo.uploaded){
+     const upload=await fetch(SUPABASE_URL+'/storage/v1/object/coaster-orders/'+filename,{method:'POST',headers:{apikey:SUPABASE_ANON_KEY,Authorization:'Bearer '+state.token,'Content-Type':'image/jpeg','x-upsert':'false'},body:photo.blob});
      // 前の送信が成功し応答だけ失われた場合、同じ保存先を使って続行する。
-     if(!upload.ok&&upload.status!==409)throw Error('写真を保存できませんでした。通信状態を確認して再送信してください。');p.uploaded=true;
+     if(!upload.ok&&upload.status!==409)throw Error('写真を保存できませんでした。通信状態を確認して再送信してください。');photo.uploaded=true;
    }
-   if(!p.photoURL){const signed=await api('/storage/v1/object/sign/coaster-orders/'+filename,{method:'POST',body:JSON.stringify({expiresIn:2592000})});const path=signed?.signedURL||signed?.signedUrl;if(!path)throw Error('写真の共有リンクを作れませんでした。');p.photoURL=path.startsWith('https://')?path:SUPABASE_URL+'/storage/v1'+path;}
+   if(!photo.photoURL){const signed=await api('/storage/v1/object/sign/coaster-orders/'+filename,{method:'POST',body:JSON.stringify({expiresIn:2592000})});const path=signed?.signedURL||signed?.signedUrl;if(!path)throw Error('写真の共有リンクを作れませんでした。');photo.photoURL=path.startsWith('https://')?path:SUPABASE_URL+'/storage/v1'+path;}
+   }
    notice('通知と完成情報を登録しています…');
-   await api('/rest/v1/rpc/coaster_submit_photo',{method:'POST',body:JSON.stringify({p_id:p.id,p_ref:p.ref,p_kind:p.kind,p_object_path:filename,p_photo_url:p.photoURL})});
+   await api('/rest/v1/rpc/coaster_submit_photos',{method:'POST',body:JSON.stringify({p_ref:p.ref,p_kind:p.kind,p_photos:p.photos.map(photo=>({id:photo.id,object_path:photo.object_path,photo_url:photo.photoURL}))})});
    state.prepared=null;state.pending=null;state.sent=true;$('photo').value='';$('camera').value='';$('preview').hidden=true;$('preview').removeAttribute('src');if(previewURL){URL.revokeObjectURL(previewURL);previewURL=null;}$('photoInfo').textContent='';
+   document.querySelectorAll('.extra-photo-preview').forEach(n=>{URL.revokeObjectURL(n.src);n.remove();});
    notice('登録が完了しました。確認／完成メールの送信を依頼しました。この写真について追加の送信・ギャラリー登録操作は不要です。実際のメール送信結果はMakeで確認できます。');
  }catch(err){notice(err.message+' 保存後の通信エラーの場合は、同じ写真のまま再送信してください。二重登録は防止されます。');}
  finally{state.busy=false;$('sender').setAttribute('aria-busy','false');controls.forEach(n=>n.disabled=false);updatePhotoKind();}

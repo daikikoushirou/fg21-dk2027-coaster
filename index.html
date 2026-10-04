@@ -4395,7 +4395,7 @@ function renderOrders() {
       <div class="order-card-row" style="background:rgba(160,120,74,.08);border-radius:8px;padding:10px 12px;margin-top:4px;align-items:center;gap:12px;flex-wrap:wrap;">
         <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:200px;flex-wrap:wrap;">
           ${(o.completionPhotos && o.completionPhotos.length)
-            ? o.completionPhotos.map((url, i) => `<div style="position:relative;">
+            ? o.completionPhotos.map(adminCompletionPhotoUrl).map((url, i) => `<div style="position:relative;">
                 <img src="${escapeHTML(url)}" alt="完成写真${i+1}" style="width:56px;height:56px;object-fit:cover;border-radius:6px;border:2px solid var(--border);cursor:pointer;" onclick="zoomImg('${escapeHTML(url)}')">
                 <button onclick="removeCompletionPhoto('${o.ref}', ${i})" title="この写真を削除" style="position:absolute;top:-6px;right:-6px;width:18px;height:18px;border-radius:50%;border:none;background:#e05040;color:#fff;font-size:.7rem;line-height:1;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;">×</button>
               </div>`).join('')
@@ -6744,6 +6744,22 @@ function expandAbout() {
   $('lookupOpen').addEventListener('click', () => { $('customerLookup').showModal(); $('lookupEmail').focus(); });
 })();
 
+async function stripPhotoMetadata(file){
+ if(!file||file.size>60*1024*1024)throw Error('写真は60MB以下で選んでください。');
+ if(!/^image\/(jpeg|png|webp|heic|heif)$/i.test(file.type))throw Error('JPEG・PNG・WebPの写真を選んでください。HEICは端末が表示できる場合に利用できます。');
+ let image,url;
+ try{
+   url=URL.createObjectURL(file);image=new Image();image.src=url;await image.decode();
+   const width=image.naturalWidth,height=image.naturalHeight;if(!width||!height||width*height>100000000)throw Error('写真が大きすぎます。画像サイズを小さくして選び直してください。');
+   const scale=Math.min(1,2400/Math.max(width,height)),canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(width*scale));canvas.height=Math.max(1,Math.round(height*scale));
+   const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(image,0,0,canvas.width,canvas.height);
+   let blob;for(const quality of [.92,.85,.75,.65]){blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',quality));if(blob&&blob.size<=3*1024*1024)break;}
+   if(!blob||blob.size>3*1024*1024)throw Error('写真を送信サイズにできませんでした。小さめの写真でお試しください。');
+   return {blob,width:canvas.width,height:canvas.height,sourceWidth:width,sourceHeight:height};
+ }catch(err){throw Error(err.message==='The source image cannot be decoded.'?'写真を読み込めません。HEICの場合はJPEGに変換してお試しください。':err.message);}
+ finally{if(url)URL.revokeObjectURL(url);}
+}
+
 async function checkMaterialCapacity(qty) {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/coaster_can_accept_materials`, {
     method:'POST', headers:{...SB_H(),Authorization:'Bearer '+SUPABASE_ANON_KEY},
@@ -6784,6 +6800,11 @@ async function saveMaterialStock() {
 let coasterReviewRows=[];
 let coasterReviewFiles=[];
 let coasterDmRows=[];
+let coasterAdminPhotoUrls={};
+function adminCompletionPhotoUrl(url){
+ try{const parsed=new URL(url);if(parsed.origin===new URL(SUPABASE_URL).origin&&parsed.pathname==='/functions/v1/coaster-gallery-photo')return coasterAdminPhotoUrls[parsed.searchParams.get('id')]||url;}catch{}
+ return url;
+}
 async function reviewRpc(name,body,admin=false){
   const res=await fetch(`${SUPABASE_URL}/rest/v1/rpc/${name}`,{method:'POST',headers:{...SB_H(),Authorization:admin?authBearer():'Bearer '+SUPABASE_ANON_KEY},body:JSON.stringify(body)});
   if(!res.ok){const text=await res.text();let message='確認処理に失敗しました。';try{message=JSON.parse(text).message||message;}catch{}if(message.includes('MATERIAL_CAPACITY_EXCEEDED'))message='追加製作分の材料が不足しているため確定できません。主催者にご連絡ください。追加料金はまだ加算していません。';throw Error(message);}
@@ -6800,7 +6821,16 @@ async function loadCoasterReviews(){
     coasterReviewRows=await res.json();coasterReviewFiles=await files.json();
     const dm=await fetch(`${SUPABASE_URL}/rest/v1/coaster_review_mail_queue?delivery_channel=eq.x&select=id,review_id,event_type,dm_text,dm_account,dm_sent_at,created_at,review_version&order=created_at.desc&limit=500`,{headers:SB_H()});
     coasterDmRows=dm.ok?await dm.json():[];
-  }catch(err){coasterReviewRows=[];coasterReviewFiles=[];coasterDmRows=[];showToast(err.message);}
+    coasterAdminPhotoUrls={};
+    const photos=await fetch(`${SUPABASE_URL}/rest/v1/coaster_photo_receipts?kind=eq.completion&select=id,object_path`,{headers:SB_H()});
+    if(photos.ok){
+      const rows=await photos.json();
+      if(rows.length){
+        const signed=await fetch(`${SUPABASE_URL}/storage/v1/object/sign/coaster-orders`,{method:'POST',headers:SB_H(),body:JSON.stringify({paths:rows.map(r=>r.object_path),expiresIn:3600})});
+        if(signed.ok){const links=await signed.json();for(const r of rows){const link=links.find(x=>x.path===r.object_path);const url=link?.signedURL||link?.signedUrl;if(url)coasterAdminPhotoUrls[r.id]=url.startsWith('https://')?url:SUPABASE_URL+'/storage/v1'+url;}}
+      }
+    }
+  }catch(err){coasterReviewRows=[];coasterReviewFiles=[];coasterDmRows=[];coasterAdminPhotoUrls={};showToast(err.message);}
 }
 function orderDmTasks(o){
  const ids=new Set(coasterReviewRows.filter(r=>r.order_ref===o.ref&&r.status!=='superseded').map(r=>r.id));
@@ -6809,7 +6839,7 @@ function orderDmTasks(o){
    const r=coasterReviewRows.find(x=>x.id===q.review_id);
    if(q.event_type==='ready')return ['made','done'].includes(o.status);
    if(!r||r.status==='superseded')return false;
-   if(q.event_type==='request')return r.status==='pending';
+   if(q.event_type==='request')return r.status==='pending'||(r.status==='consultation'&&r.waiting_for==='customer_data'&&q.review_version===r.quote_version);
    if(q.event_type==='quote')return r.status==='quote_ready'&&r.quote_version===q.review_version;
    if(q.event_type==='reminder')return !r.held&&['pending','consultation','quote_ready'].includes(r.status)&&r.waiting_for?.startsWith('customer');
    if(q.event_type==='hold')return r.held;
@@ -6857,37 +6887,46 @@ function reviewAdminControls(o){
     return `<div style="margin:8px 0;"><strong>${kind==='sample'?'端材試作':'仕上がり確認'}</strong>：${escapeHTML(state||'未確認')}${review?.message?'<p>'+escapeHTML(review.message)+'</p>':''}
       ${files.map(f=>`<p><button class="admin-btn" onclick="downloadAdminRevision('${f.id}')">原稿をダウンロード</button> ${escapeHTML(f.original_name)}</p>`).join('')}
       ${review?`<details style="margin:12px 0;"><summary style="cursor:pointer;">メール・DMの返答を手動記録</summary><p><button class="admin-btn" onclick="recordReviewContact('${review.id}','ok')">メール等で受け取ったOKを記録</button> <button class="admin-btn" onclick="recordReviewContact('${review.id}','consult')">メール等の修正相談を記録</button></p></details>`:''}
-      ${review&&['consultation','quote_ready'].includes(review.status)?`<div style="margin:10px 0;"><textarea id="reviewQuote-${review.id}" placeholder="受領した修正原稿を再出力する内容を入力（デザイン修正は注文者が行います）" style="background:white;color:#222;width:100%;">${escapeHTML(review.quote_note||'')}</textarea><label style="color:#2c2418;"><input type="checkbox" id="reviewRequire-${review.id}" checked> 修正原稿が必要</label><br><button class="admin-btn" onclick="quoteCoasterReview('${review.id}')">内容＋追加300円の確認を依頼</button></div>`:''}
+      ${review&&['consultation','quote_ready'].includes(review.status)?`<div style="margin:10px 0;"><textarea id="reviewQuote-${review.id}" placeholder="受領した修正原稿を再出力する内容を入力（デザイン修正は注文者が行います）" style="background:white;color:#222;width:100%;">${escapeHTML(review.quote_note||'')}</textarea><label style="color:#2c2418;"><input type="checkbox" id="reviewRequire-${review.id}" checked> 修正原稿が必要</label><br>${files.length?`<label style="color:#2c2418;"><input type="checkbox" id="reviewLayout-${review.id}"> 最新原稿の位置・クロップ・向き・文字の欠けを確認しました（初回と違う場合は本人の意図を確認）</label>`:''}<button class="admin-btn" onclick="quoteCoasterReview('${review.id}')">内容＋追加300円の確認を依頼</button><button class="admin-btn" onclick="returnRevisionData('${review.id}')">修正原稿を差し戻す（加算なし）</button></div>`:''}
       ${review?.status==='quote_ready'?`<button class="admin-btn" onclick="recordReviewContact('${review.id}','confirm')">メール等での再製作・300円の同意を記録</button>`:''}
-      <br><label style="font-size:.8rem;color:#2c2418;">確認写真を登録してメール依頼：<input type="file" accept="image/jpeg,image/png,image/webp" style="color:var(--ink);" onchange="createCoasterReview('${o.ref}','${kind}',this)"></label></div>`;
+      <br><label style="font-size:.8rem;color:#2c2418;">確認写真を登録してメール依頼（最大3枚）：<input type="file" multiple accept="image/jpeg,image/png,image/webp" style="color:var(--ink);" onchange="createCoasterReview('${o.ref}','${kind}',this)"></label></div>`;
   };
   const compact=kind=>{const r=entries.find(x=>x.kind===kind);return (kind==='sample'?'端材試作':'完成写真')+'：'+(r?(r.held?'製作保留':r.status==='approved'?'本人OK済み':labels[r.status]||'要確認'):'写真未登録');};
   const summary=[o.sampleRequested&&compact('sample'),o.wantsCompletionImage&&compact('completion')].filter(Boolean).join(' ／ ');
   return `<details class="admin-order-details" data-admin-section="review-${o.ref}"><summary>確認・連絡<br><span style="font-size:.82rem;font-weight:400;">${escapeHTML(summary)}</span></summary><div class="order-card-row" style="display:block;background:rgba(160,120,74,.04);padding:12px;">${o.sampleRequested?row('sample'):''}${o.wantsCompletionImage?row('completion'):''}<details style="margin:12px 0;"><summary style="cursor:pointer;">連絡・料金の扱い</summary><p style="font-size:.75rem;">リンクは30日間有効。未返信は3日後に再通知、7日後に製作保留（開催直前は表示期限まで）。相談・原稿提出だけでは加算しません。メール通知の結果はMakeで確認してください。メール・XのDMで返答を受け取った場合は、記録ボタンから日時・連絡手段・内容を記録してください。原稿をメール・DMで受領済みの場合は、見積もりの「修正原稿が必要」を外して内容と追加料金の同意を依頼できます。</p></details></div></details>`;
 }
 async function createCoasterReview(ref,kind,input){
-  const file=input.files?.[0];if(!file)return;
-  if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>3*1024*1024){showToast('確認写真は3MB以下のJPEG・PNG・WebPにしてください。');input.value='';return;}
-  if(!_authToken){showToast('管理者としてログインしてください。');return;}
-  if(!confirm('この写真で'+(kind==='sample'?'端材試作':'仕上がり確認')+'の確認メールを依頼しますか？')){input.value='';return;}
-  input.disabled=true;
-  try{
-    const extension={ 'image/jpeg':'jpg','image/png':'png','image/webp':'webp'}[file.type];
-    const filename='review_'+crypto.randomUUID()+'.'+extension;
-    await sbUploadImage(file,filename);
-    const res=await fetch(`${SUPABASE_URL}/storage/v1/object/sign/coaster-orders/${filename}`,{method:'POST',headers:SB_H(),body:JSON.stringify({expiresIn:2592000})});
-    if(!res.ok)throw Error('写真を共有する設定に失敗しました。');
-    const signed=await res.json(),path=signed.signedURL||signed.signedUrl;
-    if(!path)throw Error('確認写真のURLがありません。');
-    const photoUrl=path.startsWith('https://')?path:SUPABASE_URL+'/storage/v1'+path;
-    await reviewRpc('coaster_create_review',{p_ref:ref,p_kind:kind,p_photo_url:photoUrl},true);
-    await loadAndRenderOrders();showToast('確認写真を登録しました。メール通知待ちです。');
-  }catch(err){showToast(err.message);}finally{input.disabled=false;input.value='';}
+ const files=[...(input.files||[])];if(!files.length)return;
+ if(files.length>3){showToast('写真は最大3枚までです。');input.value='';return;}
+ if(!_authToken){showToast('管理者としてログインしてください。');return;}
+ if(!confirm(files.length+'枚の写真で確認メールを依頼しますか？')){input.value='';return;}
+ input.disabled=true;
+ try{
+  const photos=[];
+  for(const file of files){
+   const prepared=await stripPhotoMetadata(file),id=crypto.randomUUID(),filename='photo_'+id+'.jpg';
+   const uploaded=await fetch(SUPABASE_URL+'/storage/v1/object/coaster-orders/'+filename,{method:'POST',headers:{apikey:SUPABASE_ANON_KEY,Authorization:authBearer(),'Content-Type':'image/jpeg','x-upsert':'false'},body:prepared.blob});
+   if(!uploaded.ok)throw Error('写真を保存できませんでした。');
+   const signed=await fetch(SUPABASE_URL+'/storage/v1/object/sign/coaster-orders/'+filename,{method:'POST',headers:SB_H(),body:JSON.stringify({expiresIn:2592000})});
+   if(!signed.ok)throw Error('写真のリンクを作れませんでした。');const data=await signed.json(),path=data.signedURL||data.signedUrl;
+   if(!path)throw Error('写真のリンクを作れませんでした。');photos.push({id,object_path:filename,photo_url:path.startsWith('https://')?path:SUPABASE_URL+'/storage/v1'+path});
+  }
+  await reviewRpc('coaster_submit_photos',{p_ref:ref,p_kind:kind,p_photos:photos},true);
+  await loadAndRenderOrders();showToast('写真を登録しました。メール通知待ちです。');
+ }catch(err){showToast(err.message);}finally{input.disabled=false;input.value='';}
 }
 async function quoteCoasterReview(id){
   const note=document.getElementById('reviewQuote-'+id).value.trim();
   if(!note){showToast('再製作する内容を入力してください。');return;}
-  try{await reviewRpc('coaster_quote_review',{p_id:id,p_note:note,p_require_data:document.getElementById('reviewRequire-'+id).checked},true);await loadAndRenderOrders();showToast('内容と追加料金の確認メールを依頼しました。まだ加算していません。');}catch(err){showToast(err.message);}
+  const check=document.getElementById('reviewLayout-'+id);
+  if(check&&!check.checked){showToast('最新原稿の位置・クロップ・向きを確認してください。');return;}
+  try{if(check)await reviewRpc('coaster_check_revision_layout',{p_id:id},true);await reviewRpc('coaster_quote_review',{p_id:id,p_note:note,p_require_data:document.getElementById('reviewRequire-'+id).checked},true);await loadAndRenderOrders();showToast('内容と追加料金の確認メールを依頼しました。まだ加算していません。');}catch(err){showToast(err.message);}
+}
+async function returnRevisionData(id){
+ const note=document.getElementById('reviewQuote-'+id).value.trim();
+ if(!note){showToast('位置・クロップなど、修正してほしい箇所を入力してください。');return;}
+ if(!confirm('この内容で修正原稿の再提出を依頼しますか？追加料金は加算しません。'))return;
+ try{await reviewRpc('coaster_return_revision_data',{p_id:id,p_note:note},true);await loadAndRenderOrders();showToast('修正原稿の再提出を依頼しました。料金は加算していません。');}catch(err){showToast(err.message);}
 }
 async function recordReviewContact(id,action){
   const label=action==='confirm'?'本人が再製作と追加300円に同意した返答':action==='ok'?'本人から受け取ったOKの返答':'本人から受け取った修正の相談';
@@ -6955,8 +6994,8 @@ async function downloadAdminRevision(id){
    if(review.held)content.append(el('p','現在、製作を保留しています。キャンセルにはしていません。返答・原稿提出後、主催者が製作日程を確認して再開します。'));
    if(review.waiting_for?.startsWith('customer')&&review.reply_by){content.append(el('p','返答・原稿提出の目安：'+new Date(review.reply_by).toLocaleString('ja-JP',{timeZone:'Asia/Tokyo'})+'（日本時間）。間に合わない場合はメールに返信してご相談ください。'));
    }
-   if(review.photo_url&&safeStorageUrl(review.photo_url)){
-     const photo=el('img'),photoMessage=el('p');photo.src=review.photo_url;photo.alt='主催者から届いた確認写真';photo.style.cssText='width:100%;max-height:420px;object-fit:contain;';photo.referrerPolicy='no-referrer';photo.onerror=()=>{photoMessage.textContent='写真を表示できません。このメールに返信して再送をご依頼ください。';};content.append(photo,photoMessage);
+   for(const url of (Array.isArray(review.photo_urls)?review.photo_urls:[review.photo_url]).slice(0,3).filter(url=>url&&safeStorageUrl(url))){
+     const photo=el('img'),photoMessage=el('p');photo.src=url;photo.alt='主催者から届いた確認写真';photo.style.cssText='width:100%;max-height:420px;object-fit:contain;';photo.referrerPolicy='no-referrer';photo.onerror=()=>{photoMessage.textContent='写真を表示できません。このメールに返信して再送をご依頼ください。';};content.append(photo,photoMessage);
    }
    const files=review.files||[];
    if(files.length){content.append(el('h3','送信済みの修正データ'));for(const file of files){const item=el('p',file.name+' '),download=el('button','確認・ダウンロード');download.className='admin-btn';download.onclick=()=>action(async()=>{const signed=await uploadRequest({action:'download',id:file.id});if(!safeStorageUrl(signed.url))throw Error('ダウンロード先を確認できません。');const link=el('a');link.href=signed.url;link.download=file.name;link.rel='noreferrer';link.click();});item.append(download);content.append(item);}}
@@ -6983,7 +7022,7 @@ async function downloadAdminRevision(id){
        if(!uploadSession||uploadSession.file!==file)uploadSession={file,...await uploadRequest({action:'begin',name:file.name,size:file.size}),uploaded:false};
        if(!uploadSession.uploaded){if(!safeStorageUrl(uploadSession.url))throw Error('送信先を確認できません。');const result=await fetch(uploadSession.url,{method:'PUT',headers:{'Content-Type':uploadSession.mime_type,'x-upsert':'false'},body:file});if(!result.ok)throw Error('原稿を送信できませんでした。再度送信してください。');uploadSession.uploaded=true;}
        await uploadRequest({action:'finish',id:uploadSession.id});uploadSession=null;await reload();msg.textContent='修正データを受領しました。主催者の確認をお待ちください。料金はまだ加算していません。';
-     });content.append(fileInput,el('p','50MB以下、1回の確認につき最大5ファイル。画像・PSD・AI・PDF等を送れます。'),upload);
+     });content.append(fileInput,el('p','50MB以下、1回の確認につき最大5ファイル。画像・PSD・AI・PDF等を送れます。AIファイルはフォントをアウトライン化してから送信してください。位置・クロップ・向きを初回から変えた場合は、意図した変更であることを相談欄に記載してください。'),upload);
    }
    if(review.status==='quote_ready'){
      const quote=el('div');quote.style.cssText='padding:16px;margin:16px 0;border:2px solid #b8954b;border-radius:8px;';
