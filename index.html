@@ -1057,7 +1057,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
               </div>
             </div>
           </div>
-          <div class="warn-box">⚠️ <strong>デザインの修正・色調整はこちらではお受けできません。</strong>受領した画像をそのまま出力するのが基本となります。誤ってイラストがカットされてしまうことのないよう、送信前に必ずプレビューでご確認ください。</div>
+          <div class="warn-box">⚠️ <strong>デザインの作成・修正は注文者ご自身でお願いします。</strong>主催者は受領した原稿を素材に出力します。線の太さ、配置、文字、色などの編集・デザイン修正はお受けできません。変更をご希望の場合は、ご自身で修正した原稿をお送りください。誤ってイラストがカットされてしまうことのないよう、送信前に必ずプレビューでご確認ください。</div>
         </div></div>
       </div>
       <div class="flow-item" id="flow-1">
@@ -1457,7 +1457,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
             </div>
           </label>
           <div id="completionImgNote" style="display:none;margin-top:8px;background:rgba(255,200,100,.12);border:1px solid rgba(255,200,100,.3);border-radius:6px;padding:8px 12px;font-size:.8rem;color:rgba(255,235,160,1);line-height:1.6;">
-            ⚠️ 修正希望のご連絡をいただくか、修正原稿をお送りいただいた場合は、上の「端材試作」の2回目以降の扱いと同様に <strong>¥300</strong> が発生します。製作点数が1点増えることと、作業料ということでご理解いただければ幸いです。
+            修正の相談・原稿の送付だけでは追加料金は発生しません。デザインの修正はご自身で行い、修正済みの原稿をお送りください。内容を確認して再製作をご案内し、<strong>追加料金¥300への同意をいただいてから再出力</strong>します。再製作分は追加の材料・作業に充て、お渡し点数は増えません。
           </div>
         </div>
       </div>
@@ -6805,7 +6805,7 @@ function reviewAdminControls(o){
     return `<div style="margin:8px 0;"><strong>${kind==='sample'?'端材試作':'仕上がり確認'}</strong>：${escapeHTML(state||'未確認')}${review?.message?'<p>'+escapeHTML(review.message)+'</p>':''}
       ${files.map(f=>`<p><button class="admin-btn" onclick="downloadAdminRevision('${f.id}')">原稿をダウンロード</button> ${escapeHTML(f.original_name)}</p>`).join('')}
       ${review?`<details style="margin:12px 0;"><summary style="cursor:pointer;">メール・DMの返答を手動記録</summary><p><button class="admin-btn" onclick="recordReviewContact('${review.id}','ok')">メール等で受け取ったOKを記録</button> <button class="admin-btn" onclick="recordReviewContact('${review.id}','consult')">メール等の修正相談を記録</button></p></details>`:''}
-      ${review&&['consultation','quote_ready'].includes(review.status)?`<div style="margin:10px 0;"><textarea id="reviewQuote-${review.id}" placeholder="原稿を確認し、再製作する内容を入力" style="background:white;color:#222;width:100%;">${escapeHTML(review.quote_note||'')}</textarea><label style="color:#2c2418;"><input type="checkbox" id="reviewRequire-${review.id}" checked> 修正原稿が必要</label><br><button class="admin-btn" onclick="quoteCoasterReview('${review.id}')">内容＋追加300円の確認を依頼</button></div>`:''}
+      ${review&&['consultation','quote_ready'].includes(review.status)?`<div style="margin:10px 0;"><textarea id="reviewQuote-${review.id}" placeholder="受領した修正原稿を再出力する内容を入力（デザイン修正は注文者が行います）" style="background:white;color:#222;width:100%;">${escapeHTML(review.quote_note||'')}</textarea><label style="color:#2c2418;"><input type="checkbox" id="reviewRequire-${review.id}" checked> 修正原稿が必要</label><br><button class="admin-btn" onclick="quoteCoasterReview('${review.id}')">内容＋追加300円の確認を依頼</button></div>`:''}
       ${review?.status==='quote_ready'?`<button class="admin-btn" onclick="recordReviewContact('${review.id}','confirm')">メール等での再製作・300円の同意を記録</button>`:''}
       <br><label style="font-size:.8rem;color:#2c2418;">確認写真を登録してメール依頼：<input type="file" accept="image/jpeg,image/png,image/webp" style="color:var(--ink);" onchange="createCoasterReview('${o.ref}','${kind}',this)"></label></div>`;
   };
@@ -6890,6 +6890,7 @@ async function downloadAdminRevision(id){
  function render(){
    content.replaceChildren();title.textContent=review.kind==='sample'?'端材試作の確認':'仕上がりの確認';
    content.append(el('p',`${review.name} 様 ／ ${review.ref} ／ ${review.shape} ${review.qty}点 ／ 現在の合計 ${review.total}円`));
+   const scope=el('p','デザインの作成・修正は注文者ご自身でお願いします。主催者は受領した原稿を素材に出力します。線の太さ、配置、文字、色などの編集・デザイン修正はお受けできません。変更をご希望の場合は、ご自身で修正した原稿をお送りください。');scope.style.cssText='padding:12px;border:1px solid #c7b98e;border-radius:8px;line-height:1.7;';content.append(scope);
    const labels={pending:'返答をお待ちしています',approved:'OKの返答を記録済み',consultation:review.waiting_for==='customer_data'?'修正データをお待ちしています（未加算）':'主催者が修正内容を確認しています（未加算）',quote_ready:'再製作内容と追加料金をご確認ください',revision_confirmed:'再製作の依頼・追加料金への同意を記録済み',revision_requested:'修正希望を記録済み（以前の方式）'};
    content.append(el('p',labels[review.status]||'主催者にお問い合わせください'));
    if(review.held)content.append(el('p','現在、製作を保留しています。キャンセルにはしていません。返答・原稿提出後、主催者が製作日程を確認して再開します。'));
@@ -6904,7 +6905,7 @@ async function downloadAdminRevision(id){
      const choice=el('select');choice.style.cssText=inputStyle;
      for(const [value,label]of [['ok',review.status==='quote_ready'?'元の写真のままでOK（修正せず追加料金なし）':'この仕上がりでOK'],['consult','修正を相談する／データは後で送る']]){const opt=el('option',label);opt.value=value;choice.append(opt);}
      choice.value=params.get('choice')==='revise'||review.status==='consultation'?'consult':'ok';
-     const consult=el('div'),note=el('textarea');note.maxLength=2000;note.placeholder='修正したい内容。まだ決まっていない場合は空欄でも送れます。';note.style.cssText=inputStyle+'min-height:100px;';
+     const consult=el('div'),note=el('textarea');note.maxLength=2000;note.placeholder='ご自身で修正した原稿の再出力についての相談。データを後で送る場合は空欄でも送れます。';note.style.cssText=inputStyle+'min-height:100px;';
      const later=el('input');later.type='checkbox';later.checked=true;const laterLabel=el('label');laterLabel.append(later,document.createTextNode(' 修正データは後で送ります'));
      consult.append(note,laterLabel,el('p','修正希望の連絡・相談・原稿の提出だけでは追加料金は発生しません。'));
      const update=()=>consult.hidden=choice.value!=='consult';choice.onchange=update;update();
