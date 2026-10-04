@@ -672,6 +672,15 @@ footer a{color:var(--potato-light);text-decoration:none;}
 
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+ #adminPanel .admin-order-details{border-top:1px solid var(--border);color:var(--ink);background:#fff;}
+ #adminPanel .admin-order-details>summary{padding:13px 14px;cursor:pointer;font-weight:700;line-height:1.6;}
+ #adminPanel .admin-order-details[open]>summary{background:var(--bg);}
+ #adminPanel .admin-section-help{padding:0 14px 10px;margin:0;color:#736959;font-size:.8rem;line-height:1.6;}
+ #adminPanel .admin-next-action{background:#fff8e8;color:#59491f;line-height:1.6;}
+ #adminPanel .admin-order-details label{color:#2c2418;}
+ #adminPanel .admin-order-details textarea{color:#2c2418;}
+ </style>
 </head>
 <body>
 
@@ -1560,6 +1569,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
   <div class="section">
     <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
       <div class="admin-label">🔒 管理パネル</div>
+      <button class="admin-btn" onclick="refreshAdminPanel(this)">🔄 最新の情報に更新</button>
       <button class="admin-btn" onclick="logoutAdmin()" style="font-size:.78rem;">ログアウト</button>
     </div>
 
@@ -1577,7 +1587,7 @@ footer a{color:var(--potato-light);text-decoration:none;}
   <p style="font-size:.75rem;">製作前のキャンセル・削除は枠を戻します。製作を開始した注文の枠は、キャンセル・削除しても戻しません。</p>
 </div>
 
-<button class="admin-btn" onclick="loadAndRenderOrders();loadMaterialStock();" style="margin-bottom:16px;">DBから再読み込み</button>
+<button class="admin-btn" onclick="refreshAdminPanel(this)" style="margin-bottom:16px;">DBから再読み込み</button>
     <!-- 受付上限設定 -->
     <div style="background:var(--potato-dark);border-radius:12px;padding:16px;margin-bottom:16px;">
       <div style="font-size:.8rem;font-weight:700;color:rgba(255,255,255,.85);margin-bottom:12px;">⚙️ 受付上限設定</div>
@@ -4137,6 +4147,7 @@ function toggleAdmin(e) {
   if (adminVisible) {
     // ログアウト
     adminVisible = false;
+    setAdminOpen(false);
     document.getElementById('adminPanel').style.display = 'none';
     return;
   }
@@ -4170,6 +4181,7 @@ async function submitAdminPw() {
       }
       document.getElementById('adminPwInput').value = '';
       _authToken = data.access_token || null;   // 管理者だけが利用
+      rememberAdminSession(data);
       openAdminPanel();
       return;
     }
@@ -4181,21 +4193,25 @@ async function submitAdminPw() {
 }
 
 // ログイン成功後の共通処理：管理パネルを開いてデータを読み込む
-async function openAdminPanel() {
+async function openAdminPanel(restoreScroll = null) {
   closeAdminPwModal();
+  if(restoreScroll!==null){document.getElementById('mainContent').style.display='block';document.getElementById('gate').style.display='none';}
   adminVisible = true;
+  setAdminOpen(true);
   document.getElementById('adminPanel').style.display = 'block';
   await loadOrderLimits();
   await loadMaterialStock();
   document.getElementById('adminLimitCircle').value  = ORDER_LIMIT.circle;
   document.getElementById('adminLimitGeneral').value = ORDER_LIMIT.general;
   await loadAndRenderOrders(); reloadInterestsAdmin();
-  document.getElementById('adminPanel').scrollIntoView({ behavior: 'smooth' });
+  if(restoreScroll !== null) requestAnimationFrame(()=>window.scrollTo(0,restoreScroll));
+  else document.getElementById('adminPanel').scrollIntoView({ behavior: 'smooth' });
 }
 
 // ログアウト：トークンを破棄して管理画面を閉じる
 function logoutAdmin() {
   _authToken = null;
+  forgetAdminSession();
   adminVisible = false;
   document.getElementById('adminPanel').style.display = 'none';
   const em = document.getElementById('adminEmailInput'); if (em) em.value = '';
@@ -4228,7 +4244,11 @@ function calcOrderTotal(o) {
   return total + (o.completionImgFee || 0) + (o.adjustment || 0) + (o.reviewExtraFee||0);
 }
 
+let expandedAdminSections=new Set();
 function renderOrders() {
+  const sections=[...document.querySelectorAll('#ordersContainer details[data-admin-section]')];
+  if(sections.length)expandedAdminSections=new Set(sections.filter(n=>n.open).map(n=>n.dataset.adminSection));
+  const expanded=expandedAdminSections;
   if(adminOrdersState==='loading'||adminOrdersState==='error') {
     document.getElementById('ordersContainer').innerHTML='<div class="admin-empty">'+(adminOrdersState==='loading'?'DBから読み込み中…':'DBから注文を取得できませんでした。「DBから再読み込み」を押すか、再ログインしてください。')+'</div>';
     return;
@@ -4270,7 +4290,7 @@ function renderOrders() {
         <div class="oc-head-right">
           <span class="oc-date">${fmtDateTime(o.date)}</span>
           ${o.ipAddress ? `<span class="oc-ip-cell">${o.ipAddress}</span>` : ''}
-          <button class="oc-delete-btn" onclick="deleteOrder('${o.ref}')">🗑 削除</button>
+          
         </div>
       </div>
 
@@ -4310,17 +4330,12 @@ function renderOrders() {
         <div class="oc-group" style="flex:1;min-width:0;">
           <div class="oc-label">合計金額</div>
           <div class="oc-val oc-total-val">${tot===0?'<span class="oc-total-free">無料</span>':'¥'+tot.toLocaleString()}</div>
-          ${o.type==='circle' ? `<button class="oc-free-btn ${o.freeOverride?'active':''}" onclick="toggleFreeOverride('${o.ref}')">${o.freeOverride?'🚫 無料なし':'🎁 無料あり'}</button>` : ''}
+          
         </div>
         <div class="oc-group" style="flex:1;min-width:0;">
           <div class="oc-label">形状・点数</div>
           <div class="oc-val">${o.shape} × ${o.qty}点</div>
-          <div class="sample-ctrl" style="margin-top:4px;">
-            <button class="sample-ctrl-btn" onclick="updateOrderQty('${o.ref}',-1)" title="-1点">−</button>
-            <span class="sample-ctrl-count">${o.qty}点</span>
-            <button class="sample-ctrl-btn" onclick="updateOrderQty('${o.ref}',1)" title="+1点">＋</button>
-            ${o.earlyBird ? `<span style="font-size:.65rem;color:var(--gold);margin-left:4px;">⭐早割</span>` : ''}
-          </div>
+          
         </div>
         <!-- 元画像↗・切抜↗ リンク(元の位置) -->
         <div class="oc-group" style="flex:0 0 auto;align-items:center;min-width:60px;">
@@ -4329,6 +4344,10 @@ function renderOrders() {
         </div>
       </div>
 
+      <div class="order-card-row admin-next-action"><strong>次の対応</strong><span>${escapeHTML(adminNextAction(o))}</span></div>
+      <details class="admin-order-details" data-admin-section="edit-${o.ref}"><summary>点数・料金を編集</summary><p class="admin-section-help">注文内容の訂正用です。再製作の追加料金は「確認・連絡」から本人の同意を記録してください。</p>
+      <div class="order-card-row"><div style="display:flex;align-items:center;gap:8px;"><strong>点数</strong> <button class="sample-ctrl-btn" onclick="updateOrderQty('${o.ref}',-1)">−</button> ${o.qty}点 <button class="sample-ctrl-btn" onclick="updateOrderQty('${o.ref}',1)">＋</button></div>
+      ${o.type==='circle'?`<button class="oc-free-btn ${o.freeOverride?'active':''}" onclick="toggleFreeOverride('${o.ref}')">${o.freeOverride?'無料枠なし':'無料枠あり'}</button>`:''}</div>
       <!-- 行4: オプション(端材試作 | 仕上がり確認) -->
       ${(o.sampleRequested || o.wantsCompletionImage || o.earlyBird) ? `
       <div class="order-card-row" style="align-items:stretch;gap:0;padding:0;justify-content:flex-start;">
@@ -4341,12 +4360,7 @@ function renderOrders() {
             <button class="sample-ctrl-btn" onclick="updateSampleCount('${o.ref}',1)">＋</button>
           </div>
           <div class="sample-cost-note">${o.sampleFreeEligible?'初回無料':'有料のみ'} / ¥${sCostNow.toLocaleString()}</div>
-          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:2px;">
-            <button class="sent-btn ${o.sampleSent?'done':''}" onclick="toggleSampleSent('${o.ref}')">
-              ${o.sampleSent ? '✓ 送信済み' : '○ 未送信'}
-            </button>
-            <button class="sent-btn" style="background:rgba(255,200,80,.15);border-color:var(--gold-border);font-size:.75rem;padding:5px 10px;" onclick="showMsgModal('sample','${o.ref}')">📝 文面</button>
-          </div>
+          
         </div>` : ''}
         ${o.sampleRequested && o.wantsCompletionImage ? `<div style="width:1px;background:rgba(0,0,0,.1);align-self:stretch;"></div>` : ''}
         ${o.wantsCompletionImage ? `
@@ -4358,12 +4372,7 @@ function renderOrders() {
             <button class="sample-ctrl-btn" onclick="updateAdjustment('${o.ref}',300)" title="+¥300">＋</button>
           </div>
           <div class="sample-cost-note">申込時の確認料金：¥${(o.completionImgFee||0).toLocaleString()}</div>
-          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:2px;">
-            <button class="sent-btn ${o.completionImageSent?'done':''}" onclick="toggleCompletionImageSent('${o.ref}')">
-              ${o.completionImageSent ? '✓ 送信済み' : '○ 未送信'}
-            </button>
-            <button class="sent-btn" style="background:rgba(255,200,80,.15);border-color:var(--gold-border);font-size:.75rem;padding:5px 10px;" onclick="showMsgModal('completion','${o.ref}')">📝 文面</button>
-          </div>
+          
         </div>` : ''}
         ${o.earlyBird ? `
         ${(o.sampleRequested || o.wantsCompletionImage) ? '<div style="width:1px;background:rgba(0,0,0,.1);align-self:stretch;"></div>' : ''}
@@ -4378,7 +4387,9 @@ function renderOrders() {
         </div>` : ''}
       </div>` : ''}
 
+      <div class="order-card-row"><button class="oc-delete-btn" onclick="deleteOrder('${o.ref}')">この注文を削除</button></div></details>
       ${reviewAdminControls(o)}
+      <details class="admin-order-details" data-admin-section="gallery-${o.ref}"><summary>展示・ギャラリー写真 ${o.completionPhotos?.length?'（'+o.completionPhotos.length+'枚）':'（未登録）'}</summary><p class="admin-section-help">こちらは公開展示用の写真です。注文者に確認してもらう写真は「確認・連絡」で登録します。</p>
       <!-- 完成写真アップロード(ギャラリー用) -->
       <div class="order-card-row" style="background:rgba(160,120,74,.08);border-radius:8px;padding:10px 12px;margin-top:4px;align-items:center;gap:12px;flex-wrap:wrap;">
         <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:200px;flex-wrap:wrap;">
@@ -4437,6 +4448,7 @@ function renderOrders() {
         })()}
       </div>
 
+      </details>
       <!-- メモ -->
       ${o.note && String(o.note).trim() ? `
       <div class="order-card-row">
@@ -4445,6 +4457,7 @@ function renderOrders() {
     </div>`;
   }).join('')}</div>`;
 
+  c.querySelectorAll('details[data-admin-section]').forEach(n=>{if(expanded.has(n.dataset.adminSection))n.open=true;});
   // 非公開バケットの画像(data-authed-img)を管理者トークン付きで読み込む
   c.querySelectorAll('img[data-authed-img]').forEach(async (img) => {
     const path = img.getAttribute('data-authed-img');
@@ -5017,7 +5030,7 @@ function renderInterestsAdmin() {
         <td style="font-size:.85rem">${i.x_account ? `@${escapeHTML(i.x_account)}` : '—'}</td>
         <td style="font-size:.85rem">${i.display_name || '—'}</td>
         <td class="oc-ip-cell">${ip}</td>
-        <td><img class="thumb-mini" src="${src}" alt="" onerror="this.src='${FALLBACK_AVATAR}'" style="border-radius:50%"></td>
+        <td><img class="thumb-mini" src="${src}" alt="" onerror="this.onerror=null;this.src='${FALLBACK_AVATAR.replaceAll("'","%27")}'" style="border-radius:50%"></td>
         <td>${i.id ? `<button class="admin-btn danger oc-delete-small" onclick="deleteInterest(${i.id})">削除</button>` : '—'}</td>
       </tr>`;
     }).join('')}</tbody>
@@ -5858,7 +5871,7 @@ function calcAvatarMax(containerWidth, total) {
 function buildAvatarHTML(shown, rest) {
   return shown.map((av, i) => {
     const z = shown.length - i + 1;
-    return `<div class="gate-avatar" style="z-index:${z}" title="${av.title}"><img src="${av.src}" alt="${av.title}" onerror="this.src='${FALLBACK_AVATAR}'"></div>`;
+    return `<div class="gate-avatar" style="z-index:${z}" title="${av.title}"><img src="${av.src}" alt="${av.title}" onerror="this.onerror=null;this.src='${FALLBACK_AVATAR.replaceAll("'","%27")}'"></div>`;
   }).join('') + (rest > 0 ? `<div class="gate-avatar-more" style="z-index:${shown.length + 2}">+${rest}</div>` : '');
 }
 
@@ -6766,6 +6779,20 @@ async function loadCoasterReviews(){
     coasterReviewRows=await res.json();coasterReviewFiles=await files.json();
   }catch(err){coasterReviewRows=[];coasterReviewFiles=[];showToast(err.message);}
 }
+function adminNextAction(o){
+ const reviews=coasterReviewRows.filter(r=>r.order_ref===o.ref&&r.status!=='superseded');
+ if(reviews.some(r=>r.held))return '製作保留：返答・原稿と日程を確認';
+ if(reviews.some(r=>r.status==='consultation'&&r.waiting_for==='organizer'))return '修正相談・原稿を確認して再製作内容を案内';
+ if(reviews.some(r=>r.waiting_for==='customer_data'))return '注文者の修正原稿待ち';
+ if(reviews.some(r=>r.status==='quote_ready'))return '再製作内容・追加料金への同意待ち';
+ if(reviews.some(r=>r.status==='pending'))return '写真への返答待ち';
+ if(o.status==='done')return '受け渡し完了';
+ if(o.sampleRequested&&!reviews.some(r=>r.kind==='sample'))return '端材試作の写真を登録して確認を依頼';
+ if(o.wantsCompletionImage&&!reviews.some(r=>r.kind==='completion')&&['made','working','making'].includes(o.status))return '仕上がり写真を登録して確認を依頼';
+ if(reviews.some(r=>r.status==='revision_confirmed'))return '同意済みの内容で再製作';
+ if(o.status==='made')return '当日の受け渡し待ち';
+ return '製作を進める';
+}
 function reviewAdminControls(o){
   if(!o.sampleRequested&&!o.wantsCompletionImage)return '';
   const entries=coasterReviewRows.filter(r=>r.order_ref===o.ref&&r.status!=='superseded');
@@ -6776,12 +6803,12 @@ function reviewAdminControls(o){
     const files=review?coasterReviewFiles.filter(f=>f.review_id===review.id):[];
     return `<div style="margin:8px 0;"><strong>${kind==='sample'?'端材試作':'仕上がり確認'}</strong>：${escapeHTML(state||'未確認')}${review?.message?'<p>'+escapeHTML(review.message)+'</p>':''}
       ${files.map(f=>`<p><button class="admin-btn" onclick="downloadAdminRevision('${f.id}')">原稿をダウンロード</button> ${escapeHTML(f.original_name)}</p>`).join('')}
-      ${review?`<p><button class="admin-btn" onclick="recordReviewContact('${review.id}','ok')">メール等で受け取ったOKを記録</button> <button class="admin-btn" onclick="recordReviewContact('${review.id}','consult')">メール等の修正相談を記録</button></p>`:''}
-      ${review&&['consultation','quote_ready'].includes(review.status)?`<div style="margin:10px 0;"><textarea id="reviewQuote-${review.id}" placeholder="原稿を確認し、再製作する内容を入力" style="background:white;color:#222;width:100%;">${escapeHTML(review.quote_note||'')}</textarea><label><input type="checkbox" id="reviewRequire-${review.id}" checked> 修正原稿が必要</label><br><button class="admin-btn" onclick="quoteCoasterReview('${review.id}')">内容＋追加300円の確認を依頼</button></div>`:''}
+      ${review?`<details style="margin:12px 0;"><summary style="cursor:pointer;">メール・DMの返答を手動記録</summary><p><button class="admin-btn" onclick="recordReviewContact('${review.id}','ok')">メール等で受け取ったOKを記録</button> <button class="admin-btn" onclick="recordReviewContact('${review.id}','consult')">メール等の修正相談を記録</button></p></details>`:''}
+      ${review&&['consultation','quote_ready'].includes(review.status)?`<div style="margin:10px 0;"><textarea id="reviewQuote-${review.id}" placeholder="原稿を確認し、再製作する内容を入力" style="background:white;color:#222;width:100%;">${escapeHTML(review.quote_note||'')}</textarea><label style="color:#2c2418;"><input type="checkbox" id="reviewRequire-${review.id}" checked> 修正原稿が必要</label><br><button class="admin-btn" onclick="quoteCoasterReview('${review.id}')">内容＋追加300円の確認を依頼</button></div>`:''}
       ${review?.status==='quote_ready'?`<button class="admin-btn" onclick="recordReviewContact('${review.id}','confirm')">メール等での再製作・300円の同意を記録</button>`:''}
-      <br><label style="font-size:.8rem;">確認写真を登録してメール依頼：<input type="file" accept="image/jpeg,image/png,image/webp" style="color:var(--ink);" onchange="createCoasterReview('${o.ref}','${kind}',this)"></label></div>`;
+      <br><label style="font-size:.8rem;color:#2c2418;">確認写真を登録してメール依頼：<input type="file" accept="image/jpeg,image/png,image/webp" style="color:var(--ink);" onchange="createCoasterReview('${o.ref}','${kind}',this)"></label></div>`;
   };
-  return `<div class="order-card-row" style="display:block;background:rgba(160,120,74,.08);padding:12px;border-radius:8px;"><strong>注文者への写真確認</strong>${o.sampleRequested?row('sample'):''}${o.wantsCompletionImage?row('completion'):''}<p style="font-size:.75rem;">リンクは30日間有効。未返信は3日後に再通知、7日後に製作保留（開催直前は表示期限まで）。相談・原稿提出だけでは加算しません。メール通知の結果はMakeで確認してください。</p></div>`;
+  return `<details class="admin-order-details" data-admin-section="review-${o.ref}"><summary>確認・連絡（${o.sampleRequested?'端材試作':''}${o.sampleRequested&&o.wantsCompletionImage?'・':''}${o.wantsCompletionImage?'仕上がり確認':''}）</summary><div class="order-card-row" style="display:block;background:rgba(160,120,74,.04);padding:12px;">${o.sampleRequested?row('sample'):''}${o.wantsCompletionImage?row('completion'):''}<details style="margin:12px 0;"><summary style="cursor:pointer;">連絡・料金の扱い</summary><p style="font-size:.75rem;">リンクは30日間有効。未返信は3日後に再通知、7日後に製作保留（開催直前は表示期限まで）。相談・原稿提出だけでは加算しません。メール通知の結果はMakeで確認してください。メール・XのDMで返答を受け取った場合は、記録ボタンから日時・連絡手段・内容を記録してください。原稿をメール・DMで受領済みの場合は、見積もりの「修正原稿が必要」を外して内容と追加料金の同意を依頼できます。</p></details></div></details>`;
 }
 async function createCoasterReview(ref,kind,input){
   const file=input.files?.[0];if(!file)return;
@@ -6828,8 +6855,16 @@ async function downloadAdminRevision(id){
  const params=new URLSearchParams(location.hash.slice(1)),token=params.get('review');if(!token)return;
  const el=(tag,text)=>{const node=document.createElement(tag);if(text!=null)node.textContent=text;return node;};
  const dialog=el('dialog');dialog.id='orderPhotoReview';dialog.style.cssText='width:min(650px,calc(100% - 32px));max-height:90vh;overflow:auto;padding:24px;border:1px solid #c7b98e;border-radius:14px;background:#fffdf6;color:#2c2418;';
+ const style=el('style');style.textContent=`
+ #orderPhotoReview label{color:#2c2418;display:flex;align-items:flex-start;gap:8px;margin:12px 0;line-height:1.6;}
+ #orderPhotoReview input[type=checkbox]{flex:0 0 auto;margin-top:5px;}
+ #orderPhotoReview textarea,#orderPhotoReview select,#orderPhotoReview input{color:#2c2418;}
+ #orderPhotoReview textarea::placeholder{color:#736959;opacity:1;}
+ #orderPhotoReview .admin-btn{display:inline-flex;align-items:center;justify-content:center;line-height:1.5;margin:6px 8px 6px 0;}
+ #orderPhotoReview .review-close{display:block;margin-top:14px;}
+ `;document.head.append(style);
  const title=el('h2','注文の写真確認'),content=el('div'),msg=el('p','読み込み中…');msg.setAttribute('role','status');
- const close=el('button','閉じる');close.className='admin-btn';close.onclick=()=>dialog.close();dialog.append(title,content,msg,close);document.body.append(dialog);dialog.showModal();
+ const close=el('button','閉じる');close.className='admin-btn review-close';close.onclick=()=>dialog.close();dialog.append(title,content,msg,close);document.body.append(dialog);dialog.showModal();
  let review=null,busy=false,uploadSession=null;
  if(!/^[a-f0-9]{64}$/.test(token)){msg.textContent='確認リンクが無効です。主催者にお問い合わせください。';return;}
  const inputStyle='background:white;color:#222;width:100%;margin:12px 0;';
@@ -6898,11 +6933,60 @@ async function downloadAdminRevision(id){
    }
    if(review.messages?.length){const history=el('details');history.append(el('summary','これまでのやり取り'));for(const message of review.messages){const line=el('p',(message.sender==='customer'?'ご本人':message.sender==='organizer'?'主催者':'お知らせ')+'：'+message.body);line.style.whiteSpace='pre-wrap';history.append(line);}content.append(history);}
    const refresh=el('button','最新の内容を確認');refresh.className='admin-btn';refresh.onclick=()=>action(async()=>{await reload();msg.textContent='最新の内容に更新しました。';});
-   content.append(el('p','この画面が使えない場合や返信を忘れていた場合は、確認メールに直接返信してください。主催者が返答を記録できます。'),refresh);
+   const contact=el('div');contact.style.cssText='margin:18px 0;padding:14px;border:1px solid #c7b98e;border-radius:8px;';
+   contact.append(el('h3','メール・XのDMでも連絡できます'),el('p','OKの返答、修正の相談、修正データは、確認メールへの返信、下記のメール、またはXのDMでも受け付けます。お名前と注文番号（'+review.ref+'）を添えてください。'));
+   const email=el('a','daikikoushirou@gmail.com');email.href='mailto:daikikoushirou@gmail.com?subject='+encodeURIComponent('コースター企画 '+review.ref);
+   const x=el('a','X：@daikikoushirou（DM）');x.href='https://x.com/daikikoushirou';x.target='_blank';x.rel='noopener noreferrer';
+   contact.append(email,el('br'),x,el('p','メール・DMの返答は、主催者が確認してこの画面へ反映します。反映まで時間がかかる場合があります。相談やデータ送付だけで追加料金が発生することはありません。'));
+   content.append(contact,refresh);
    msg.textContent='';
  }
  reload().catch(err=>msg.textContent=err.message);
 })();
+
+const ADMIN_SESSION_KEY='bc_admin_tab_session';
+function readAdminSession(){try{return JSON.parse(sessionStorage.getItem(ADMIN_SESSION_KEY)||'null');}catch{return null;}}
+function rememberAdminSession(data){
+  try{sessionStorage.setItem(ADMIN_SESSION_KEY,JSON.stringify({access_token:data.access_token,refresh_token:data.refresh_token,expires_at:data.expires_at||Math.floor(Date.now()/1000)+(data.expires_in||3600),open:true,scroll:window.scrollY}));}catch{}
+}
+function setAdminOpen(open){try{const s=readAdminSession();if(s){s.open=open;sessionStorage.setItem(ADMIN_SESSION_KEY,JSON.stringify(s));}}catch{}}
+function forgetAdminSession(){try{sessionStorage.removeItem(ADMIN_SESSION_KEY);}catch{}}
+let adminRefreshInProgress=false;
+async function refreshAdminPanel(button){
+  if(adminRefreshInProgress)return;
+  if(!_authToken){showToast('管理者としてログインしてください。');return;}
+  const drafts=[...document.querySelectorAll('[id^="reviewQuote-"]')].filter(e=>e.value!==e.defaultValue);
+  if(drafts.length&&!confirm('入力途中の見積もり文が消えます。最新情報に更新しますか？'))return;
+  adminRefreshInProgress=true;const label=button?.textContent;if(button){button.disabled=true;button.textContent='更新中…';}
+  const scroll=window.scrollY;
+  try{
+    await loadAndRenderOrders();
+    await Promise.all([loadMaterialStock(),reloadInterestsAdmin()]);
+    showToast(adminOrdersState==='ready'?'最新の情報に更新しました。':'取得に失敗しました。再ログインしてお試しください。');
+    window.scrollTo(0,scroll);
+  }finally{adminRefreshInProgress=false;if(button){button.disabled=false;button.textContent=label;}}
+}
+window.addEventListener('pagehide',()=>{
+  try{const s=readAdminSession();if(s){s.open=adminVisible;s.scroll=window.scrollY;sessionStorage.setItem(ADMIN_SESSION_KEY,JSON.stringify(s));}}catch{}
+});
+async function restoreAdminSession(){
+  const s=readAdminSession();if(!s?.open||location.hash.startsWith('#review='))return;
+  try{
+    let token=s.access_token;
+    if(!token||Number(s.expires_at)<Date.now()/1000+30){
+      if(!s.refresh_token){forgetAdminSession();return;}
+      const refresh=await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`,{method:'POST',headers:{apikey:SUPABASE_ANON_KEY,'Content-Type':'application/json'},body:JSON.stringify({refresh_token:s.refresh_token})});
+      if(!refresh.ok){if(refresh.status===400||refresh.status===401||refresh.status===403)forgetAdminSession();throw Error('管理者ログインの復元に失敗しました。');}
+      const data=await refresh.json();token=data.access_token;rememberAdminSession(data);
+    }
+    const res=await fetch(`${SUPABASE_URL}/auth/v1/user`,{headers:{apikey:SUPABASE_ANON_KEY,Authorization:'Bearer '+token}});
+    if(!res.ok){if(res.status===401||res.status===403)forgetAdminSession();throw Error('管理者として再ログインしてください。');}
+    const user=await res.json();
+    if(user.id!=='0285dcfd-9477-4155-8b17-08c51c3fdbd5'){forgetAdminSession();return;}
+    _authToken=token;await openAdminPanel(Number(s.scroll)||0);
+  }catch(err){_authToken=null;showToast(err.message||'管理者として再ログインしてください。');}
+}
+restoreAdminSession();
 
 </script>
 </body>
