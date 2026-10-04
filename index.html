@@ -2018,17 +2018,19 @@ async function sbInsert(order) {
   };
   // 申込INSERTは行を読み返さない（return=minimal）。
   // anonにはSELECT権限が無いため representation だと読み返しでRLS拒否されるのを回避。
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/coaster_orders`, {
-    method: 'POST',
-    headers: { ...SB_H(), Authorization:'Bearer '+SUPABASE_ANON_KEY, 'Prefer': 'return=minimal' },
-    body: JSON.stringify(payload)
+  const res = await fetch(order.manualEntry?`${SUPABASE_URL}/rest/v1/coaster_orders`:`${SUPABASE_URL}/rest/v1/rpc/coaster_register_order`, {
+    method:'POST',headers:{...SB_H(),Authorization:order.manualEntry?authBearer():'Bearer '+SUPABASE_ANON_KEY,Prefer:order.manualEntry?'return=minimal':'return=representation'},
+    body:JSON.stringify(order.manualEntry?payload:{p_order:payload})
   });
   if (!res.ok) {
     const detail=await res.text();
-    const err=new Error(detail.includes('MATERIAL_CAPACITY_EXCEEDED') ? '材料の残量が不足しています。点数を減らすか、主催者にご相談ください。' : 'DB保存失敗 '+res.status);
+    let serverMessage='注文を保存できませんでした。';try{serverMessage=JSON.parse(detail).message||serverMessage;}catch{}
+    const err=new Error(detail.includes('MATERIAL_CAPACITY_EXCEEDED') ? '材料の残量が不足しています。点数を減らすか、主催者にご相談ください。' : serverMessage);
+    err.noRetry=res.status>=400&&res.status<500;
     err.materialCapacityExceeded=detail.includes('MATERIAL_CAPACITY_EXCEEDED');
     throw err;
   }
+  if(!order.manualEntry){const saved=await res.json();Object.assign(order,{total:saved.total,freeQty:saved.free_qty,earlyBird:saved.early_bird,sampleFreeEligible:saved.sample_free_eligible,freeOverride:saved.free_override,completionImgFee:saved.completion_img_fee,sampleCount:saved.sample_count});}
 }
 
 // リトライ付きDB保存（最大3回、1秒・2秒・4秒のバックオフ）
@@ -2039,7 +2041,7 @@ async function sbInsertWithRetry(order, maxRetries = 3) {
       await sbInsert(order);
       return true; // 成功
     } catch (err) {
-      if(err.materialCapacityExceeded) throw err;
+      if(err.materialCapacityExceeded||err.noRetry) throw err;
       lastErr = err;
       if (i < maxRetries - 1) {
         await new Promise(r => setTimeout(r, 1000 * Math.pow(2, i)));
@@ -3983,6 +3985,7 @@ document.getElementById('orderForm').addEventListener('submit', async e => {
   }
 
   let cloudSaveFailed = false;
+  let saveErrorMessage = "";
   let materialCapacityExceeded = false;
   if (sbReady()) {
     // 送信中表示
@@ -3995,6 +3998,7 @@ document.getElementById('orderForm').addEventListener('submit', async e => {
     } catch (err) {
       console.warn('DB保存失敗(全リトライ失敗):', err);
       cloudSaveFailed = true;
+      saveErrorMessage=err.message;showToast(err.message);
       materialCapacityExceeded = !!err.materialCapacityExceeded;
     } finally {
       if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = origText; }
@@ -4012,7 +4016,7 @@ document.getElementById('orderForm').addEventListener('submit', async e => {
 
   // 全リトライ失敗時はエラーモーダルを表示
   if (cloudSaveFailed) {
-    showSubmitErrorModal(order);
+    showSubmitErrorModal(order,saveErrorMessage);
     return;
   }
 
@@ -6237,7 +6241,7 @@ function applyAboutFold() {
   more.style.display = 'none';
   btn.style.display  = 'inline-block';
 }
-function showSubmitErrorModal(order) {
+function showSubmitErrorModal(order,reason="") {
   const lines = [
     `注文番号：${order.ref}`,
     `お名前：${order.name}`,
@@ -6251,14 +6255,14 @@ function showSubmitErrorModal(order) {
     order.note ? `備考：${order.note}` : '',
   ].filter(Boolean).join('\n');
 
-  document.getElementById('submitErrorContent').textContent = lines;
+  document.getElementById('submitErrorContent').textContent = (reason?'注文は登録されていません。\n'+reason+'\n\n':'')+lines;
 
   const xUrl = order.xAccount
     ? `https://x.com/${order.xAccount}`
     : 'https://x.com/daikikoushirou';
   const mailBody = encodeURIComponent('【送信失敗・注文内容】\n\n' + lines);
   document.getElementById('submitErrorXLink').href = `https://x.com/messages/compose?recipient_id=daikikoushirou`;
-  document.getElementById('submitErrorMailLink').href = `mailto:ルーニー@ふたば学園祭?subject=${encodeURIComponent('【送信失敗】注文内容')}&body=${mailBody}`;
+  document.getElementById('submitErrorMailLink').href = `mailto:daikikoushirou@gmail.com?subject=${encodeURIComponent('【送信失敗】注文内容')}&body=${mailBody}`;
 
   document.getElementById('submitErrorModal').classList.add('show');
 }
@@ -6318,7 +6322,7 @@ async function submitManualOrder() {
   const ref = 'M-' + Date.now().toString(36).toUpperCase();
 
   const order = {
-    ref, code, type: _manualOrderType,
+    ref, code, type: _manualOrderType, manualEntry:true,
     date: new Date().toISOString(),
     name,
     circleName: document.getElementById('mo-circle').value.trim(),
