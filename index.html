@@ -1511,6 +1511,12 @@ footer a{color:var(--potato-light);text-decoration:none;}
           </div>
         </div>
       </div>
+<div class="form-group full" id="distributionPriceGroup" style="display:none;color:#fff8e8;">
+        <label for="f-distribution-price">ご自身のサークルでの予定頒布価格 <span style="font-size:.75rem;font-weight:400;">任意・1点あたり</span></label>
+        <p style="color:#fff8e8;font-size:.85rem;line-height:1.65;margin:0 0 8px;">当サークルでも少数頒布するため、価格に大きな差が出ないよう、想定する価格を教えてください。価格を指定するものではありません。無記入でも問題ありませんし、後から修正も可能です。</p>
+        <input id="f-distribution-price" type="text" maxlength="120" style="width:100%;" placeholder="例：400円程度／未定／頒布予定なし">
+        <p style="color:#fff0c7;font-size:.8rem;line-height:1.65;margin:6px 0 0;">前回は1点300円。今回は原材料高騰などにより400円にする可能性があります（未確定）。制作料金には影響しません。</p>
+      </div>
       <div class="form-group full" id="generalImageNotice" style="display:none">
         <div style="background:rgba(240,120,64,.15);border:1.5px solid rgba(240,120,64,.4);border-radius:8px;padding:12px 16px;font-size:.85rem;color:rgba(255,255,255,.85);line-height:1.7;">
           ℹ️ <strong>2種類以上のイラストを製作できるのはサークル参加者に限られます。</strong><br>
@@ -1985,6 +1991,7 @@ async function sbInsert(order) {
     ref: order.ref, code: order.code, type: order.type,
     date: order.date, name: order.name, circle_name: order.circleName||'', circle_space: order.circleSpace||'', email: order.email,
     x_account: order.xAccount||'', contact_pref: order.contactPref||'email',
+    planned_distribution_price:order.type==='circle'?(order.plannedDistributionPrice||''):'',
     shape: order.shape, qty: order.qty, total: order.total,
     early_bird: order.earlyBird||false,
     free_qty: order.freeQty ?? null,
@@ -2054,6 +2061,7 @@ async function sbFetch() {
     ref: r.ref, code: r.code, type: r.type,
     date: r.date, name: r.name, circleName: r.circle_name||'', circleSpace: r.circle_space||'', email: r.email,
     xAccount: r.x_account||'', contactPref: r.contact_pref||'email',
+    plannedDistributionPrice:r.planned_distribution_price||'',
     shape: r.shape, qty: r.qty, total: r.total,
     earlyBird: r.early_bird, freeQty: r.free_qty ?? null, ipAddress: r.ip_address || '',
     sampleRequested: r.sample_requested,
@@ -2179,6 +2187,7 @@ async function notifyMake(order, cutlineBlob = null, imageMeta = null) {
         name:order.name, circle_name:order.circleName||'',circle_space:order.circleSpace||'',
         shape:order.shape,qty:order.qty,total:order.total,order_type:order.type,
         code:order.code,ref:order.ref,email:order.email,x_account:order.xAccount||'',contact_pref:order.contactPref||'email',contact_label:order.contactPref==='x'?'X優先：@'+(order.xAccount||'')+'へDMで連絡してください':'メール優先',
+        planned_distribution_price:order.type==='circle'?(order.plannedDistributionPrice||''):'',
         early_bird:order.earlyBird?'早割':'', ...attachment
       })
     });
@@ -2649,6 +2658,7 @@ function applyModeUI() {
   // サークル名フィールドの表示切替
   const circleNameGroup = document.getElementById('circleNameGroup');
   if (circleNameGroup) circleNameGroup.style.display = isC ? '' : 'none';
+  document.getElementById('distributionPriceGroup').style.display=isC?'':'none';
   const circleSpaceGroup = document.getElementById('circleSpaceGroup');
   if (circleSpaceGroup) circleSpaceGroup.style.display = isC ? '' : 'none';
   const generalCircleNameGroup = document.getElementById('generalCircleNameGroup');
@@ -3918,6 +3928,7 @@ document.getElementById('orderForm').addEventListener('submit', async e => {
     ref, code, type: currentMode,
     date: new Date().toISOString(),
     ipAddress: await fetchClientIP(),
+    plannedDistributionPrice: currentMode==='circle'?document.getElementById('f-distribution-price').value.trim():'',
     name: document.getElementById('f-name').value.trim(),
     circleName: currentMode === 'circle' ? document.getElementById('f-circle-name').value.trim() : (document.getElementById('f-general-circle-name').value.trim() || ''),
     circleSpace: currentMode === 'circle' ? document.getElementById('f-circle-space').value.trim() : (document.getElementById('f-general-circle-space').value.trim() || ''),
@@ -4344,7 +4355,7 @@ function renderOrders() {
         </div>
       </div>
 
-      <div class="order-card-row admin-next-action"><strong>次の対応</strong><span>${escapeHTML(adminNextAction(o))}</span></div>
+      ${o.type==='circle'?`<div class="order-card-row"><strong>予定頒布価格（1点）</strong><span>${escapeHTML(o.plannedDistributionPrice||'未記入')}</span></div>`:''}<div class="order-card-row admin-next-action"><strong>次の対応</strong><span>${escapeHTML(adminNextAction(o))}</span></div>
       <details class="admin-order-details" data-admin-section="edit-${o.ref}"><summary>点数・料金を編集</summary><p class="admin-section-help">注文内容の訂正用です。再製作の追加料金は「確認・連絡」から本人の同意を記録してください。</p>
       <div class="order-card-row"><div style="display:flex;align-items:center;gap:8px;"><strong>点数</strong> <button class="sample-ctrl-btn" onclick="updateOrderQty('${o.ref}',-1)">−</button> ${o.qty}点 <button class="sample-ctrl-btn" onclick="updateOrderQty('${o.ref}',1)">＋</button></div>
       ${o.type==='circle'?`<button class="oc-free-btn ${o.freeOverride?'active':''}" onclick="toggleFreeOverride('${o.ref}')">${o.freeOverride?'無料枠なし':'無料枠あり'}</button>`:''}</div>
@@ -6709,6 +6720,14 @@ function expandAbout() {
             dt.textContent = label; dd.textContent = String(value); card.append(dt,dd);
           }
           $('lookupResults').append(card);
+          if(order.type==='circle'&&!['done','cancelled'].includes(order.status)){
+            const form=document.createElement('form'),label=document.createElement('label'),input=document.createElement('input'),save=document.createElement('button');
+            label.textContent='予定頒布価格（1点あたり・任意）';input.type='text';input.maxLength=120;input.value=order.planned_distribution_price||'';input.placeholder='例：400円程度／未定／頒布予定なし';label.append(input);save.type='submit';save.textContent='予定頒布価格を保存';form.append(label,save);$('lookupResults').append(form);
+            form.addEventListener('submit',event=>{event.preventDefault();action(async()=>{
+              if(!token||Date.now()>=expiresAt){message('本人確認の有効期限が切れました。確認コードを再送信してください。');return;}
+              try{const result=await request('/rest/v1/rpc/coaster_update_my_distribution_price',{p_ref:order.ref,p_price:input.value.trim()},token);if(version!==generation)return;input.value=result.planned_distribution_price;message('予定頒布価格を保存しました。制作料金は変わりません。');}catch{if(version===generation)message('保存できませんでした。本人確認をやり直すか、主催者へお問い合わせください。');}
+            });});
+          }
           if (!['done','cancelled'].includes(order.status)) {
             const form=document.createElement('form'),label=document.createElement('label'),input=document.createElement('input'),save=document.createElement('button'),note=document.createElement('p');
             label.textContent='サークルスペースを更新';input.type='text';input.maxLength=50;input.value=order.circle_space || '';input.placeholder='未定の場合は空欄で構いません';label.append(input);
@@ -6727,7 +6746,7 @@ function expandAbout() {
             });});
           }
         }
-        message('注文内容を表示しました。スペース情報は下の入力欄から更新できます。');
+        message('注文内容を表示しました。スペース情報・予定頒布価格は下の入力欄から更新できます。');
       } catch { if (version === generation) message('取得できませんでした。再試行するか、確認コードを再送信してください。'); }
     });
   });
