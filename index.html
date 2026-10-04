@@ -4404,6 +4404,7 @@ function renderOrders() {
 
       <div class="order-card-row"><button class="oc-delete-btn" onclick="deleteOrder('${o.ref}')">この注文を削除</button></div></details>
       ${dmAdminControls(o)}
+      ${ownerReminderControls(o)}
       ${reviewAdminControls(o)}
       <details class="admin-order-details" data-admin-section="gallery-${o.ref}"><summary>展示・ギャラリー写真 ${o.completionPhotos?.length?'（'+o.completionPhotos.length+'枚）':'（未登録）'}</summary><p class="admin-section-help">こちらは公開展示用の写真です。注文者に確認してもらう写真は「確認・連絡」で登録します。</p>
       <!-- 完成写真アップロード(ギャラリー用) -->
@@ -6824,6 +6825,7 @@ let coasterReviewRows=[];
 let coasterReviewFiles=[];
 let coasterDmRows=[];
 let coasterAdminPhotoUrls={};
+let coasterOwnerTasks=[];
 function adminCompletionPhotoUrl(url){
  try{const parsed=new URL(url);if(parsed.origin===new URL(SUPABASE_URL).origin&&parsed.pathname==='/functions/v1/coaster-gallery-photo')return coasterAdminPhotoUrls[parsed.searchParams.get('id')]||url;}catch{}
  return url;
@@ -6842,6 +6844,9 @@ async function loadCoasterReviews(){
     ]);
     if(!res.ok||!files.ok)throw Error('確認・原稿の設定を読み込めません。SQL10の適用を確認してください。');
     coasterReviewRows=await res.json();coasterReviewFiles=await files.json();
+    coasterOwnerTasks=[];
+    const taskRefresh=await fetch(`${SUPABASE_URL}/rest/v1/rpc/coaster_refresh_owner_tasks`,{method:'POST',headers:SB_H(),body:'{}'});
+    if(taskRefresh.ok){const tasks=await fetch(`${SUPABASE_URL}/rest/v1/coaster_owner_tasks?resolved_at=is.null&acknowledged_at=is.null&select=*&order=started_at.asc`,{headers:SB_H()});if(tasks.ok)coasterOwnerTasks=await tasks.json();}
     const dm=await fetch(`${SUPABASE_URL}/rest/v1/coaster_review_mail_queue?delivery_channel=eq.x&select=id,review_id,event_type,dm_text,dm_account,dm_sent_at,created_at,review_version&order=created_at.desc&limit=500`,{headers:SB_H()});
     coasterDmRows=dm.ok?await dm.json():[];
     coasterAdminPhotoUrls={};
@@ -6854,6 +6859,16 @@ async function loadCoasterReviews(){
       }
     }
   }catch(err){coasterReviewRows=[];coasterReviewFiles=[];coasterDmRows=[];coasterAdminPhotoUrls={};showToast(err.message);}
+}
+function ownerReminderControls(o){
+ const tasks=coasterOwnerTasks.filter(t=>t.order_ref===o.ref);
+ if(!tasks.length)return '';
+ return `<details class="admin-order-details" data-admin-section="reminders-${escapeHTML(o.ref)}"><summary>主催者の対応待ち・通知設定（${tasks.length}件）</summary><div style="padding:14px;background:#fff;color:#302817;"><p>18時間後にメール通知。未対応なら、送信完了から28時間後に再通知します。</p>${tasks.map(t=>`<div style="border-top:1px solid #dfd4bc;padding:12px 0;"><strong>${escapeHTML(t.title)}</strong><p>${t.snoozed_until&&new Date(t.snoozed_until)>new Date()?'通知延期中：'+escapeHTML(new Date(t.snoozed_until).toLocaleString('ja-JP')):'対応すると通知は自動で止まります。'}</p><button class="admin-btn" data-owner-task="${escapeHTML(t.task_key)}" onclick="deferOwnerTask(this,false)">通知を24時間延期</button>${t.task_kind==='hold'?` <button class="admin-btn" data-owner-task="${escapeHTML(t.task_key)}" onclick="deferOwnerTask(this,true)">個別連絡済み</button>`:''}</div>`).join('')}</div></details>`;
+}
+async function deferOwnerTask(button,ack){
+ if(ack&&!confirm('製作保留後の個別連絡を済ませましたか？この件の通知を止めます。製作保留そのものは解除しません。'))return;
+ button.disabled=true;
+ try{await reviewRpc('coaster_defer_owner_task',{p_key:button.dataset.ownerTask,p_ack:ack},true);await loadAndRenderOrders();showToast(ack?'個別連絡済みを記録しました。':'通知を24時間延期しました。');}catch(err){showToast(err.message);}finally{button.disabled=false;}
 }
 function orderDmTasks(o){
  const ids=new Set(coasterReviewRows.filter(r=>r.order_ref===o.ref&&r.status!=='superseded').map(r=>r.id));
